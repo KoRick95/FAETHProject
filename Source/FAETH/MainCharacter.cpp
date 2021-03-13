@@ -1,7 +1,5 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "MainCharacter.h"
+#include "Components/InputComponent.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -27,6 +25,8 @@ void AMainCharacter::Tick(float DeltaTime)
 void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	//PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &AMainCharacter::Attack);
 }
 
 UAbilitySystemComponent* AMainCharacter::GetAbilitySystemComponent() const
