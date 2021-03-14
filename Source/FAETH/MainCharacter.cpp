@@ -1,4 +1,5 @@
 #include "MainCharacter.h"
+#include "CharacterAttributeSet.h"
 #include "Components/InputComponent.h"
 
 // Sets default values
@@ -7,6 +8,7 @@ AMainCharacter::AMainCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>("AbilitySystemComponent");
+	AttributeSet = CreateDefaultSubobject<UCharacterAttributeSet>("AttributeSet");
 }
 
 // Called when the game starts or when spawned

@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -7,6 +5,8 @@
 #include "AbilitySystemInterface.h"
 #include "AbilitySystemComponent.h"
 #include "MainCharacter.generated.h"
+
+class UCharacterAttributeSet;
 
 UCLASS()
 class FAETH_API AMainCharacter : public ACharacter, public IAbilitySystemInterface
@@ -19,6 +19,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UAbilitySystemComponent* AbilitySystemComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UCharacterAttributeSet* AttributeSet;
 
 protected:
 	// Called when the game starts or when spawned
