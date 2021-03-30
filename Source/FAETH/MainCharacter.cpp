@@ -16,6 +16,8 @@ void AMainCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	AttributeSet->OnHealthChange.AddDynamic(this, &AMainCharacter::OnHealthChanged);
+	AttributeSet->OnManaChange.AddDynamic(this, &AMainCharacter::OnManaChanged);
+	AttributeSet->OnStaminaChange.AddDynamic(this, &AMainCharacter::OnStaminaChanged);
 }
 
 // Called every frame
@@ -37,6 +39,21 @@ UAbilitySystemComponent* AMainCharacter::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
+void AMainCharacter::OnHealthChanged(float Health, float MaxHealth)
+{
+	BP_OnHealthChanged(Health, MaxHealth);
+}
+
+void AMainCharacter::OnManaChanged(float Mana, float MaxMana)
+{
+	BP_OnManaChanged(Mana, MaxMana);
+}
+
+void AMainCharacter::OnStaminaChanged(float Stamina, float MaxStamina)
+{
+	BP_OnStaminaChanged(Stamina, MaxStamina);
+}
+
 void AMainCharacter::GainAbility(TSubclassOf<UGameplayAbility> Ability)
 {
 	if (AbilitySystemComponent)
@@ -48,9 +65,4 @@ void AMainCharacter::GainAbility(TSubclassOf<UGameplayAbility> Ability)
 
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	}
-}
-
-void AMainCharacter::OnHealthChanged(float Health, float MaxHealth)
-{
-	BP_OnHealthChanged(Health, MaxHealth);
 }

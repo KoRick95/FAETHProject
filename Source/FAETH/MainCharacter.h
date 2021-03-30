@@ -36,12 +36,24 @@ public:
 
 	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
-	UFUNCTION(BlueprintCallable)
-	void GainAbility(TSubclassOf<UGameplayAbility> Ability);
-
 	UFUNCTION()
 	void OnHealthChanged(float Health, float MaxHealth);
 
+	UFUNCTION()
+	void OnManaChanged(float Mana, float MaxMana);
+
+	UFUNCTION()
+	void OnStaminaChanged(float Stamina, float MaxStamina);
+
+	UFUNCTION(BlueprintCallable)
+	void GainAbility(TSubclassOf<UGameplayAbility> Ability);
+
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnHealthChanged"))
 	void BP_OnHealthChanged(float Health, float MaxHealth);
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnManaChanged"))
+	void BP_OnManaChanged(float Mana, float MaxMana);
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnStaminaChanged"))
+	void BP_OnStaminaChanged(float Stamina, float MaxStamina);
 };
