@@ -9,7 +9,6 @@ AMainCharacter::AMainCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>("AbilitySystemComponent");
 	AttributeSet = CreateDefaultSubobject<UCharacterAttributeSet>("AttributeSet");
-	bIsDead = false;
 }
 
 // Called when the game starts or when spawned
@@ -42,11 +41,6 @@ UAbilitySystemComponent* AMainCharacter::GetAbilitySystemComponent() const
 
 void AMainCharacter::OnHealthChanged(float Health, float MaxHealth)
 {
-	if (Health <= 0.0f && !bIsDead)
-	{
-		bIsDead = true;
-		BP_Death();
-	}
 	BP_OnHealthChanged(Health, MaxHealth);
 }
 
