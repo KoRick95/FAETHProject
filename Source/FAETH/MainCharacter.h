@@ -56,4 +56,11 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnStaminaChanged"))
 	void BP_OnStaminaChanged(float Stamina, float MaxStamina);
+
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Death"))
+		void BP_Death();
+
+protected:
+	bool bIsDead;
 };
