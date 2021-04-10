@@ -46,6 +46,12 @@ public:
 	void OnStaminaChanged(float Stamina, float MaxStamina);
 
 	UFUNCTION(BlueprintCallable)
+	void SetHealth(float Value);
+
+	UFUNCTION(BlueprintCallable)
+	void SetMaxHealth(float Value);
+
+	UFUNCTION(BlueprintCallable)
 	void GainAbility(TSubclassOf<UGameplayAbility> Ability);
 
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnHealthChanged"))
@@ -57,9 +63,8 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnStaminaChanged"))
 	void BP_OnStaminaChanged(float Stamina, float MaxStamina);
 
-
-	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Death"))
-		void BP_Death();
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnDeath"))
+	void BP_Death();
 
 protected:
 	bool bIsDead;

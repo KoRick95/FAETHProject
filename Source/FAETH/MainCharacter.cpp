@@ -60,6 +60,16 @@ void AMainCharacter::OnStaminaChanged(float Stamina, float MaxStamina)
 	BP_OnStaminaChanged(Stamina, MaxStamina);
 }
 
+void AMainCharacter::SetHealth(float Value)
+{
+	AttributeSet->Health = Value;
+}
+
+void AMainCharacter::SetMaxHealth(float Value)
+{
+	AttributeSet->MaxHealth = Value;
+}
+
 void AMainCharacter::GainAbility(TSubclassOf<UGameplayAbility> Ability)
 {
 	if (AbilitySystemComponent)
