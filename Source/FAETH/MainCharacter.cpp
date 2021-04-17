@@ -9,6 +9,7 @@ AMainCharacter::AMainCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>("AbilitySystemComponent");
 	AttributeSet = CreateDefaultSubobject<UCharacterAttributeSet>("AttributeSet");
+	bIsDead = false;
 }
 
 // Called when the game starts or when spawned
@@ -16,6 +17,8 @@ void AMainCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	AttributeSet->OnHealthChange.AddDynamic(this, &AMainCharacter::OnHealthChanged);
+	AttributeSet->OnManaChange.AddDynamic(this, &AMainCharacter::OnManaChanged);
+	AttributeSet->OnStaminaChange.AddDynamic(this, &AMainCharacter::OnStaminaChanged);
 }
 
 // Called every frame
@@ -37,6 +40,36 @@ UAbilitySystemComponent* AMainCharacter::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
+void AMainCharacter::OnHealthChanged(float Health, float MaxHealth)
+{
+	if (Health <= 0.0f && !bIsDead)
+	{
+		bIsDead = true;
+		BP_Death();
+	}
+	BP_OnHealthChanged(Health, MaxHealth);
+}
+
+void AMainCharacter::OnManaChanged(float Mana, float MaxMana)
+{
+	BP_OnManaChanged(Mana, MaxMana);
+}
+
+void AMainCharacter::OnStaminaChanged(float Stamina, float MaxStamina)
+{
+	BP_OnStaminaChanged(Stamina, MaxStamina);
+}
+
+void AMainCharacter::SetHealth(float Value)
+{
+	AttributeSet->Health = Value;
+}
+
+void AMainCharacter::SetMaxHealth(float Value)
+{
+	AttributeSet->MaxHealth = Value;
+}
+
 void AMainCharacter::GainAbility(TSubclassOf<UGameplayAbility> Ability)
 {
 	if (AbilitySystemComponent)
@@ -48,9 +81,4 @@ void AMainCharacter::GainAbility(TSubclassOf<UGameplayAbility> Ability)
 
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	}
-}
-
-void AMainCharacter::OnHealthChanged(float Health, float MaxHealth)
-{
-	BP_OnHealthChanged(Health, MaxHealth);
 }
