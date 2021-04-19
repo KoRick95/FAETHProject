@@ -11,6 +11,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChangeDelegate, float, Health, float, MaxHealth);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnManaChangeDelegate, float, Mana, float, MaxMana);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnStaminaChangeDelegate, float, Stamina, float, MaxStamina);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnStaggerChangeDelegate, float, Stagger, float, MaxStagger);
 
 UCLASS()
 class FAETH_API UCharacterAttributeSet : public UAttributeSet
@@ -23,6 +24,7 @@ public:
 	FOnHealthChangeDelegate OnHealthChange;
 	FOnManaChangeDelegate OnManaChange;
 	FOnStaminaChangeDelegate OnStaminaChange;
+	FOnStaggerChangeDelegate OnStaggerChange;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FGameplayAttributeData Health;
@@ -41,6 +43,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FGameplayAttributeData MaxStamina;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameplayAttributeData Stagger;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameplayAttributeData MaxStagger;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FGameplayAttributeData Strength;

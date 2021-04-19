@@ -45,6 +45,9 @@ public:
 	UFUNCTION()
 	void OnStaminaChanged(float Stamina, float MaxStamina);
 
+	UFUNCTION()
+	void OnStaggerChanged(float Stagger, float MaxStagger);
+
 	UFUNCTION(BlueprintCallable)
 	void SetHealth(float Value);
 
@@ -62,6 +65,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnStaminaChanged"))
 	void BP_OnStaminaChanged(float Stamina, float MaxStamina);
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnStaggerChanged"))
+	void BP_OnStaggerChanged(float Stagger, float MaxStagger);
 
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnDeath"))
 	void BP_Death();

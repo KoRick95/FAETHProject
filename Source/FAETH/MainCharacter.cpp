@@ -60,6 +60,11 @@ void AMainCharacter::OnStaminaChanged(float Stamina, float MaxStamina)
 	BP_OnStaminaChanged(Stamina, MaxStamina);
 }
 
+void AMainCharacter::OnStaggerChanged(float Stagger, float MaxStagger)
+{
+	BP_OnStaggerChanged(Stagger, MaxStagger);
+}
+
 void AMainCharacter::SetHealth(float Value)
 {
 	AttributeSet->Health = Value;
