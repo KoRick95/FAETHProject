@@ -10,6 +10,8 @@ UCharacterAttributeSet::UCharacterAttributeSet()
 	Mana = MaxMana;
 	MaxStamina = 100;
 	Stamina = MaxStamina;
+	Stagger = 0;
+	MaxStagger = 5;
 
 	Strength = 0;
 	Defense = 0;
