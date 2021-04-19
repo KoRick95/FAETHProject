@@ -39,4 +39,11 @@ void UCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModC
 		Stamina.SetBaseValue(FMath::Clamp(Stamina.GetCurrentValue(), 0.0f, MaxStamina.GetCurrentValue()));
 		OnStaminaChange.Broadcast(Stamina.GetCurrentValue(), MaxStamina.GetCurrentValue());
 	}
+
+	if (Data.EvaluatedData.Attribute.GetUProperty() == FindFieldChecked<UProperty>(UCharacterAttributeSet::StaticClass(), GET_MEMBER_NAME_CHECKED(UCharacterAttributeSet, Stagger)))
+	{
+		Stagger.SetCurrentValue(FMath::Clamp(Stagger.GetCurrentValue(), 0.0f, MaxStagger.GetCurrentValue()));
+		Stagger.SetBaseValue(FMath::Clamp(Stagger.GetCurrentValue(), 0.0f, MaxStagger.GetCurrentValue()));
+		OnStaggerChange.Broadcast(Stagger.GetCurrentValue(), MaxStagger.GetCurrentValue());
+	}
 }
