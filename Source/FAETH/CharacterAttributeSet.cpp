@@ -14,9 +14,9 @@ UCharacterAttributeSet::UCharacterAttributeSet()
 	MaxStagger = 5;
 
 	Strength = 0;
-	Defense = 0;
+	Defence = 0;
 	Magic = 0;
-	MagicDefense = 0;
+	MagicDefence = 0;
 }
 
 void UCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)

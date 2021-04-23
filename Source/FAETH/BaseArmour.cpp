@@ -1,9 +1,9 @@
-#include "BaseWeapon.h"
+#include "BaseArmour.h"
 #include "AbilitySystemComponent.h"
 #include "EquipmentAttributeSet.h"
 
 // Sets default values
-ABaseWeapon::ABaseWeapon()
+ABaseArmour::ABaseArmour()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -13,15 +13,15 @@ ABaseWeapon::ABaseWeapon()
 }
 
 // Called when the game starts or when spawned
-void ABaseWeapon::BeginPlay()
+void ABaseArmour::BeginPlay()
 {
 	Super::BeginPlay();
 
-	EquipmentAttributeSet->Attack = Attack;
+	EquipmentAttributeSet->Defence = Defence;
 }
 
 // Called every frame
-void ABaseWeapon::Tick(float DeltaTime)
+void ABaseArmour::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }

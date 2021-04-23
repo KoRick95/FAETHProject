@@ -76,7 +76,7 @@ public:
 	void SetStrength(float Value);
 
 	UFUNCTION(BlueprintCallable)
-	void SetDefense(float Value);
+	void SetDefence(float Value);
 
 	UFUNCTION(BlueprintCallable)
 	void GainAbility(TSubclassOf<UGameplayAbility> Ability);

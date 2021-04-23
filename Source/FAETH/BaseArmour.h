@@ -2,19 +2,19 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "BaseWeapon.generated.h"
+#include "BaseArmour.generated.h"
 
 class UAbilitySystemComponent;
 class UEquipmentAttributeSet;
 
 UCLASS()
-class FAETH_API ABaseWeapon : public AActor
+class FAETH_API ABaseArmour : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ABaseWeapon();
+	ABaseArmour();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UAbilitySystemComponent* AbilitySystemComponent;
@@ -22,8 +22,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UEquipmentAttributeSet* EquipmentAttributeSet;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Base Stats", meta=(ClampMin="0"))
-	float Attack = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base Stats", meta = (ClampMin = "0"))
+	float Defence = 0;
 
 protected:
 	// Called when the game starts or when spawned

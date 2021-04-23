@@ -110,9 +110,9 @@ void ABaseCharacter::SetStrength(float Value)
 	AttributeSet->Strength = Value;
 }
 
-void ABaseCharacter::SetDefense(float Value)
+void ABaseCharacter::SetDefence(float Value)
 {
-	AttributeSet->Defense = Value;
+	AttributeSet->Defence = Value;
 }
 
 void ABaseCharacter::GainAbility(TSubclassOf<UGameplayAbility> Ability)

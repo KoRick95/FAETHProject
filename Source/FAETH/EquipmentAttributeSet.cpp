@@ -7,5 +7,5 @@ UEquipmentAttributeSet::UEquipmentAttributeSet()
 	Stamina = 0;
 	Stagger = 0;
 	Attack = 0;
-	Defense = 0;
+	Defence = 0;
 }

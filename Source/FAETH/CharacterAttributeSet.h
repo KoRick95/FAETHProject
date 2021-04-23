@@ -54,13 +54,13 @@ public:
 	FGameplayAttributeData Strength;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FGameplayAttributeData Defense;
+	FGameplayAttributeData Defence;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FGameplayAttributeData Magic;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FGameplayAttributeData MagicDefense;
+	FGameplayAttributeData MagicDefence;
 
 	void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 };

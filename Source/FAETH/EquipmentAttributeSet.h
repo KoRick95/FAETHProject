@@ -31,5 +31,5 @@ public:
 	FGameplayAttributeData Attack;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FGameplayAttributeData Defense;
+	FGameplayAttributeData Defence;
 };
