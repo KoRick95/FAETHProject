@@ -4,18 +4,18 @@
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
 #include "AbilitySystemComponent.h"
-#include "MainCharacter.generated.h"
+#include "BaseCharacter.generated.h"
 
 class UCharacterAttributeSet;
 
 UCLASS()
-class FAETH_API AMainCharacter : public ACharacter, public IAbilitySystemInterface
+class FAETH_API ABaseCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
-	AMainCharacter();
+	ABaseCharacter();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UAbilitySystemComponent* AbilitySystemComponent;

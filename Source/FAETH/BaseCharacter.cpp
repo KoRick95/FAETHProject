@@ -1,9 +1,9 @@
-#include "MainCharacter.h"
+#include "BaseCharacter.h"
 #include "CharacterAttributeSet.h"
 #include "Components/InputComponent.h"
 
 // Sets default values
-AMainCharacter::AMainCharacter()
+ABaseCharacter::ABaseCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -13,34 +13,34 @@ AMainCharacter::AMainCharacter()
 }
 
 // Called when the game starts or when spawned
-void AMainCharacter::BeginPlay()
+void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	AttributeSet->OnHealthChange.AddDynamic(this, &AMainCharacter::OnHealthChanged);
-	AttributeSet->OnManaChange.AddDynamic(this, &AMainCharacter::OnManaChanged);
-	AttributeSet->OnStaminaChange.AddDynamic(this, &AMainCharacter::OnStaminaChanged);
+	AttributeSet->OnHealthChange.AddDynamic(this, &ABaseCharacter::OnHealthChanged);
+	AttributeSet->OnManaChange.AddDynamic(this, &ABaseCharacter::OnManaChanged);
+	AttributeSet->OnStaminaChange.AddDynamic(this, &ABaseCharacter::OnStaminaChanged);
 }
 
 // Called every frame
-void AMainCharacter::Tick(float DeltaTime)
+void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
 
 // Called to bind functionality to input
-void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	//PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &AMainCharacter::Attack);
+	//PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ABaseCharacter::Attack);
 }
 
-UAbilitySystemComponent* AMainCharacter::GetAbilitySystemComponent() const
+UAbilitySystemComponent* ABaseCharacter::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
 }
 
-void AMainCharacter::OnHealthChanged(float Health, float MaxHealth)
+void ABaseCharacter::OnHealthChanged(float Health, float MaxHealth)
 {
 	if (Health <= 0.0f && !bIsDead)
 	{
@@ -50,72 +50,72 @@ void AMainCharacter::OnHealthChanged(float Health, float MaxHealth)
 	BP_OnHealthChanged(Health, MaxHealth);
 }
 
-void AMainCharacter::OnManaChanged(float Mana, float MaxMana)
+void ABaseCharacter::OnManaChanged(float Mana, float MaxMana)
 {
 	BP_OnManaChanged(Mana, MaxMana);
 }
 
-void AMainCharacter::OnStaminaChanged(float Stamina, float MaxStamina)
+void ABaseCharacter::OnStaminaChanged(float Stamina, float MaxStamina)
 {
 	BP_OnStaminaChanged(Stamina, MaxStamina);
 }
 
-void AMainCharacter::OnStaggerChanged(float Stagger, float MaxStagger)
+void ABaseCharacter::OnStaggerChanged(float Stagger, float MaxStagger)
 {
 	BP_OnStaggerChanged(Stagger, MaxStagger);
 }
 
-void AMainCharacter::SetHealth(float Value)
+void ABaseCharacter::SetHealth(float Value)
 {
 	AttributeSet->Health = Value;
 }
 
-void AMainCharacter::SetMaxHealth(float Value)
+void ABaseCharacter::SetMaxHealth(float Value)
 {
 	AttributeSet->MaxHealth = Value;
 }
 
-void AMainCharacter::SetMana(float Value)
+void ABaseCharacter::SetMana(float Value)
 {
 	AttributeSet->Mana = Value;
 }
 
-void AMainCharacter::SetMaxMana(float Value)
+void ABaseCharacter::SetMaxMana(float Value)
 {
 	AttributeSet->MaxMana = Value;
 }
 
-void AMainCharacter::SetStamina(float Value)
+void ABaseCharacter::SetStamina(float Value)
 {
 	AttributeSet->Stamina = Value;
 }
 
-void AMainCharacter::SetMaxStamina(float Value)
+void ABaseCharacter::SetMaxStamina(float Value)
 {
 	AttributeSet->MaxStamina = Value;
 }
 
-void AMainCharacter::SetStagger(float Value)
+void ABaseCharacter::SetStagger(float Value)
 {
 	AttributeSet->Stagger = Value;
 }
 
-void AMainCharacter::SetMaxStagger(float Value)
+void ABaseCharacter::SetMaxStagger(float Value)
 {
 	AttributeSet->MaxStagger = Value;
 }
 
-void AMainCharacter::SetStrength(float Value)
+void ABaseCharacter::SetStrength(float Value)
 {
 	AttributeSet->Strength = Value;
 }
 
-void AMainCharacter::SetDefense(float Value)
+void ABaseCharacter::SetDefense(float Value)
 {
 	AttributeSet->Defense = Value;
 }
 
-void AMainCharacter::GainAbility(TSubclassOf<UGameplayAbility> Ability)
+void ABaseCharacter::GainAbility(TSubclassOf<UGameplayAbility> Ability)
 {
 	if (AbilitySystemComponent)
 	{
