@@ -1,6 +1,6 @@
 #include "BaseCharacter.h"
 #include "CharacterAttributeSet.h"
-#include "Components/InputComponent.h"
+//#include "Components/InputComponent.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
