@@ -17,6 +17,9 @@ public:
 	// Sets default values for this character's properties
 	ABaseCharacter();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int TeamID = 0;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UAbilitySystemComponent* AbilitySystemComponent;
 
@@ -77,6 +80,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetDefence(float Value);
+
+	UFUNCTION(BlueprintCallable)
+	bool GetIsHostile(ABaseCharacter* other);
 
 	UFUNCTION(BlueprintCallable)
 	void GainAbility(TSubclassOf<UGameplayAbility> Ability);

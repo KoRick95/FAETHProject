@@ -115,6 +115,14 @@ void ABaseCharacter::SetDefence(float Value)
 	AttributeSet->Defence = Value;
 }
 
+bool ABaseCharacter::GetIsHostile(ABaseCharacter* other)
+{
+	if (TeamID != other->TeamID)
+		return true;
+	else
+		return false;
+}
+
 void ABaseCharacter::GainAbility(TSubclassOf<UGameplayAbility> Ability)
 {
 	if (AbilitySystemComponent)
