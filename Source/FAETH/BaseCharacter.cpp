@@ -135,3 +135,11 @@ void ABaseCharacter::GainAbility(TSubclassOf<UGameplayAbility> Ability)
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	}
 }
+
+void ABaseCharacter::ApplyGameplayEffectToTarget(const FGameplayEffectSpecHandle& GESpecHandle, const FGameplayAbilityTargetDataHandle& GATargetDataHandle)
+{
+	for (TSharedPtr<FGameplayAbilityTargetData> Data : GATargetDataHandle.Data)
+	{
+		Data->ApplyGameplayEffectSpec(*GESpecHandle.Data.Get());
+	}
+}

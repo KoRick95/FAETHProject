@@ -87,6 +87,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void GainAbility(TSubclassOf<UGameplayAbility> Ability);
 
+	UFUNCTION(BlueprintCallable)
+	void ApplyGameplayEffectToTarget(const FGameplayEffectSpecHandle& GESpecHandle, const FGameplayAbilityTargetDataHandle& GATargetDataHandle);
+
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnHealthChanged"))
 	void BP_OnHealthChanged(float Health, float MaxHealth);
 
