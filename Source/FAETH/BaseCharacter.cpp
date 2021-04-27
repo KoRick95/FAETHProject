@@ -115,6 +115,14 @@ void ABaseCharacter::SetDefence(float Value)
 	AttributeSet->Defence = Value;
 }
 
+bool ABaseCharacter::GetIsHostile(ABaseCharacter* other)
+{
+	if (TeamID != other->TeamID)
+		return true;
+	else
+		return false;
+}
+
 void ABaseCharacter::GainAbility(TSubclassOf<UGameplayAbility> Ability)
 {
 	if (AbilitySystemComponent)
@@ -125,5 +133,13 @@ void ABaseCharacter::GainAbility(TSubclassOf<UGameplayAbility> Ability)
 		}
 
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	}
+}
+
+void ABaseCharacter::ApplyGameplayEffectToTarget(const FGameplayEffectSpecHandle& GESpecHandle, const FGameplayAbilityTargetDataHandle& GATargetDataHandle)
+{
+	for (TSharedPtr<FGameplayAbilityTargetData> Data : GATargetDataHandle.Data)
+	{
+		Data->ApplyGameplayEffectSpec(*GESpecHandle.Data.Get());
 	}
 }

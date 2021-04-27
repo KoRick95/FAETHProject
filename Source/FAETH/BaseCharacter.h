@@ -17,6 +17,9 @@ public:
 	// Sets default values for this character's properties
 	ABaseCharacter();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int TeamID = 0;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UAbilitySystemComponent* AbilitySystemComponent;
 
@@ -79,7 +82,13 @@ public:
 	void SetDefence(float Value);
 
 	UFUNCTION(BlueprintCallable)
+	bool GetIsHostile(ABaseCharacter* other);
+
+	UFUNCTION(BlueprintCallable)
 	void GainAbility(TSubclassOf<UGameplayAbility> Ability);
+
+	UFUNCTION(BlueprintCallable)
+	void ApplyGameplayEffectToTarget(const FGameplayEffectSpecHandle& GESpecHandle, const FGameplayAbilityTargetDataHandle& GATargetDataHandle);
 
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnHealthChanged"))
 	void BP_OnHealthChanged(float Health, float MaxHealth);
