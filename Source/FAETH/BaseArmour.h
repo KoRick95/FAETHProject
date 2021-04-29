@@ -1,26 +1,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "BaseEquipment.h"
 #include "BaseArmour.generated.h"
 
-class UAbilitySystemComponent;
-class UEquipmentAttributeSet;
-
 UCLASS()
-class FAETH_API ABaseArmour : public AActor
+class FAETH_API ABaseArmour : public ABaseEquipment
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
 	ABaseArmour();
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	UAbilitySystemComponent* AbilitySystemComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	UEquipmentAttributeSet* EquipmentAttributeSet;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base Stats", meta = (ClampMin = "0"))
 	float Defence = 0;
