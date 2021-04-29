@@ -3,7 +3,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
-#include "AbilitySystemComponent.h"
 #include "CharacterAttributeSet.h"
 #include "BaseCharacter.generated.h"
 
