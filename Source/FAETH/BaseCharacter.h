@@ -4,9 +4,8 @@
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
 #include "AbilitySystemComponent.h"
+#include "CharacterAttributeSet.h"
 #include "BaseCharacter.generated.h"
-
-class UCharacterAttributeSet;
 
 UCLASS()
 class FAETH_API ABaseCharacter : public ACharacter, public IAbilitySystemInterface
@@ -24,7 +23,7 @@ public:
 	UAbilitySystemComponent* AbilitySystemComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	UCharacterAttributeSet* AttributeSet;
+	UCharacterAttributeSet* CharacterAttributeSet;
 
 protected:
 	// Called when the game starts or when spawned
