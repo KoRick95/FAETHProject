@@ -15,6 +15,8 @@ ABaseEquipment::ABaseEquipment()
 void ABaseEquipment::BeginPlay()
 {
 	Super::BeginPlay();
+
+	InitAttributes();
 }
 
 // Called every frame
@@ -29,6 +31,18 @@ void ABaseEquipment::InitAttributes()
 	EquipmentAttributeSet->InitMana(BaseMana);
 	EquipmentAttributeSet->InitStamina(BaseStamina);
 	EquipmentAttributeSet->InitStrength(BaseStrength);
+	EquipmentAttributeSet->InitDexterity(BaseDexterity);
+	EquipmentAttributeSet->InitIntelligence(BaseIntelligence);
+	EquipmentAttributeSet->InitAgility(BaseAgility);
+	EquipmentAttributeSet->InitArmour(BaseArmour);
+	EquipmentAttributeSet->InitResistance(BaseResistance);
+	EquipmentAttributeSet->InitPhysicalAttack(BasePhysicalAttack);
+	EquipmentAttributeSet->InitMagicAttack(BaseMagicAttack);
+	EquipmentAttributeSet->InitAttackSpeed(BaseAttackSpeed);
+	EquipmentAttributeSet->InitHealthRegen(BaseHealthRegen);
+	EquipmentAttributeSet->InitManaRegen(BaseManaRegen);
+	EquipmentAttributeSet->InitStaminaRegen(BaseStaminaRegen);
+	EquipmentAttributeSet->InitStaggerChance(BaseStaggerChance);
 }
 
 void ABaseEquipment::AddStatsToCharacter(ABaseCharacter* Character)

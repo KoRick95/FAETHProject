@@ -21,17 +21,53 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UEquipmentAttributeSet* EquipmentAttributeSet;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base Stats", meta = (ClampMin = "0"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base Stats")
 	float BaseHealth = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base Stats", meta = (ClampMin = "0"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base Stats")
 	float BaseMana = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base Stats", meta = (ClampMin = "0"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base Stats")
 	float BaseStamina = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base Stats", meta = (ClampMin = "0"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base Stats")
 	float BaseStrength = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base Stats")
+	float BaseDexterity = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base Stats")
+	float BaseIntelligence = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base Stats")
+	float BaseAgility = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base Stats")
+	float BaseArmour = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base Stats")
+	float BaseResistance = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base Stats")
+	float BasePhysicalAttack = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base Stats")
+	float BaseMagicAttack = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base Stats")
+	float BaseAttackSpeed = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base Stats")
+	float BaseHealthRegen = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base Stats")
+	float BaseManaRegen = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base Stats")
+	float BaseStaminaRegen = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base Stats")
+	float BaseStaggerChance = 0;
 
 protected:
 	// Called when the game starts or when spawned
