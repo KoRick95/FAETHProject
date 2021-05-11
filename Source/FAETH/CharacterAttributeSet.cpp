@@ -21,31 +21,23 @@ UCharacterAttributeSet::UCharacterAttributeSet()
 
 void UCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
-	if (Data.EvaluatedData.Attribute.GetUProperty() == FindFieldChecked<UProperty>(UCharacterAttributeSet::StaticClass(), GET_MEMBER_NAME_CHECKED(UCharacterAttributeSet, Health)))
+	Super::PostGameplayEffectExecute(Data);
+
+	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
-		Health.SetCurrentValue(FMath::Clamp(Health.GetCurrentValue(), 0.0f, MaxHealth.GetCurrentValue()));
-		Health.SetBaseValue(FMath::Clamp(Health.GetBaseValue(), 0.0f, MaxHealth.GetCurrentValue()));
-		OnHealthChange.Broadcast(Health.GetCurrentValue(), MaxHealth.GetCurrentValue());
+		SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth()));
+		OnHealthChange.Broadcast(GetHealth(), GetMaxHealth());
 	}
 
-	if (Data.EvaluatedData.Attribute.GetUProperty() == FindFieldChecked<UProperty>(UCharacterAttributeSet::StaticClass(), GET_MEMBER_NAME_CHECKED(UCharacterAttributeSet, Mana)))
+	if (Data.EvaluatedData.Attribute == GetManaAttribute())
 	{
-		Mana.SetCurrentValue(FMath::Clamp(Mana.GetCurrentValue(), 0.0f, MaxMana.GetCurrentValue()));
-		Mana.SetBaseValue(FMath::Clamp(Mana.GetCurrentValue(), 0.0f, MaxMana.GetCurrentValue()));
-		OnManaChange.Broadcast(Mana.GetCurrentValue(), MaxMana.GetCurrentValue());
+		SetMana(FMath::Clamp(GetMana(), 0.0f, GetMaxMana()));
+		OnManaChange.Broadcast(GetMana(), GetMaxMana());
 	}
 
-	if (Data.EvaluatedData.Attribute.GetUProperty() == FindFieldChecked<UProperty>(UCharacterAttributeSet::StaticClass(), GET_MEMBER_NAME_CHECKED(UCharacterAttributeSet, Stamina)))
+	if (Data.EvaluatedData.Attribute == GetStaminaAttribute())
 	{
-		Stamina.SetCurrentValue(FMath::Clamp(Stamina.GetCurrentValue(), 0.0f, MaxStamina.GetCurrentValue()));
-		Stamina.SetBaseValue(FMath::Clamp(Stamina.GetCurrentValue(), 0.0f, MaxStamina.GetCurrentValue()));
-		OnStaminaChange.Broadcast(Stamina.GetCurrentValue(), MaxStamina.GetCurrentValue());
-	}
-
-	if (Data.EvaluatedData.Attribute.GetUProperty() == FindFieldChecked<UProperty>(UCharacterAttributeSet::StaticClass(), GET_MEMBER_NAME_CHECKED(UCharacterAttributeSet, Stagger)))
-	{
-		Stagger.SetCurrentValue(FMath::Clamp(Stagger.GetCurrentValue(), 0.0f, MaxStagger.GetCurrentValue()));
-		Stagger.SetBaseValue(FMath::Clamp(Stagger.GetCurrentValue(), 0.0f, MaxStagger.GetCurrentValue()));
-		OnStaggerChange.Broadcast(Stagger.GetCurrentValue(), MaxStagger.GetCurrentValue());
+		SetStamina(FMath::Clamp(GetStamina(), 0.0f, GetMaxStamina()));
+		OnStaminaChange.Broadcast(GetStamina(), GetMaxStamina());
 	}
 }
