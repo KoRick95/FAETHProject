@@ -12,7 +12,7 @@ void ABaseArmour::BeginPlay()
 {
 	Super::BeginPlay();
 
-	EquipmentAttributeSet->Defence = Defence;
+	InitAttributes();
 }
 
 // Called every frame

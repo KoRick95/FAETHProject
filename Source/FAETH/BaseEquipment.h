@@ -21,6 +21,18 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UEquipmentAttributeSet* EquipmentAttributeSet;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base Stats", meta = (ClampMin = "0"))
+	float BaseHealth = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base Stats", meta = (ClampMin = "0"))
+	float BaseMana = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base Stats", meta = (ClampMin = "0"))
+	float BaseStamina = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base Stats", meta = (ClampMin = "0"))
+	float BaseStrength = 0;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -28,6 +40,8 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	virtual void InitAttributes();
 
 	void AddStatsToCharacter(class ABaseCharacter* Character);
 };

@@ -23,13 +23,20 @@ void ABaseEquipment::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void ABaseEquipment::InitAttributes()
+{
+	EquipmentAttributeSet->InitHealth(BaseHealth);
+	EquipmentAttributeSet->InitMana(BaseMana);
+	EquipmentAttributeSet->InitStamina(BaseStamina);
+	EquipmentAttributeSet->InitStrength(BaseStrength);
+}
+
 void ABaseEquipment::AddStatsToCharacter(ABaseCharacter* Character)
 {
 	UCharacterAttributeSet* CharAttribSet = Character->CharacterAttributeSet;
 
-	CharAttribSet->MaxHealth.SetCurrentValue(CharAttribSet->MaxHealth.GetCurrentValue() + EquipmentAttributeSet->Health.GetCurrentValue());
-	CharAttribSet->MaxMana.SetCurrentValue(CharAttribSet->MaxMana.GetCurrentValue() + EquipmentAttributeSet->Mana.GetCurrentValue());
-	CharAttribSet->MaxStamina.SetCurrentValue(CharAttribSet->MaxStamina.GetCurrentValue() + EquipmentAttributeSet->Stamina.GetCurrentValue());
-	CharAttribSet->Strength.SetCurrentValue(CharAttribSet->Strength.GetCurrentValue() + EquipmentAttributeSet->Attack.GetCurrentValue());
-	CharAttribSet->Defence.SetCurrentValue(CharAttribSet->Defence.GetCurrentValue() + EquipmentAttributeSet->Defence.GetCurrentValue());
+	CharAttribSet->SetMaxHealth(CharAttribSet->MaxHealth.GetBaseValue() + EquipmentAttributeSet->Health.GetBaseValue());
+	CharAttribSet->SetMaxMana(CharAttribSet->MaxMana.GetBaseValue() + EquipmentAttributeSet->Mana.GetBaseValue());
+	CharAttribSet->SetMaxStamina(CharAttribSet->MaxStamina.GetBaseValue() + EquipmentAttributeSet->Stamina.GetBaseValue());
+	CharAttribSet->SetStrength(CharAttribSet->Strength.GetBaseValue() + EquipmentAttributeSet->Strength.GetBaseValue());
 }

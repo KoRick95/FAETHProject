@@ -6,6 +6,6 @@ UEquipmentAttributeSet::UEquipmentAttributeSet()
 	Mana = 0;
 	Stamina = 0;
 	Stagger = 0;
-	Attack = 0;
+	Strength = 0;
 	Defence = 0;
 }

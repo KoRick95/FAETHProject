@@ -13,9 +13,6 @@ public:
 	// Sets default values for this actor's properties
 	ABaseWeapon();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Base Stats", meta=(ClampMin="0"))
-	float Attack = 0;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

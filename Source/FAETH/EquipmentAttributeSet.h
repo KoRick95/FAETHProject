@@ -36,8 +36,8 @@ public:
 	ATTRIBUTE_ACCESSORS(UEquipmentAttributeSet, Stagger);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FGameplayAttributeData Attack;
-	ATTRIBUTE_ACCESSORS(UEquipmentAttributeSet, Attack);
+	FGameplayAttributeData Strength;
+	ATTRIBUTE_ACCESSORS(UEquipmentAttributeSet, Strength);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FGameplayAttributeData Defence;
