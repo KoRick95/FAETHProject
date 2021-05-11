@@ -9,6 +9,7 @@ float UBaseGameplayAbility::GetAbilityCost(FString AbilityCostType)
 		if (Modifier.Attribute.AttributeName == AbilityCostType)
 		{
 			Modifier.ModifierMagnitude.GetStaticMagnitudeIfPossible(1, Cost);
+			break;
 		}
 	}
 
