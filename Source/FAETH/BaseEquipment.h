@@ -68,7 +68,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base Stats")
 	float BaseStaggerPower = 0;
-
+  
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
