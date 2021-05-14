@@ -10,13 +10,6 @@ UCharacterAttributeSet::UCharacterAttributeSet()
 	Mana = MaxMana;
 	MaxStamina = 100;
 	Stamina = MaxStamina;
-	Stagger = 0;
-	MaxStagger = 5;
-
-	Strength = 0;
-	Defence = 0;
-	Magic = 0;
-	MagicDefence = 0;
 }
 
 void UCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)

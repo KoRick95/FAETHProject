@@ -67,7 +67,7 @@ public:
 	float BaseStaminaRegen = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Base Stats")
-	float BaseStaggerChance = 0;
+	float BaseStaggerPower = 0;
 
 protected:
 	// Called when the game starts or when spawned

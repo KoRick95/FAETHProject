@@ -42,7 +42,7 @@ void ABaseEquipment::InitAttributes()
 	EquipmentAttributeSet->InitHealthRegen(BaseHealthRegen);
 	EquipmentAttributeSet->InitManaRegen(BaseManaRegen);
 	EquipmentAttributeSet->InitStaminaRegen(BaseStaminaRegen);
-	EquipmentAttributeSet->InitStaggerChance(BaseStaggerChance);
+	EquipmentAttributeSet->InitStaggerPower(BaseStaggerPower);
 }
 
 void ABaseEquipment::AddStatsToCharacter(ABaseCharacter* Character)
@@ -53,4 +53,5 @@ void ABaseEquipment::AddStatsToCharacter(ABaseCharacter* Character)
 	CharAttribSet->SetMaxMana(CharAttribSet->MaxMana.GetBaseValue() + EquipmentAttributeSet->Mana.GetBaseValue());
 	CharAttribSet->SetMaxStamina(CharAttribSet->MaxStamina.GetBaseValue() + EquipmentAttributeSet->Stamina.GetBaseValue());
 	CharAttribSet->SetStrength(CharAttribSet->Strength.GetBaseValue() + EquipmentAttributeSet->Strength.GetBaseValue());
+	
 }

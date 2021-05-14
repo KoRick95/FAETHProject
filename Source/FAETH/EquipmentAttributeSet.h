@@ -80,6 +80,6 @@ public:
 	ATTRIBUTE_ACCESSORS(UEquipmentAttributeSet, StaminaRegen);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FGameplayAttributeData StaggerChance;
-	ATTRIBUTE_ACCESSORS(UEquipmentAttributeSet, StaggerChance);
+	FGameplayAttributeData StaggerPower;
+	ATTRIBUTE_ACCESSORS(UEquipmentAttributeSet, StaggerPower);
 };

@@ -64,16 +64,52 @@ public:
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, Strength);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameplayAttributeData Dexterity;
+	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, Dexterity);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameplayAttributeData Intelligence;
+	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, Intelligence);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameplayAttributeData Agility;
+	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, Agility);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FGameplayAttributeData Defence;
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, Defence);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FGameplayAttributeData Magic;
-	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, Magic);
+	FGameplayAttributeData Resistance;
+	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, Resistance);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FGameplayAttributeData MagicDefence;
-	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, MagicDefence);
+	FGameplayAttributeData PhysicalAttack;
+	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, PhysicalAttack);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameplayAttributeData MagicAttack;
+	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, MagicAttack);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameplayAttributeData AttackSpeed;
+	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, AttackSpeed);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameplayAttributeData HealthRegen;
+	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, HealthRegen);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameplayAttributeData ManaRegen;
+	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, ManaRegen);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameplayAttributeData StaminaRegen;
+	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, StaminaRegen);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameplayAttributeData StaggerPower;
+	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, StaggerPower);
 
 	void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 };
