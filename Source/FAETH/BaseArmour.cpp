@@ -11,8 +11,6 @@ ABaseArmour::ABaseArmour()
 void ABaseArmour::BeginPlay()
 {
 	Super::BeginPlay();
-
-	EquipmentAttributeSet->Defence = Defence;
 }
 
 // Called every frame

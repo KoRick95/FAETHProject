@@ -1,6 +1,4 @@
 #include "BaseWeapon.h"
-#include "AbilitySystemComponent.h"
-#include "EquipmentAttributeSet.h"
 
 // Sets default values
 ABaseWeapon::ABaseWeapon()
@@ -13,8 +11,6 @@ ABaseWeapon::ABaseWeapon()
 void ABaseWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-
-	EquipmentAttributeSet->Attack = Attack;
 }
 
 // Called every frame
