@@ -77,7 +77,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void InitAttributes();
+	UFUNCTION(BlueprintCallable)
+	virtual void InitBaseAttributes();
 
+	UFUNCTION(BlueprintCallable)
 	void AddStatsToCharacter(class ABaseCharacter* Character);
 };

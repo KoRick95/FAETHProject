@@ -11,8 +11,6 @@ ABaseArmour::ABaseArmour()
 void ABaseArmour::BeginPlay()
 {
 	Super::BeginPlay();
-
-	InitAttributes();
 }
 
 // Called every frame
