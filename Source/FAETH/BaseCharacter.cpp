@@ -64,6 +64,26 @@ void ABaseCharacter::OnStaggerChanged(float Stagger, float MaxStagger)
 	BP_OnStaggerChanged(Stagger, MaxStagger);
 }
 
+void ABaseCharacter::InitBaseAttributes()
+{
+	CharacterAttributeSet->InitHealth(BaseHealth);
+	CharacterAttributeSet->InitMana(BaseMana);
+	CharacterAttributeSet->InitStamina(BaseStamina);
+	CharacterAttributeSet->InitStrength(BaseStrength);
+	CharacterAttributeSet->InitDexterity(BaseDexterity);
+	CharacterAttributeSet->InitIntelligence(BaseIntelligence);
+	CharacterAttributeSet->InitAgility(BaseAgility);
+	CharacterAttributeSet->InitDefence(BaseDefence);
+	CharacterAttributeSet->InitResistance(BaseResistance);
+	CharacterAttributeSet->InitPhysicalAttack(BasePhysicalAttack);
+	CharacterAttributeSet->InitMagicAttack(BaseMagicAttack);
+	CharacterAttributeSet->InitAttackSpeed(BaseAttackSpeed);
+	CharacterAttributeSet->InitHealthRegen(BaseHealthRegen);
+	CharacterAttributeSet->InitManaRegen(BaseManaRegen);
+	CharacterAttributeSet->InitStaminaRegen(BaseStaminaRegen);
+	CharacterAttributeSet->InitStaggerPower(BaseStaggerPower);
+}
+
 void ABaseCharacter::SetHealth(float Value)
 {
 	CharacterAttributeSet->Health = Value;
