@@ -1,5 +1,5 @@
 #include "BaseCharacter.h"
-//#include "Components/InputComponent.h"
+#include "GASObjects.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -31,7 +31,8 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	//PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ABaseCharacter::Attack);
+	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent,
+		FGameplayAbilityInputBinds(FString("ConfirmTarget"), FString("CancelTarget"), FString("AbilityInputID"), static_cast<int32>(EAbilityInputID::Confirm), static_cast<int32>(EAbilityInputID::Cancel)));
 }
 
 UAbilitySystemComponent* ABaseCharacter::GetAbilitySystemComponent() const
