@@ -1,5 +1,5 @@
 #include "BaseCharacter.h"
-//#include "Components/InputComponent.h"
+#include "GASObjects.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -31,7 +31,8 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	//PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ABaseCharacter::Attack);
+	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent,
+		FGameplayAbilityInputBinds(FString("ConfirmTarget"), FString("CancelTarget"), FString("AbilityInputID"), static_cast<int32>(EAbilityInputID::Confirm), static_cast<int32>(EAbilityInputID::Cancel)));
 }
 
 UAbilitySystemComponent* ABaseCharacter::GetAbilitySystemComponent() const
@@ -62,6 +63,26 @@ void ABaseCharacter::OnStaminaChanged(float Stamina, float MaxStamina)
 void ABaseCharacter::OnStaggerChanged(float Stagger, float MaxStagger)
 {
 	BP_OnStaggerChanged(Stagger, MaxStagger);
+}
+
+void ABaseCharacter::InitBaseAttributes()
+{
+	CharacterAttributeSet->InitHealth(BaseHealth);
+	CharacterAttributeSet->InitMana(BaseMana);
+	CharacterAttributeSet->InitStamina(BaseStamina);
+	CharacterAttributeSet->InitStrength(BaseStrength);
+	CharacterAttributeSet->InitDexterity(BaseDexterity);
+	CharacterAttributeSet->InitIntelligence(BaseIntelligence);
+	CharacterAttributeSet->InitAgility(BaseAgility);
+	CharacterAttributeSet->InitDefence(BaseDefence);
+	CharacterAttributeSet->InitResistance(BaseResistance);
+	CharacterAttributeSet->InitPhysicalAttack(BasePhysicalAttack);
+	CharacterAttributeSet->InitMagicAttack(BaseMagicAttack);
+	CharacterAttributeSet->InitAttackSpeed(BaseAttackSpeed);
+	CharacterAttributeSet->InitHealthRegen(BaseHealthRegen);
+	CharacterAttributeSet->InitManaRegen(BaseManaRegen);
+	CharacterAttributeSet->InitStaminaRegen(BaseStaminaRegen);
+	CharacterAttributeSet->InitStaggerPower(BaseStaggerPower);
 }
 
 void ABaseCharacter::SetHealth(float Value)
