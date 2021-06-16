@@ -31,8 +31,8 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent,
-		FGameplayAbilityInputBinds(FString("ConfirmTarget"), FString("CancelTarget"), FString("AbilityInputID"), static_cast<int32>(EAbilityInputID::Confirm), static_cast<int32>(EAbilityInputID::Cancel)));
+	//AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent,
+	//	FGameplayAbilityInputBinds(FString("ConfirmTarget"), FString("CancelTarget"), FString("AbilityInputID"), static_cast<int32>(EAbilityInputID::Confirm), static_cast<int32>(EAbilityInputID::Cancel)));
 }
 
 UAbilitySystemComponent* ABaseCharacter::GetAbilitySystemComponent() const
