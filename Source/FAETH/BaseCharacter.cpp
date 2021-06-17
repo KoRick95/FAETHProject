@@ -1,6 +1,5 @@
 #include "BaseCharacter.h"
-#include "CharacterAttributeSet.h"
-//#include "Components/InputComponent.h"
+#include "GASObjects.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -8,7 +7,7 @@ ABaseCharacter::ABaseCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>("AbilitySystemComponent");
-	AttributeSet = CreateDefaultSubobject<UCharacterAttributeSet>("AttributeSet");
+	CharacterAttributeSet = CreateDefaultSubobject<UCharacterAttributeSet>("CharacterAttributeSet");
 	bIsDead = false;
 }
 
@@ -16,9 +15,9 @@ ABaseCharacter::ABaseCharacter()
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	AttributeSet->OnHealthChange.AddDynamic(this, &ABaseCharacter::OnHealthChanged);
-	AttributeSet->OnManaChange.AddDynamic(this, &ABaseCharacter::OnManaChanged);
-	AttributeSet->OnStaminaChange.AddDynamic(this, &ABaseCharacter::OnStaminaChanged);
+	CharacterAttributeSet->OnHealthChange.AddDynamic(this, &ABaseCharacter::OnHealthChanged);
+	CharacterAttributeSet->OnManaChange.AddDynamic(this, &ABaseCharacter::OnManaChanged);
+	CharacterAttributeSet->OnStaminaChange.AddDynamic(this, &ABaseCharacter::OnStaminaChanged);
 }
 
 // Called every frame
@@ -32,7 +31,8 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	//PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ABaseCharacter::Attack);
+	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent,
+		FGameplayAbilityInputBinds(FString("ConfirmTarget"), FString("CancelTarget"), FString("AbilityInputID"), static_cast<int32>(EAbilityInputID::Confirm), static_cast<int32>(EAbilityInputID::Cancel)));
 }
 
 UAbilitySystemComponent* ABaseCharacter::GetAbilitySystemComponent() const
@@ -65,54 +65,74 @@ void ABaseCharacter::OnStaggerChanged(float Stagger, float MaxStagger)
 	BP_OnStaggerChanged(Stagger, MaxStagger);
 }
 
+void ABaseCharacter::InitBaseAttributes()
+{
+	CharacterAttributeSet->InitHealth(BaseHealth);
+	CharacterAttributeSet->InitMana(BaseMana);
+	CharacterAttributeSet->InitStamina(BaseStamina);
+	CharacterAttributeSet->InitStrength(BaseStrength);
+	CharacterAttributeSet->InitDexterity(BaseDexterity);
+	CharacterAttributeSet->InitIntelligence(BaseIntelligence);
+	CharacterAttributeSet->InitAgility(BaseAgility);
+	CharacterAttributeSet->InitDefence(BaseDefence);
+	CharacterAttributeSet->InitResistance(BaseResistance);
+	CharacterAttributeSet->InitPhysicalAttack(BasePhysicalAttack);
+	CharacterAttributeSet->InitMagicAttack(BaseMagicAttack);
+	CharacterAttributeSet->InitAttackSpeed(BaseAttackSpeed);
+	CharacterAttributeSet->InitHealthRegen(BaseHealthRegen);
+	CharacterAttributeSet->InitManaRegen(BaseManaRegen);
+	CharacterAttributeSet->InitStaminaRegen(BaseStaminaRegen);
+	CharacterAttributeSet->InitStaggerPower(BaseStaggerPower);
+}
+
 void ABaseCharacter::SetHealth(float Value)
 {
-	AttributeSet->Health = Value;
+	CharacterAttributeSet->Health = Value;
 }
 
 void ABaseCharacter::SetMaxHealth(float Value)
 {
-	AttributeSet->MaxHealth = Value;
+	CharacterAttributeSet->MaxHealth = Value;
 }
 
 void ABaseCharacter::SetMana(float Value)
 {
-	AttributeSet->Mana = Value;
+	CharacterAttributeSet->Mana = Value;
 }
 
 void ABaseCharacter::SetMaxMana(float Value)
 {
-	AttributeSet->MaxMana = Value;
+	CharacterAttributeSet->MaxMana = Value;
 }
 
 void ABaseCharacter::SetStamina(float Value)
 {
-	AttributeSet->Stamina = Value;
+	CharacterAttributeSet->Stamina = Value;
 }
 
 void ABaseCharacter::SetMaxStamina(float Value)
 {
-	AttributeSet->MaxStamina = Value;
+	CharacterAttributeSet->MaxStamina = Value;
 }
 
 void ABaseCharacter::SetStagger(float Value)
 {
-	AttributeSet->Stagger = Value;
+	CharacterAttributeSet->Stagger = Value;
 }
 
 void ABaseCharacter::SetMaxStagger(float Value)
 {
-	AttributeSet->MaxStagger = Value;
+	CharacterAttributeSet->MaxStagger = Value;
 }
 
 void ABaseCharacter::SetStrength(float Value)
 {
-	AttributeSet->Strength = Value;
+	CharacterAttributeSet->Strength = Value;
 }
 
 void ABaseCharacter::SetDefence(float Value)
 {
-	AttributeSet->Defence = Value;
+	CharacterAttributeSet->Defence = Value;
 }
 
 bool ABaseCharacter::GetIsHostile(ABaseCharacter* other)
