@@ -1,1 +1,2 @@
 # FaethPrototype
+Keyword: PACKAGE
