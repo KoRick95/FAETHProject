@@ -252,7 +252,7 @@ bool FSnapGridFlowGraphLatticeGenerator::Generate(UFlowAbstractGraphBase* InGrap
                 if (ModuleAssembly.CanFit(Assembly, DoorIndices)) {
                     FModuleFitCandidate& Candidate = FitCandidates.AddDefaulted_GetRef();
                     Candidate.ModuleItem = ModuleItem;
-                    Candidate.ModuleRotation = FQuat(FVector::UpVector, AsmIdx);
+                    Candidate.ModuleRotation = FQuat(FVector::UpVector, AsmIdx * 90);
                     Candidate.AssemblyIndex = AsmIdx;
                     Candidate.DoorIndices = DoorIndices;
                     const int32 Gap = 1000;
@@ -302,12 +302,12 @@ bool FSnapGridFlowGraphLatticeGenerator::Generate(UFlowAbstractGraphBase* InGrap
             const FSnapGridFlowModuleDatabaseItem& ModuleDBItem = BestFit->ModuleItem->GetItem();
             
             const FVector HalfChunkSize = Settings.ChunkSize * FMathUtils::ToVector(ModuleDBItem.NumChunks) * 0.5f;
-            ModuleNode->WorldTransform =
-                    FTransform(-HalfChunkSize)
-                    * FTransform(ModuleRotation)
-                    * FTransform(HalfChunkSize)
-                    * FTransform(FMathUtils::ToVector(Coord) * Settings.ChunkSize)
-                    * Settings.BaseTransform;
+
+            FVector LocalCenter = ModuleDBItem.ModuleBounds.GetCenter();
+            LocalCenter = ModuleRotation.RotateVector(LocalCenter);
+            FVector DesiredCenter = Node->Coord * Settings.ChunkSize;
+            FVector ModuleLocation = DesiredCenter - LocalCenter;
+            ModuleNode->WorldTransform = FTransform(ModuleRotation, ModuleLocation) * Settings.BaseTransform;
 
             // Add the doors
             TArray<FSGFModuleAssemblySideCell>& DoorIndicesRef = ActiveModuleDoorIndices.FindOrAdd(NodeId);

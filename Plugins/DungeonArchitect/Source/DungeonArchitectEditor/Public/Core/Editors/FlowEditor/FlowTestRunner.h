@@ -2,7 +2,7 @@
 
 #pragma once
 #include "CoreMinimal.h"
-#include "Frameworks/Flow/FlowAsset.h"
+#include "Frameworks/Flow/FlowAssetBase.h"
 #include "Frameworks/Flow/FlowProcessor.h"
 #include "Frameworks/TestRunner/DATestRunnerGameThread.h"
 #include "Frameworks/TestRunner/Widgets/SDATestRunner.h"

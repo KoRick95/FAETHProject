@@ -180,6 +180,10 @@ void UDungeonBuilder::ApplyDungeonTheme(const TArray<UDungeonThemeAsset*>& InThe
     ThemeEngineSettings.Themes = InThemes;
     ThemeEngineSettings.ClusteredThemes = InClusteredThemes;
     ThemeEngineSettings.SceneProvider = InSceneProvider;
+    if (Dungeon) {
+        ThemeEngineSettings.bRoleAuthority = Dungeon->HasAuthority(); 
+    }
+    
     // Grab the theme override volumes
     if (InWorld) {
         for (TActorIterator<ADungeonThemeOverrideVolume> VolumeIt(InWorld); VolumeIt; ++VolumeIt) {

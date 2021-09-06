@@ -328,7 +328,7 @@ void AGridFlowAbstractGraphVisualizer::AlignToCamera(const FVector& InCameraLoca
 FVector AGridFlowAbstractGraphVisualizer::GetNodeLocation(const UFlowAbstractNode* InNode) const {
     FVector Coord = InNode->Coord;
     if (Settings.bRenderNodeOnCellCenter) {
-        Coord += FVector(0.5f); 
+        //Coord += FVector(0.5f);
     }
     return Coord * Settings.NodeSeparationDistance;
 }

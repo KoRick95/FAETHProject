@@ -1,6 +1,6 @@
 //$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
-#include "Frameworks/Flow/FlowAsset.h"
+#include "Frameworks/Flow/FlowAssetBase.h"
 
 
 void UFlowAssetBase::AddReferencedObjects(UObject* InThis, FReferenceCollector& Collector) {

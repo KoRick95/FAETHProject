@@ -4,7 +4,7 @@
 
 #include "Frameworks/Flow/ExecGraph/FlowExecGraphScript.h"
 #include "Frameworks/Flow/ExecGraph/GridFlowExecEdGraph.h"
-#include "Frameworks/Flow/FlowAsset.h"
+#include "Frameworks/Flow/FlowAssetBase.h"
 
 #include "AssetToolsModule.h"
 #include "Engine/TextureRenderTarget2D.h"

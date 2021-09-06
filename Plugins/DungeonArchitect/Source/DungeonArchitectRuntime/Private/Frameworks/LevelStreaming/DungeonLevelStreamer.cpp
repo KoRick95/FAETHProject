@@ -224,7 +224,7 @@ void FDungeonLevelStreamer::GetVisibleChunks(const FDungeonLevelStreamingConfig&
 
 bool FDungeonLevelStreamer::GetNearestChunk(const TArray<UDungeonStreamingChunk*>& Chunks, const FVector& ViewLocation,
                                             UDungeonStreamingChunk*& OutNearestChunk) {
-    float NearestDistanceSq = MAX_int32;
+    float NearestDistanceSq = MAX_flt;
 
     for (UDungeonStreamingChunk* Chunk : Chunks) {
         if (Chunk->Bounds.IsInside(ViewLocation)) {

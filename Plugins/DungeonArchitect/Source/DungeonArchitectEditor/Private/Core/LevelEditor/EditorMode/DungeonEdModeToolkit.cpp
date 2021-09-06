@@ -6,8 +6,16 @@
 
 #include "Editor.h"
 #include "EditorModeManager.h"
+#include "Classes/EditorStyleSettings.h"
 
 #define LOCTEXT_NAMESPACE "DungeonEditMode"
+
+namespace DAEdModeImpl
+{
+    static const FName DAPaletteName(TEXT("Dungeon Architect")); 
+    const TArray<FName> DAPaletteNames = { DAPaletteName };
+}
+
 
 void FDungeonEdModeToolkit::RegisterTabSpawners(const TSharedRef<class FTabManager>& TabManager) {
 
@@ -35,6 +43,38 @@ class FEdMode* FDungeonEdModeToolkit::GetEditorMode() const {
 
 TSharedPtr<SWidget> FDungeonEdModeToolkit::GetInlineContent() const {
     return DungeonEdWidget;
+}
+
+void FDungeonEdModeToolkit::GetToolPaletteNames(TArray<FName>& InPaletteName) const {
+    if (!GetDefault<UEditorStyleSettings>()->bEnableLegacyEditorModeUI)
+    {
+        InPaletteName = DAEdModeImpl::DAPaletteNames;
+    }
+}
+
+FText FDungeonEdModeToolkit::GetToolPaletteDisplayName(FName PaletteName) const {
+    if (PaletteName == DAEdModeImpl::DAPaletteName)
+    {
+        return LOCTEXT("DAPaletteTitle", "Dungeon Architect");
+    }
+    return FText();
+}
+
+void FDungeonEdModeToolkit::BuildToolPalette(FName PaletteName, FToolBarBuilder& ToolbarBuilder) {
+    if (PaletteName == DAEdModeImpl::DAPaletteName && DungeonEdWidget.IsValid())
+    {
+        //DungeonEdWidget->CustomizeToolBarPalette(ToolbarBuilder);
+    }
+}
+
+FText FDungeonEdModeToolkit::GetActiveToolDisplayName() const {
+    return LOCTEXT("ActiveToolDebugTitle", "Tool Name");
+    //return DungeonEdWidget->GetActiveToolName();
+}
+
+FText FDungeonEdModeToolkit::GetActiveToolMessage() const {
+    //return DungeonEdWidget->GetActiveToolMessage();
+    return LOCTEXT("ActiveToolDebugTitle", "Tool Message");
 }
 
 

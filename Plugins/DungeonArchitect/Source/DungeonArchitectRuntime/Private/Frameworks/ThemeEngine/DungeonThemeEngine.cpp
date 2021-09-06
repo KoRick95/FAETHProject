@@ -286,7 +286,6 @@ void FDungeonThemeEngine::Apply(TArray<FPropSocket>& InOutMarkers, const FRandom
         Context.MarkerUserData = MarkerInfo.UserData;
 
         // Add a mesh instance, if specified
-        AActor* SpawnedActor = nullptr;
         if (UDungeonMesh* Mesh = Cast<UDungeonMesh>(MarkerInfo.TemplateObject)) {
             InSettings.SceneProvider->AddStaticMesh(Mesh, Context);
         }
@@ -297,10 +296,35 @@ void FDungeonThemeEngine::Apply(TArray<FPropSocket>& InOutMarkers, const FRandom
             InSettings.SceneProvider->AddParticleSystem(Particle, Context);
         }
         else if (UClass* ClassTemplate = Cast<UClass>(MarkerInfo.TemplateObject)) {
-            InSettings.SceneProvider->AddActorFromTemplate(ClassTemplate, Context);
+            bool bCanSpawn = true;
+            if (!InSettings.bRoleAuthority) {
+                // This is a client. Make sure we are not spawning a replicated actor
+                if (AActor* TemplateCDO = Cast<AActor>(ClassTemplate->ClassDefaultObject)) {
+                    if (TemplateCDO->GetIsReplicated()) {
+                        bCanSpawn = false;
+                    }
+                }   
+            }
+            
+            if (bCanSpawn) {
+                InSettings.SceneProvider->AddActorFromTemplate(ClassTemplate, Context);
+            }
         }
         else if (UDungeonActorTemplate* ActorTemplate = Cast<UDungeonActorTemplate>(MarkerInfo.TemplateObject)) {
-            InSettings.SceneProvider->AddClonedActor(ActorTemplate, Context);
+            bool bCanSpawn = true;
+            if (!InSettings.bRoleAuthority) {
+                // This is a client. Make sure we are not spawning a replicated actor
+                if (ActorTemplate->ClassTemplate) {
+                    if (AActor* TemplateCDO = Cast<AActor>(ActorTemplate->ClassTemplate->ClassDefaultObject)) {
+                        if (TemplateCDO->GetIsReplicated()) {
+                            bCanSpawn = false;
+                        }
+                    }
+                }
+            }
+            if (bCanSpawn) {
+                InSettings.SceneProvider->AddClonedActor(ActorTemplate, Context);
+            }
         }
         else {
             // Not supported.  Give the implementation an opportunity to handle it

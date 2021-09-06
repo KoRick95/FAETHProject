@@ -291,6 +291,7 @@ void UDungeonLandscapeModifier::RasterizeWeights(ADungeon* Dungeon, ULandscapeIn
     FDungeonLandscapeDataRasterizer Rasterizer(TargetSizeX, TargetSizeY, LocalToWorld);
     Rasterizer.Fill(0);
 
+    bool bProcessed = false;
     // Grid builder rasterizer
     {
         UGridDungeonModel* GridModel = Cast<UGridDungeonModel>(Dungeon->GetModel());
@@ -298,9 +299,21 @@ void UDungeonLandscapeModifier::RasterizeWeights(ADungeon* Dungeon, ULandscapeIn
 
         if (GridModel && GridConfig) {
             RasterizeLayoutGridBuilder(GridModel, GridConfig, Rasterizer, PaintBlurWeight, true, true, true);
+            bProcessed = true;
         }
     }
 
+    if (!bProcessed) {
+        // City builder rasterizer
+        USimpleCityModel* CityModel = Cast<USimpleCityModel>(Dungeon->GetModel());
+        USimpleCityConfig* CityConfig = Cast<USimpleCityConfig>(Dungeon->GetConfig());
+        if (CityModel && CityConfig) {
+            FVector DungeonLocation = Dungeon ? Dungeon->GetActorLocation() : FVector::ZeroVector;
+            RasterizeLayoutCityBuilder(CityModel, CityConfig, Rasterizer, DungeonLocation, PaintBlurWeight);
+            bProcessed = true;
+        }
+    }
+    
     Rasterizer.Blur(PaintBlurRadius, PaintBlurIterations);
 
     const int32 ArrayCount = TargetSizeX * TargetSizeY;

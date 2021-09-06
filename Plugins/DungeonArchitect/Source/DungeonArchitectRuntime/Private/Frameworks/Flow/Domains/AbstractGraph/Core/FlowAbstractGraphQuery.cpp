@@ -6,6 +6,7 @@
 void FFlowAbstractGraphTraversal::Build(UFlowAbstractGraphBase* InGraph) {
     OutgoingNodes.Reset();
     IncomingNodes.Reset();
+    Teleporters.Reset();
 
     for (UFlowAbstractLink* Link : InGraph->GraphLinks) {
         if (Link->Type == EFlowAbstractLinkType::Unconnected) {
@@ -27,7 +28,7 @@ void FFlowAbstractGraphTraversal::Build(UFlowAbstractGraphBase* InGraph) {
             FNodeInfo& Info = Incoming.AddDefaulted_GetRef();
             Info.NodeId = Link->Source;
             Info.LinkId = Link->LinkId;
-            Info.bOutgoing = true;
+            Info.bOutgoing = false;
         }
     }
 

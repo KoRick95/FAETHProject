@@ -21,6 +21,17 @@ public:
     virtual FEdMode* GetEditorMode() const override;
     virtual TSharedPtr<SWidget> GetInlineContent() const override;
 
+    
+    /** Mode Toolbar Palettes **/
+    virtual void GetToolPaletteNames(TArray<FName>& InPaletteName) const override;
+    virtual FText GetToolPaletteDisplayName(FName PaletteName) const override; 
+    virtual void BuildToolPalette(FName PaletteName, class FToolBarBuilder& ToolbarBuilder) override;
+
+    /** Modes Panel Header Information **/
+    virtual FText GetActiveToolDisplayName() const override;
+    virtual FText GetActiveToolMessage() const override;
+
+    
     void SetInlineContent(TSharedPtr<SWidget> Widget);
 
 private:

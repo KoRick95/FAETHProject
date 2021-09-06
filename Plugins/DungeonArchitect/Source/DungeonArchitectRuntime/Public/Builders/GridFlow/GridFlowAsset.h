@@ -2,7 +2,7 @@
 
 #pragma once
 #include "CoreMinimal.h"
-#include "Frameworks/Flow/FlowAsset.h"
+#include "Frameworks/Flow/FlowAssetBase.h"
 #include "GridFlowAsset.generated.h"
 
 UCLASS()

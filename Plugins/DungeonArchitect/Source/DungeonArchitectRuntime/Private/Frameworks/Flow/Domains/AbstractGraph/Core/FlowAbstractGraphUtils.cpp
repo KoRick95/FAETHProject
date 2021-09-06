@@ -180,6 +180,7 @@ void FFlowAbstractGraphUtils::FindNodesWithItemType(const FFlowAbstractGraphQuer
         for (const UFlowGraphItem* Item : Node->NodeItems) {
             if (Item->ItemType == ItemType) {
                 OutNodeIds.Add(Node->NodeId);
+                break;
             }
         }
     }

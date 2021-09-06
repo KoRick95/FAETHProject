@@ -69,7 +69,7 @@ ULevelStreamingDynamic* FLevelStreamLoader::LoadLevelInstance_Internal(UWorld* W
     
     // Create Unique Name for sub-level package
     const uint32 Hash = HashCombine(GetTypeHash(Location), GetTypeHash(Rotation.Euler()));
-    FString UniqueLevelPackageName = FString::Printf(TEXT("%s/%s%s_LI_%s_%d_%u"), *PackagePath, *World->StreamingLevelsPrefix,
+    FString UniqueLevelPackageName = FString::Printf(TEXT("%s/%s_LI_%s_%d_%u"), *PackagePath, 
             *ShortPackageName, *World->GetName(), InstanceId, Hash);
 
     if (!World->IsGameWorld()) {
@@ -81,11 +81,30 @@ ULevelStreamingDynamic* FLevelStreamLoader::LoadLevelInstance_Internal(UWorld* W
     else {
         UniqueLevelPackageName += TEXT("G");
     }
+    
+#if WITH_EDITOR
+    const bool bIsPlayInEditor = World->IsPlayInEditor();
+    int32 PIEInstance = INDEX_NONE;
+    if (bIsPlayInEditor)
+    {
+        const FWorldContext& WorldContext = GEngine->GetWorldContextFromWorldChecked(World);
+        PIEInstance = WorldContext.PIEInstance;
+        UniqueLevelPackageName = UWorld::ConvertToPIEPackageName(UniqueLevelPackageName, PIEInstance);
+    }
+#endif
 
     ULevelStreamingDynamic* StreamingLevel = NewObject<ULevelStreamingDynamic>(
         World, ULevelStreamingDynamic::StaticClass(), NAME_None, RF_Transient | RF_DuplicateTransient, nullptr);
     StreamingLevel->SetWorldAssetByPackageName(FName(*UniqueLevelPackageName));
 
+#if WITH_EDITOR
+    if (bIsPlayInEditor)
+    {
+        // Necessary for networking in PIE
+        StreamingLevel->RenameForPIE(PIEInstance);
+    }
+#endif // WITH_EDITOR
+    
     StreamingLevel->LevelColor = FColor::MakeRandomColor();
     StreamingLevel->SetShouldBeLoaded(false);
     StreamingLevel->SetShouldBeVisible(false);
