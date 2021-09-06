@@ -64,6 +64,9 @@ namespace {
         TArray<FColor> SurfaceData;
         FRenderTarget* RenderTarget = RenderTexture->GameThread_GetRenderTargetResource();
         RenderTarget->ReadPixels(SurfaceData);
+        if (!RenderTarget) {
+            return;
+        }
 
         // Resize the mask array to fit the new data
         {

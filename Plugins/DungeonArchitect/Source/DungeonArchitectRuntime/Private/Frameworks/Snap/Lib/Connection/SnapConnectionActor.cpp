@@ -243,6 +243,7 @@ void ASnapConnectionActor::BuildImpl(int32 InSeed, ULevel* HostLevel) {
     FDungeonThemeEngineSettings ThemeEngineSettings;
     ThemeEngineSettings.Themes = { ConnectionInfo->ThemeAsset };
     ThemeEngineSettings.SceneProvider = SceneProvider;
+    ThemeEngineSettings.bRoleAuthority = HasAuthority(); 
 
     const FRandomStream Random(InSeed);
     const FDungeonThemeEngineEventHandlers ThemeEventHandlers;

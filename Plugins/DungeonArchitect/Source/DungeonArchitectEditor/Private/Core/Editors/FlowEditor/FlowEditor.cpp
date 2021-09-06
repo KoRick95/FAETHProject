@@ -19,7 +19,7 @@
 #include "Frameworks/Flow/ExecGraph/Nodes/GridFlowExecEdGraphNodeBase.h"
 #include "Frameworks/Flow/ExecGraph/Nodes/GridFlowExecEdGraphNodes.h"
 #include "Frameworks/Flow/ExecGraph/Utils/ExecGraphEditorUtils.h"
-#include "Frameworks/Flow/FlowAsset.h"
+#include "Frameworks/Flow/FlowAssetBase.h"
 #include "Frameworks/Flow/FlowProcessor.h"
 
 #include "AssetToolsModule.h"

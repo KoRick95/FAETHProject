@@ -80,7 +80,7 @@ void USnapMapDungeonBuilder::BuildNonThemedDungeonImpl(UWorld* World, TSharedPtr
 
         if (!GraphRootNode.IsValid()) {
             FRandomStream SeedGenerator(Seed);
-            Seed = SeedGenerator.FRandRange(0, MAX_int32 - 1);
+            Seed = SeedGenerator.RandRange(0, MAX_int32 - 1);
             while (ProcessedSeeds.Contains(Seed)) {
                 Seed++;
             }

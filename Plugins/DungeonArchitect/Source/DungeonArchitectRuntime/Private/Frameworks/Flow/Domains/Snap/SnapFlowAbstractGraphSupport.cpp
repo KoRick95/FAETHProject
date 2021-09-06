@@ -15,20 +15,30 @@ class UFANodeSnapDomainData;
 FSnapFlowAGNodeGroupGenerator::FSnapFlowAGNodeGroupGenerator(const USnapGridFlowModuleDatabase* ModuleDB) {
 	if (ModuleDB) {
 		TMap<FIntVector, float> GroupWeights;
-		TMap<FIntVector, int32> GroupCounts;
-		for (const FSnapGridFlowModuleDatabaseItem& Module : ModuleDB->Modules) {
-			float& Weight = GroupWeights.FindOrAdd(Module.NumChunks);
-			Weight += Module.SelectionWeight;
+		{	
+			TMap<FIntVector, int32> GroupCounts;
+			for (const FSnapGridFlowModuleDatabaseItem& Module : ModuleDB->Modules) {
+				TArray<FIntVector> ChunkSizes;
+				ChunkSizes.Add(Module.NumChunks);
+				if (Module.bAllowRotation) {  
+					ChunkSizes.Add(FIntVector(Module.NumChunks.Y, Module.NumChunks.X, Module.NumChunks.Z));
+				}
 
-			int32& Count = GroupCounts.FindOrAdd(Module.NumChunks);
-			Count++;
-		}
+				for (const FIntVector& ChunkSize : ChunkSizes) {
+					float& Weight = GroupWeights.FindOrAdd(ChunkSize);
+					Weight += Module.SelectionWeight;
 
-		// Average out the weights
-		for (auto& Entry : GroupWeights) {
-			const FIntVector& Key = Entry.Key;
-			const int32 Count = GroupCounts[Key];
-			Entry.Value /= Count;
+					int32& Count = GroupCounts.FindOrAdd(ChunkSize);
+					Count++;
+				} 
+			}
+
+			// Average out the weights
+			for (auto& Entry : GroupWeights) {
+				const FIntVector& Key = Entry.Key;
+				const int32 Count = GroupCounts[Key];
+				Entry.Value /= Count;
+			}
 		}
 
 		for (auto& Entry : GroupWeights) {
@@ -196,8 +206,13 @@ bool FSnapGridFlowAbstractGraphConstraints::IsValid(const FFlowAbstractGraphQuer
 
 
 	TSet<const UFlowAbstractNode*> AllIncomingNodes(IncomingNodes);
-	for (const FGuid& IncomingNode : Graph->GetIncomingNodes(Node->NodeId)) {
-		AllIncomingNodes.Add(InGraphQuery.GetNode(IncomingNode));
+	{
+		// TODO: Check the direction of incoming node (ignore?).
+		// TODO: Ignore unconnected nodes
+		// TODO: Check and REMOVE THIS
+		for (const FGuid& IncomingNode : Graph->GetIncomingNodes(Node->NodeId)) {
+			AllIncomingNodes.Add(InGraphQuery.GetNode(IncomingNode));
+		}
 	}
 
 	FFlowAGPathNodeGroup Group;

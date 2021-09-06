@@ -240,7 +240,9 @@ void FSnapStreamingChunkHandlerBase::HideChunkDoorActors(USnapStreamingChunk* Ch
                 if (!VisibleModules.Contains(ConnectedChunkID)) {
                     // This chunk and the connected chunks are both hidden.   Hide the persistent door actor
                     for (TWeakObjectPtr<AActor> PersistentDoorActor : ConnectionData->SpawnedDoorActors) {
-                        PersistentDoorActor->SetActorHiddenInGame(true);
+                        if (PersistentDoorActor.IsValid()) {
+                            PersistentDoorActor->SetActorHiddenInGame(true);
+                        }
                     }
                 }   
             }

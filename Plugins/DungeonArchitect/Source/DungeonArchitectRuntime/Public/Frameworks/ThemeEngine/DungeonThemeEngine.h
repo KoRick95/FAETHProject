@@ -17,6 +17,7 @@ struct FDungeonThemeEngineSettings {
     TArray<FClusterThemeInfo> ClusteredThemes;
     TArray<ADungeonThemeOverrideVolume*> ThemeOverrideVolumes;
     TSharedPtr<FDungeonSceneProvider> SceneProvider;
+	bool bRoleAuthority = true;
 };
 
 struct FDungeonThemeEngineEventHandlers {

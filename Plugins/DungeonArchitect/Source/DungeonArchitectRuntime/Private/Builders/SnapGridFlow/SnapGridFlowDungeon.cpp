@@ -250,8 +250,8 @@ void USnapGridFlowBuilder::CreateDebugVisualizations(const FGuid& DungeonID) con
         Visualizer->SetAutoAlignToLevelViewport(true);
         if (SnapGridModel.IsValid() && SnapGridModel->AbstractGraph) {
             FGFAbstractGraphVisualizerSettings Settings;
-            const float ModuleWidth = FMath::Min(ModuleSize.X, ModuleSize.Y);
-            Settings.NodeRadius = ModuleWidth * 0.05;
+            //const float ModuleWidth = FMath::Min(ModuleSize.X, ModuleSize.Y);
+            Settings.NodeRadius = 60.0f; // ModuleWidth * 0.05;
             Settings.LinkThickness = Settings.NodeRadius * 0.2f;
             Settings.LinkRefThickness = Settings.LinkThickness * 0.5f;
             Settings.NodeSeparationDistance = ModuleSize;
@@ -288,6 +288,9 @@ void USnapGridFlowBuilder::SpawnItem(UFlowGraphItem* ItemInfo, APlaceableMarkerA
     FDungeonThemeEngineSettings ThemeEngineSettings;
     ThemeEngineSettings.Themes = { SnapGridConfig->ItemTheme.LoadSynchronous() };
     ThemeEngineSettings.SceneProvider = SceneProvider;
+    if (Dungeon) {
+        ThemeEngineSettings.bRoleAuthority = Dungeon->HasAuthority(); 
+    }
 
     const FDungeonThemeEngineEventHandlers ThemeEventHandlers;
     

@@ -2946,12 +2946,12 @@ void UGridDungeonBuilder::BuildMesh_Stairs(const FCell& cell) {
         return;
     }
 
-    for (const FStairInfo stair : gridModel->CellStairsLookup[cell.Id]) {
+    for (const FStairInfo& Stair : gridModel->CellStairsLookup[cell.Id]) {
         FTransform transform = FTransform::Identity;
-        transform.SetLocation(stair.Position);
-        transform.SetRotation(stair.Rotation);
-        int stairHeight = GetStairHeight(stair);
-        FString StairType = GetStairMarkerName(stairHeight);
+        transform.SetLocation(Stair.Position);
+        transform.SetRotation(Stair.Rotation);
+        const int StairHeight = GetStairHeight(Stair);
+        FString StairType = GetStairMarkerName(StairHeight);
         // (stairHeight > 1) ? FGridBuilderMarkers::ST_STAIR2X : FGridBuilderMarkers::ST_STAIR;
         AddMarker(StairType, transform);
     }

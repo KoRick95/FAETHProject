@@ -1,1 +1,20 @@
-I:\UE_4.26\Engine\Plugins\Marketplace
+Part 1: Setup an empty new C++ project
+1) Install latest update from Marketplace to the same engine vesion
+2) Create a new, empty C++ project
+3) Copy I:\UE_4.26\Engine\Plugins\Marketplace\DungeonArchitect
+4) Paste into a new Plugins folder in the empty C++ project
+5) Open the empty C++ project
+6) Edit -> Plugins -> Enable DungeonArchitect plugin
+7) Restart
+8) Close empty C++ project
+
+Part 2: Update the Faeth DungeonArchitect plugin
+1) Open Faeth via .uproject
+2) Edit -> Plugins -> Disable DungeonArchitect plugin
+3) Copy the plugin from the new empty C++ project
+4) Paste in I:\Unreal Projects\FaethPrototype\Plugins
+5) Open Faeth via .uproject
+6) Edit -> Plugins -> Enable DungeonArchitect plugin
+7) Close Faeth
+8) Regenerate Visual Studio project files
+9) Run Faeth through Visual Studio

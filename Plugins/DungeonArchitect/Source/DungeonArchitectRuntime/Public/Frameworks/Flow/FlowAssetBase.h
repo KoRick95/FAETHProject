@@ -2,7 +2,7 @@
 
 #pragma once
 #include "CoreMinimal.h"
-#include "FlowAsset.generated.h"
+#include "FlowAssetBase.generated.h"
 
 class UEdGraph;
 class UGridFlowExecScript;

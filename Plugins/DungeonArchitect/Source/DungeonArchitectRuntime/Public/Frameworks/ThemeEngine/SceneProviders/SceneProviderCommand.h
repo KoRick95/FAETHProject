@@ -22,7 +22,7 @@ DECLARE_DELEGATE_OneParam(FSceneProviderCommandActorEvent, AActor*);
 class DUNGEONARCHITECTRUNTIME_API FSceneProviderCommand : public FGCObject {
 public:
     FSceneProviderCommand(ADungeon* InDungeon, ULevel* InLevelOverride, const FDungeonSceneProviderContext& InContext) :
-        ExecutionPriority(INT_MAX), Dungeon(InDungeon), LevelOverride(InLevelOverride), Context(InContext), bWaitForFrameUpdate(false)
+        ExecutionPriority(MAX_int32), Dungeon(InDungeon), LevelOverride(InLevelOverride), Context(InContext), bWaitForFrameUpdate(false)
     {
     }
 
@@ -35,7 +35,7 @@ public:
         return (cmd1->ExecutionPriority < cmd2->ExecutionPriority);
     }
 
-    float ExecutionPriority;
+    int32 ExecutionPriority;
 
     virtual void UpdateExecutionPriority(const FVector& BuildPosition) {
     }
@@ -67,7 +67,7 @@ protected:
 
     void UpdateExecutionPriorityByDistance(const FVector& BuildPosition, const FTransform& CommandTransform) {
         FVector Location = CommandTransform.GetLocation();
-        ExecutionPriority = (Location - BuildPosition).SizeSquared();
+        ExecutionPriority = FMath::RoundToInt((Location - BuildPosition).SizeSquared());
     }
 
     template <typename T>
@@ -188,7 +188,7 @@ public:
     }
 
     virtual void UpdateExecutionPriority(const FVector& BuildPosition) override {
-        ExecutionPriority = INT32_MAX;
+        ExecutionPriority = MAX_int32;
     }
 
 protected:
@@ -263,7 +263,7 @@ public:
     }
 
     virtual void UpdateExecutionPriority(const FVector& BuildPosition) override {
-        ExecutionPriority = INT32_MAX;
+        ExecutionPriority = MAX_int32;
     }
 
 protected:

@@ -411,12 +411,11 @@ void UGridFlowBuilder::EmitMarkerAt(const FVector& WorldLocation, const FString&
 }
 
 void UGridFlowBuilder::DrawDebugData(UWorld* InWorld, bool bPersistant /*= false*/, float lifeTime /*= 0*/) {
-    const FVector GridSize = GridFlowConfig->GridSize;
-
-    if (!GridFlowModel) {
+    if (!GridFlowModel || !GridFlowConfig) {
         return;
     }
-
+    
+    const FVector GridSize = GridFlowConfig->GridSize;
     UGridFlowTilemap* Tilemap = GridFlowModel->Tilemap;
     if (!Tilemap) {
         return;
