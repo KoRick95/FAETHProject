@@ -3,9 +3,9 @@
 #include "FaethGameInstance.h"
 #include "QuestManager.h"
 
-UQuestManager* UCustomFunctionLibrary::GetQuestManager(const UObject* WorldContextObject)
+UQuestManager* UFaethFunctionLibrary::GetQuestManager(const UObject* WorldContextObject)
 {
-    if (UCustomGameInstance* instance = Cast<UFaethGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject)))
+    if (UFaethGameInstance* instance = Cast<UFaethGameInstance>(UGameplayStatics::GetGameInstance(WorldContextObject)))
     {
         return instance->GetQuestManager();
     }

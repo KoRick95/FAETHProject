@@ -7,7 +7,7 @@
 class UQuestManager;
 
 UCLASS()
-class UNREALCODELAB_API UFaethFunctionLibrary : public UBlueprintFunctionLibrary
+class FAETH_API UFaethFunctionLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 

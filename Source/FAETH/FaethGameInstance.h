@@ -7,7 +7,7 @@
 class UQuestManager;
 
 UCLASS()
-class UNREALCODELAB_API UFaethGameInstance : public UGameInstance
+class FAETH_API UFaethGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 	
