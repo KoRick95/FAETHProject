@@ -49,10 +49,10 @@ public:
 	TArray<TSubclassOf<UQuestObjective>> QuestObjectiveClasses;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Quest")
-	UQuestRewards* QuestRewards;
+	TSubclassOf<UQuestRewards> QuestRewards;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Quest")
-	int ActiveObjectiveGroupIndex;
+	int ActiveQuestStep;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Quest")
 	FDateTime TimeLastStarted;
@@ -67,7 +67,7 @@ private:
 	UQuestManager* QuestManager;
 	EProgressStatus QuestStatus;
 	TArray<UQuestObjective*> Objectives;
-	TArray<UQuestObjective*> ActiveObjectiveGroup;
+	TArray<UQuestObjective*> ActiveObjectives;
 
 public:
 	void Init(UQuestManager* OwningQuestManager);
@@ -88,20 +88,20 @@ public:
 	const TArray<UQuestObjective*>& GetObjectives();
 
 	UFUNCTION(BlueprintCallable, Category = "Quest")
-	const TArray<UQuestObjective*>& GetActiveObjectiveGroup();
+	const TArray<UQuestObjective*>& GetActiveObjectives();
 
 	UFUNCTION(BlueprintCallable, Category = "Quest")
-	// Returns an array of objectives with the passed group index if bEqualsIndex is true.
-	// * bEqualsIndex = If set to false, function returns all objectives with different group index. Default value is true.
-	TArray<UQuestObjective*> GetObjectivesByGroupIndex(int Index, bool bEqualsIndex = true);
+	// Returns an array of objectives with the passed group index if bEqualsStep is true.
+	// * bEqualsStep = If set to false, function returns all objectives with different group index. Default value is true.
+	TArray<UQuestObjective*> GetObjectivesByQuestStep(int Step, bool bEqualsStep = true);
 
 	UFUNCTION(BlueprintCallable, Category = "Quest")
 	TArray<UQuestObjective*> GetObjectivesByStatus(EProgressStatus ObjectiveStatus);
 
 	UFUNCTION(BlueprintCallable, Category = "Quest")
-	// Sets the active objective group if there is at least one objective of the passed group index.
+	// Sets all the objectives of the given quest step active if there is at least one objective of the given step.
 	// * bHideInactiveGroup = Sets all other objectives as hidden if set to true. Default value is true.
-	void SetActiveObjectiveGroup(int GroupIndex, bool bHideInactiveGroups = true);
+	void SetActiveQuestStep(int Step, bool bHideInactiveObjectives = true);
 
 	UFUNCTION(BlueprintCallable, Category = "Quest")
 	bool HasQuestManager();

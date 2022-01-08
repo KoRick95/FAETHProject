@@ -29,9 +29,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName ObjectiveID;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "0"))
-	int ObjectiveGroupIndex;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "Description")
 	FText ObjectiveDescription;
 
@@ -40,6 +37,11 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bIsHidden;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0"))
+	// Determines which quest step this objective belongs to.
+	// Multiple objectives can be assigned to the same step.
+	int QuestStep;
 
 	UPROPERTY(BlueprintReadOnly)
 	FDateTime TimeLastStarted;
