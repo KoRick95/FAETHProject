@@ -62,33 +62,33 @@ const TArray<UQuestObjective*>& UQuest::GetObjectives()
 	return Objectives;
 }
 
-const TArray<UQuestObjective*>& UQuest::GetActiveObjectiveGroup()
+const TArray<UQuestObjective*>& UQuest::GetActiveObjectives()
 {
-	return ActiveObjectiveGroup;
+	return ActiveObjectives;
 }
 
-TArray<UQuestObjective*> UQuest::GetObjectivesByGroupIndex(int Index, bool bEqualsIndex)
+TArray<UQuestObjective*> UQuest::GetObjectivesByQuestStep(int Step, bool bEqualsStep)
 {
-	TArray<UQuestObjective*> groupedObjectives;
+	TArray<UQuestObjective*> objectives;
 
-	if (Index < 0)
+	if (Step < 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Get objectives by group index failed: Invalid objective group index %i"), Index);
+		UE_LOG(LogTemp, Warning, TEXT("Get objectives by group index failed: Invalid objective group index %i"), Step);
 	}
 
 	for (UQuestObjective* objective : Objectives)
 	{
-		if (bEqualsIndex && objective->ObjectiveGroupIndex == Index)
+		if (bEqualsStep && objective->QuestStep == Step)
 		{
-			groupedObjectives.Add(objective);
+			objectives.Add(objective);
 		}
-		else if (!bEqualsIndex && objective->ObjectiveGroupIndex != Index)
+		else if (!bEqualsStep && objective->QuestStep != Step)
 		{
-			groupedObjectives.Add(objective);
+			objectives.Add(objective);
 		}
 	}
 
-	return groupedObjectives;
+	return objectives;
 }
 
 TArray<UQuestObjective*> UQuest::GetObjectivesByStatus(EProgressStatus ObjectiveStatus)
@@ -106,31 +106,24 @@ TArray<UQuestObjective*> UQuest::GetObjectivesByStatus(EProgressStatus Objective
 	return filteredObjectives;
 }
 
-void UQuest::SetActiveObjectiveGroup(int GroupIndex, bool bHideInactiveGroups)
+void UQuest::SetActiveQuestStep(int Step, bool bHideInactiveObjectives)
 {
-	if (GroupIndex < 0)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Get objectives by group index failed: Invalid objective group index %i"), GroupIndex);
-		return;
-	}
-
-	TArray<UQuestObjective*> newActiveObjectives = GetObjectivesByGroupIndex(GroupIndex);
+	TArray<UQuestObjective*> newActiveObjectives = GetObjectivesByQuestStep(Step);
 	
 	if (newActiveObjectives.Num() > 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Get objectives by group index failed: Cannot find objectives of group index %i"), GroupIndex);
+		UE_LOG(LogTemp, Warning, TEXT("Get objectives by group index failed: Cannot find objectives of group index %i"), Step);
 		return;
 	}
 
-	if (bHideInactiveGroups)
+	for (UQuestObjective* objective : Objectives)
 	{
-		for (UQuestObjective* objective : Objectives)
-		{
-			objective->bIsHidden = (objective->ObjectiveGroupIndex != GroupIndex) ? true : objective->bIsHidden;
-		}
+		// Set active objectives as not hidden, and set inactive objectives as hidden if bHideInactiveObjectives is true.
+		objective->bIsHidden = (objective->QuestStep == Step) ? false : (bHideInactiveObjectives ? true : objective->bIsHidden);
 	}
 
-	ActiveObjectiveGroup = newActiveObjectives;
+	ActiveObjectives = newActiveObjectives;
+	ActiveQuestStep = Step;
 }
 
 bool UQuest::HasQuestManager()
