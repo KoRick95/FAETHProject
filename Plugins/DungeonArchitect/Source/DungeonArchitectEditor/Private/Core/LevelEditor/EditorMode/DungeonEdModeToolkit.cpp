@@ -4,9 +4,9 @@
 
 #include "Core/LevelEditor/EditorMode/DungeonEdMode.h"
 
+#include "Classes/EditorStyleSettings.h"
 #include "Editor.h"
 #include "EditorModeManager.h"
-#include "Classes/EditorStyleSettings.h"
 
 #define LOCTEXT_NAMESPACE "DungeonEditMode"
 

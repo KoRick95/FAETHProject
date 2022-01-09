@@ -57,6 +57,12 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Dungeon)
     int32 NumTimeoutsRetriesAllowed = 20;
     
+    /**
+     * Build the entire dungeon in the main level by copying over the module actors to the persistent level. This will disable level streaming
+     * and is meant to be used in the editor only.  You may bake your lightmaps with this method
+     **/
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Advanced)
+    bool bGenerateSinglePersistentDungeon = false;
 };
 
 UCLASS(Blueprintable)
@@ -112,10 +118,12 @@ protected:
     bool ExecuteFlowGraph();
     void CreateDebugVisualizations(const FGuid& DungeonID) const;
     void DestroyDebugVisualizations(const FGuid& DungeonID) const;
-    void SpawnItem(UFlowGraphItem* ItemInfo, APlaceableMarkerActor* InMarkerActor, USnapStreamingChunk* InChunk) const;
     void HandleChunkLoaded(USnapStreamingChunk* InChunk);
     void HandleChunkLoadedAndVisible(USnapStreamingChunk* InChunk);
     virtual bool IdentifyBuildSucceeded() const override;
+    TArray<AActor*> SpawnItemWithThemeEngine(UFlowGraphItem* ItemInfo, APlaceableMarkerActor* InMarkerActor) const;
+    TArray<AActor*> SpawnChunkPlaceableMarkers(const TArray<AActor*>& ChunkActors, const FGuid& AbstractNodeId, const FBox& ChunkBounds, const FString& ChunkName);
+    void BuildPersistentSnapLevel(UWorld* InWorld, const TArray<SnapLib::FModuleNodePtr>& InModuleNodes, TSharedPtr<FDungeonSceneProvider> InSceneProvider);
     
 protected:
     FDAAttributeList AttributeList;

@@ -2,15 +2,15 @@
 
 #pragma once
 #include "CoreMinimal.h"
-#include "Builders/Grid/SpatialConstraints/GridSpatialConstraintCellData.h"
+#include "Builders/Common/SpatialConstraints/GridSpatialConstraintCellData.h"
 #include "Core/DungeonSpatialConstraint.h"
-#include "GridSpatialConstraint2x2.generated.h"
+#include "GridSpatialConstraintEdge.generated.h"
 
 USTRUCT(BlueprintType)
-struct DUNGEONARCHITECTRUNTIME_API FGridSpatialConstraint2x2Data {
+struct DUNGEONARCHITECTRUNTIME_API FGridSpatialConstraintEdgeData {
     GENERATED_USTRUCT_BODY()
-    FGridSpatialConstraint2x2Data() {
-        Cells.SetNum(4);
+    FGridSpatialConstraintEdgeData() {
+        Cells.SetNum(2);
     }
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spatial Setup")
@@ -18,13 +18,13 @@ struct DUNGEONARCHITECTRUNTIME_API FGridSpatialConstraint2x2Data {
 };
 
 
-UCLASS(DefaultToInstanced, Blueprintable)
-class DUNGEONARCHITECTRUNTIME_API UGridSpatialConstraint2x2 : public UDungeonSpatialConstraint {
+UCLASS(Blueprintable)
+class DUNGEONARCHITECTRUNTIME_API UGridSpatialConstraintEdge : public UDungeonSpatialConstraint {
     GENERATED_UCLASS_BODY()
 
 public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spatial Setup")
-    FGridSpatialConstraint2x2Data Configuration;
+    FGridSpatialConstraintEdgeData Configuration;
 };
 

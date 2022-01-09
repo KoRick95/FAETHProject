@@ -8,6 +8,7 @@
 
 class USnapStreamingChunk;
 class USnapStreamingChunkActorData;
+class ASnapConnectionActor;
 
 DECLARE_DELEGATE_OneParam(FSnapChunkEvent, USnapStreamingChunk*);
 UCLASS()
@@ -52,6 +53,9 @@ public:
     virtual void OnChunkLoaded(USnapStreamingChunk* Chunk);
     virtual void OnChunkUnloaded(USnapStreamingChunk* Chunk);
     virtual TArray<struct FSnapConnectionInstance>* GetConnections() const = 0;
+    
+    void Internal_SpawnChunkConnections(const FGuid& ChunkID, TArray<FSnapConnectionInstance>& Connections,
+            const TArray<ASnapConnectionActor*>& ConnectionActors, ULevel* DoorLevel, ULevel* WallLevel) const;
     
 private:
     void UpdateChunkDoorStates(USnapStreamingChunk* Chunk, ULevel* PersistentLevel) const;

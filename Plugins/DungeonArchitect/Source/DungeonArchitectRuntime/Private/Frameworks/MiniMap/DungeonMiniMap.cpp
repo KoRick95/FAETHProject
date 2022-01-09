@@ -61,12 +61,13 @@ namespace {
     };
 
     void CopyRTTMask(UTextureRenderTarget2D* RenderTexture, TArray<FColor>& OutMask, uint8 Channel) {
+        if (!RenderTexture) return;
+        
         TArray<FColor> SurfaceData;
         FRenderTarget* RenderTarget = RenderTexture->GameThread_GetRenderTargetResource();
+        if (!RenderTarget) return;
+        
         RenderTarget->ReadPixels(SurfaceData);
-        if (!RenderTarget) {
-            return;
-        }
 
         // Resize the mask array to fit the new data
         {

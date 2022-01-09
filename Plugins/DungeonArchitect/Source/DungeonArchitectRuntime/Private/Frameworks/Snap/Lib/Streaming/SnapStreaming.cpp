@@ -130,32 +130,19 @@ void FSnapStreamingChunkHandlerBase::OnChunkHidden(USnapStreamingChunk* Chunk) {
     }
 }
 
-void FSnapStreamingChunkHandlerBase::UpdateChunkDoorStates(USnapStreamingChunk* Chunk, ULevel* PersistentLevel) const {
-    if (!Chunk) {
-        return;
-    }
-    ULevel* ChunkLevel = Chunk->GetLoadedLevel();
-    if (!ChunkLevel) {
-        return;
-    }
-    
-    TArray<FSnapConnectionInstance>* ConnectionsPtr = GetConnections();
-    if (!ConnectionsPtr) {
-        return;
-    }
-    TArray<FSnapConnectionInstance>& Connections = *ConnectionsPtr;
+void FSnapStreamingChunkHandlerBase::Internal_SpawnChunkConnections(const FGuid& ChunkID, TArray<FSnapConnectionInstance>& Connections,
+        const TArray<ASnapConnectionActor*>& ConnectionActors, ULevel* DoorLevel, ULevel* WallLevel) const {
 
     // The connection info for this chunk, by their door ids
     TMap<FGuid, FSnapConnectionInstance*> ModuleConnections;
     for (FSnapConnectionInstance& ConnectionData : Connections) {
-        if (ConnectionData.ModuleA == Chunk->ID) {
+        if (ConnectionData.ModuleA == ChunkID) {
             if (!ModuleConnections.Contains(ConnectionData.DoorA)) {
                 ModuleConnections.Add(ConnectionData.DoorA, &ConnectionData);
             }
         }
     }
 
-    TArray<ASnapConnectionActor*> ConnectionActors = GetActorsOfType<ASnapConnectionActor>(ChunkLevel);
     for (ASnapConnectionActor* ConnectionActor : ConnectionActors) {
         FSnapConnectionInstance** ConnectionDataSearchResult = ModuleConnections.Find(ConnectionActor->GetConnectionId());
         FSnapConnectionInstance* ConnectionData = ConnectionDataSearchResult ? *ConnectionDataSearchResult : nullptr;
@@ -174,7 +161,7 @@ void FSnapStreamingChunkHandlerBase::UpdateChunkDoorStates(USnapStreamingChunk* 
                     ConnectionData->bHasSpawnedDoorActor = true;
                 }
                 else {
-                    ConnectionActor->BuildConnectionInstance(PersistentLevel);
+                    ConnectionActor->BuildConnectionInstance(DoorLevel);
                     ConnectionData->SpawnedDoorActors = ConnectionActor->GetSpawnedInstancesPtr();
                     ConnectionData->bHasSpawnedDoorActor = true;
                     OnConnectionDoorCreated(ConnectionData);
@@ -193,9 +180,28 @@ void FSnapStreamingChunkHandlerBase::UpdateChunkDoorStates(USnapStreamingChunk* 
         else {
             // No connection exists. This is a wall
             ConnectionActor->ConnectionComponent->ConnectionState = ESnapConnectionState::Wall;
-            ConnectionActor->BuildConnectionInstance(ChunkLevel);
+            ConnectionActor->BuildConnectionInstance(WallLevel);
         }
     }
+}
+
+void FSnapStreamingChunkHandlerBase::UpdateChunkDoorStates(USnapStreamingChunk* Chunk, ULevel* PersistentLevel) const {
+    if (!Chunk) {
+        return;
+    }
+    ULevel* ChunkLevel = Chunk->GetLoadedLevel();
+    if (!ChunkLevel) {
+        return;
+    }
+    
+    TArray<FSnapConnectionInstance>* ConnectionsPtr = GetConnections();
+    if (!ConnectionsPtr) {
+        return;
+    }
+    
+    const TArray<ASnapConnectionActor*> ConnectionActors = GetActorsOfType<ASnapConnectionActor>(ChunkLevel);
+    TArray<FSnapConnectionInstance>& Connections = *ConnectionsPtr;
+    Internal_SpawnChunkConnections(Chunk->ID, Connections, ConnectionActors, PersistentLevel, ChunkLevel);
 }
 
 void FSnapStreamingChunkHandlerBase::HideChunkDoorActors(USnapStreamingChunk* Chunk) {
