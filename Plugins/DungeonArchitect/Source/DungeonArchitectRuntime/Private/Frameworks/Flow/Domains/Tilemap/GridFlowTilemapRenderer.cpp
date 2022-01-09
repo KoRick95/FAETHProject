@@ -30,35 +30,39 @@ public:
 
     static void BeginDrawCanvasToRenderTarget(UTextureRenderTarget2D* TextureRenderTarget, UCanvas*& Canvas,
                                               FVector2D& Size, FDrawToRenderTargetContext& Context) {
+        if (!TextureRenderTarget) return;
+        
         Context = FDrawToRenderTargetContext();
         Context.RenderTarget = TextureRenderTarget;
         Canvas = NewObject<UCanvas>(GetTransientPackage(), NAME_None);
         Size = FVector2D(TextureRenderTarget->SizeX, TextureRenderTarget->SizeY);
 
         FTextureRenderTargetResource* RenderTargetResource = TextureRenderTarget->GameThread_GetRenderTargetResource();
-        FCanvas* NewCanvas = new FCanvas(
-            RenderTargetResource,
-            nullptr,
-            0, 0, 0,
-            GMaxRHIFeatureLevel,
-            FCanvas::CDM_ImmediateDrawing);
-        Canvas->Init(TextureRenderTarget->SizeX, TextureRenderTarget->SizeY, nullptr, NewCanvas);
-        Canvas->Update();
+        if (RenderTargetResource) {
+            FCanvas* NewCanvas = new FCanvas(
+                RenderTargetResource,
+                nullptr,
+                0, 0, 0,
+                GMaxRHIFeatureLevel,
+                FCanvas::CDM_ImmediateDrawing);
+            Canvas->Init(TextureRenderTarget->SizeX, TextureRenderTarget->SizeY, nullptr, NewCanvas);
+            Canvas->Update();
 
-        Context.DrawEvent = new FDrawEvent();
+            Context.DrawEvent = new FDrawEvent();
 
-        FName RTName = TextureRenderTarget->GetFName();
-        FDrawEvent* DrawEvent = Context.DrawEvent;
-        ENQUEUE_RENDER_COMMAND(BeginDrawEventCommand)(
-            [RTName, DrawEvent, RenderTargetResource](FRHICommandListImmediate& RHICmdList) {
-                RenderTargetResource->FlushDeferredResourceUpdate(RHICmdList);
+            FName RTName = TextureRenderTarget->GetFName();
+            FDrawEvent* DrawEvent = Context.DrawEvent;
+            ENQUEUE_RENDER_COMMAND(BeginDrawEventCommand)(
+                [RTName, DrawEvent, RenderTargetResource](FRHICommandListImmediate& RHICmdList) {
+                    RenderTargetResource->FlushDeferredResourceUpdate(RHICmdList);
 
-                BEGIN_DRAW_EVENTF(
-                    RHICmdList,
-                    DrawCanvasToTarget,
-                    (*DrawEvent),
-                    *RTName.ToString());
-            });
+                    BEGIN_DRAW_EVENTF(
+                        RHICmdList,
+                        DrawCanvasToTarget,
+                        (*DrawEvent),
+                        *RTName.ToString());
+                });
+        }
     }
 
     static void EndDrawCanvasToRenderTarget(UCanvas* Canvas, const FDrawToRenderTargetContext& Context) {
@@ -70,17 +74,18 @@ public:
         }
 
         if (Context.RenderTarget) {
-            FTextureRenderTargetResource* RenderTargetResource = Context
-                                                                 .RenderTarget->GameThread_GetRenderTargetResource();
-            FDrawEvent* DrawEvent = Context.DrawEvent;
-            ENQUEUE_RENDER_COMMAND(CanvasRenderTargetResolveCommand)(
-                [RenderTargetResource, DrawEvent](FRHICommandList& RHICmdList) {
-                    RHICmdList.CopyToResolveTarget(RenderTargetResource->GetRenderTargetTexture(),
-                                                   RenderTargetResource->TextureRHI, FResolveParams());
-                    STOP_DRAW_EVENT((*DrawEvent));
-                    delete DrawEvent;
-                }
-            );
+            FTextureRenderTargetResource* RenderTargetResource = Context.RenderTarget->GameThread_GetRenderTargetResource();
+            if (RenderTargetResource) {
+                FDrawEvent* DrawEvent = Context.DrawEvent;
+                ENQUEUE_RENDER_COMMAND(CanvasRenderTargetResolveCommand)(
+                    [RenderTargetResource, DrawEvent](FRHICommandList& RHICmdList) {
+                        RHICmdList.CopyToResolveTarget(RenderTargetResource->GetRenderTargetTexture(),
+                                                       RenderTargetResource->TextureRHI, FResolveParams());
+                        STOP_DRAW_EVENT((*DrawEvent));
+                        delete DrawEvent;
+                    }
+                );
+            }
 
             // Remove references to the context now that we've resolved it, to avoid a crash when EndDrawCanvasToRenderTarget is called multiple times with the same context
             // const cast required, as BP will treat Context as an output without the const

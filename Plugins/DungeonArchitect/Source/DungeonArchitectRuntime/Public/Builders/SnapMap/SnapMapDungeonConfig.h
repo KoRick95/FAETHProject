@@ -47,5 +47,12 @@ public:
     /** If the dungeon build fails, it will be retried with another seed multiple tiles based on this count */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Dungeon, Meta = (EditCondition = "bSupportBuildRetries"))
     int32 NumBuildRetries = 20;
+	
+	/**
+	* Build the entire dungeon in the main level by copying over the module actors to the persistent level. This will disable level streaming
+	* and is meant to be used in the editor only.  You may bake your lightmaps with this method
+	**/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Advanced)
+	bool bGenerateSinglePersistentDungeon = false;
 };
 

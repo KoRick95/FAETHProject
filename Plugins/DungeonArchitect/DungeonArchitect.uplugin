@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
-	"Version": 126,
-	"VersionName": "2.23.0",
+	"Version": 129,
+	"VersionName": "2.23.2",
 	"FriendlyName": "Dungeon Architect",
 	"Description": "Build procedural dungeons",
 	"Category": "Procedural",

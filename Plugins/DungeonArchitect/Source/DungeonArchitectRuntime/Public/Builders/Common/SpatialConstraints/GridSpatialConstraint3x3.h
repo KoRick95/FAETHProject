@@ -2,7 +2,7 @@
 
 #pragma once
 #include "CoreMinimal.h"
-#include "Builders/Grid/SpatialConstraints/GridSpatialConstraintCellData.h"
+#include "Builders/Common/SpatialConstraints/GridSpatialConstraintCellData.h"
 #include "Core/DungeonSpatialConstraint.h"
 #include "GridSpatialConstraint3x3.generated.h"
 

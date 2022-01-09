@@ -4,6 +4,7 @@
 
 #include "Builders/GridFlow/GridFlowConfig.h"
 #include "Builders/GridFlow/GridFlowModel.h"
+#include "Core/Dungeon.h"
 #include "Core/DungeonBuilder.h"
 #include "Core/DungeonProp.h"
 #include "Core/Utils/MathUtils.h"
@@ -194,6 +195,11 @@ bool UGridFlowQuery::GetChunkAtWorldCoord(const FVector& InWorldCoord, FGridFlow
 }
 
 bool UGridFlowQuery::GetChunkAtLayoutNodeCoord(const FVector& InLayoutNodeCoord, FGridFlowChunkQueryResult& Result) const {
+    if (!Model || !Model->AbstractGraph || !Config) {
+        UE_LOG(LogGridFlowQuery, Error, TEXT("Invalid grid flow query object state"));
+        return false;
+    }
+    
     for (UFlowAbstractNode* Node : Model->AbstractGraph->GraphNodes) {
         if (!Node) continue;
         if (Node->Coord.Equals(InLayoutNodeCoord)) {
@@ -216,12 +222,17 @@ void UGridFlowQuery::GetChunkAtLayoutNode(const UFlowAbstractNode* InLayoutNode,
             Result.TileCoords.Add(FVector(Coord.X, Coord.Y, 0));
         }
         Result.RoomType = TilemapDomainData->RoomType;
+        Result.PathName = InLayoutNode->PathName;
+        Result.PathIndex = InLayoutNode->PathIndex;
+        Result.PathLength = InLayoutNode->PathLength;
     }
 }
 
 void UGridFlowQuery::GetAllChunksOfType(EGridFlowAbstractNodeRoomType InRoomType,
                                         TArray<FGridFlowChunkQueryResult>& OutChunks) const {
     OutChunks.Reset();
+    if (!Model || !Model->AbstractGraph) return;
+    
     for (const UFlowAbstractNode* Node : Model->AbstractGraph->GraphNodes) {
         if (!Node) continue;
         
@@ -233,8 +244,36 @@ void UGridFlowQuery::GetAllChunksOfType(EGridFlowAbstractNodeRoomType InRoomType
     }
 }
 
+void UGridFlowQuery::GetDungeonBounds(FVector& BoundsCenter, FVector& BoundsExtent) const {
+    if (!Model || !Model->Tilemap || !Config) {
+        UE_LOG(LogGridFlowQuery, Error, TEXT("Invalid grid flow query object state"));
+        BoundsCenter = FVector::ZeroVector;
+        BoundsExtent = FVector::ZeroVector;
+        return;
+    }
+
+    // Iterate through all the tiles in the tilemap and grab the bounds
+    const FIntPoint Offset = Model->BuildTileOffset;
+    FBox Bounds;
+    const FVector& GridSize = Config->GridSize;
+    for (const FGridFlowTilemapCell& Cell : Model->Tilemap->GetCells()) {
+        if (Cell.bLayoutCell) {
+            const float TileX = Cell.TileCoord.X - Offset.X;
+            const float TileY = Cell.TileCoord.Y - Offset.Y;
+            const float TileZ = Cell.Height;
+            
+            FVector TileCenter = FVector(TileX + 0.5f, TileY + 0.5f, TileZ) * GridSize;
+            Bounds += DungeonTransform.TransformPosition(TileCenter);
+        } 
+    }
+
+    Bounds = Bounds.ExpandBy(FVector(GridSize * 0.5f));
+    BoundsCenter = Bounds.GetCenter();
+    BoundsExtent = Bounds.GetExtent();
+}
+
 void UGridFlowQuery::IsNearMarker(const FTransform& CurrentMarkerTransform, const FString& NearbyMarkerName,
-            float NearbyDistance, UDungeonBuilder* Builder, bool& bIsNear, int32& NumFound) {
+                                  float NearbyDistance, UDungeonBuilder* Builder, bool& bIsNear, int32& NumFound) {
     NumFound = 0;
     if (Builder) {
         const float QueryDistanceSq = NearbyDistance * NearbyDistance;

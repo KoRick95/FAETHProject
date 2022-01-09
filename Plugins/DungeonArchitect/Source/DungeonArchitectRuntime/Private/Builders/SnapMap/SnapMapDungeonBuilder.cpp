@@ -21,6 +21,7 @@
 #include "Frameworks/ThemeEngine/SceneProviders/PooledDungeonSceneProvider.h"
 
 #include "DrawDebugHelpers.h"
+#include "Core/Utils/DungeonModelHelper.h"
 #include "Engine/Level.h"
 #include "Engine/LevelStreaming.h"
 #include "Engine/World.h"
@@ -58,11 +59,6 @@ void USnapMapDungeonBuilder::BuildNonThemedDungeonImpl(UWorld* World, TSharedPtr
     
     SnapMapModel->Reset();
     WorldMarkers.Reset();
-    
-    UDungeonLevelStreamingModel* LevelStreamModel = Dungeon ? Dungeon->LevelStreamingModel : nullptr;
-    LevelStreamHandler = MakeShareable(new FSnapMapStreamingChunkHandler(GetWorld(), SnapMapModel.Get(), LevelStreamModel));
-    LevelStreamHandler->ClearStreamingLevels();
-
     if (Diagnostics.IsValid()) {
         Diagnostics->Clear();
     }
@@ -93,20 +89,132 @@ void USnapMapDungeonBuilder::BuildNonThemedDungeonImpl(UWorld* World, TSharedPtr
     }
     
     FSnapMapGraphSerializer::Serialize({ GraphRootNode }, SnapMapModel->ModuleInstances, SnapMapModel->Connections);
-    FGuid SpawnRoomId = GraphRootNode->ModuleInstanceId;
-    FSnapStreaming::GenerateLevelStreamingModel(World, { GraphRootNode }, Dungeon->LevelStreamingModel, USnapStreamingChunk::StaticClass(),
-        [this, &SpawnRoomId](UDungeonStreamingChunk* InChunk, SnapLib::FModuleNodePtr Node)  {
-            USnapStreamingChunk* Chunk = Cast<USnapStreamingChunk>(InChunk);
-            if (Chunk) {
-                Chunk->ModuleTransform = Node->WorldTransform;
-                if (Node->ModuleInstanceId == SpawnRoomId) {
-                    Chunk->bSpawnRoomChunk = true;
+    
+    if (SnapMapConfig->bGenerateSinglePersistentDungeon)
+    {
+        BuildPersistentSnapLevel(World, GraphRootNode, SceneProvider);
+    }
+    else {
+        UDungeonLevelStreamingModel* LevelStreamModel = Dungeon ? Dungeon->LevelStreamingModel : nullptr;
+        LevelStreamHandler = MakeShareable(new FSnapMapStreamingChunkHandler(GetWorld(), SnapMapModel.Get(), LevelStreamModel));
+        LevelStreamHandler->ClearStreamingLevels();
+
+        FGuid SpawnRoomId = GraphRootNode->ModuleInstanceId;
+        FSnapStreaming::GenerateLevelStreamingModel(World, { GraphRootNode }, Dungeon->LevelStreamingModel, USnapStreamingChunk::StaticClass(),
+            [this, &SpawnRoomId](UDungeonStreamingChunk* InChunk, SnapLib::FModuleNodePtr Node)  {
+                USnapStreamingChunk* Chunk = Cast<USnapStreamingChunk>(InChunk);
+                if (Chunk) {
+                    Chunk->ModuleTransform = Node->WorldTransform;
+                    if (Node->ModuleInstanceId == SpawnRoomId) {
+                        Chunk->bSpawnRoomChunk = true;
+                    }
+                    if (LevelStreamHandler.IsValid()) {
+                        LevelStreamHandler->RegisterEvents(Chunk);
+                    }
                 }
-                if (LevelStreamHandler.IsValid()) {
-                    LevelStreamHandler->RegisterEvents(Chunk);
+            });
+    }
+}
+
+void USnapMapDungeonBuilder::BuildPersistentSnapLevel(UWorld* InWorld, SnapLib::FModuleNodePtr InGraphRootNode, TSharedPtr<FDungeonSceneProvider> InSceneProvider) {
+    if (!Dungeon) {
+        UE_LOG(SnapMapDungeonBuilderLog, Error, TEXT("Invalid dungeon state"));
+        return;
+    }
+    
+    if (!InWorld) {
+        UE_LOG(SnapMapDungeonBuilderLog, Error, TEXT("Invalid world state"));
+        return;
+    }
+
+    TArray<SnapLib::FModuleNodePtr> ModuleNodes;
+    SnapLib::TraverseModuleGraph(InGraphRootNode, [&](SnapLib::FModuleNodePtr Node) {
+        ModuleNodes.Add(Node);
+    });
+    
+    TMap<FGuid, TArray<ASnapConnectionActor*>> ModuleConnections;
+    const FName DungeonTag = UDungeonModelHelper::GetDungeonIdTag(Dungeon);
+    for (const SnapLib::FModuleNodePtr Node : ModuleNodes) {
+        TArray<AActor*> ChunkActors;
+        TMap<AActor*, AActor*> TemplateToSpawnedActorMap;
+        
+        const UWorld* ModuleLevel = Node->ModuleDBItem->GetLevel().LoadSynchronous();
+        const FTransform& NodeTransform = Node->WorldTransform;
+        const FGuid AbstractNodeId = Node->ModuleInstanceId;
+        
+        // Spawn the module actors
+        for (AActor* ActorTemplate : ModuleLevel->PersistentLevel->Actors) {
+            if (!ActorTemplate || ActorTemplate->IsA<AInfo>()) continue;
+            AActor* Template = ActorTemplate;
+            FTransform ActorTransform = FTransform::Identity;
+            if (Template->IsA<ABrush>()) {
+                Template = nullptr;
+                ActorTransform = ActorTemplate->GetTransform();
+            }
+            
+            FActorSpawnParameters SpawnParams;
+            SpawnParams.Template = Template;
+            const FTransform SpawnTransform = ActorTransform * NodeTransform;
+            AActor* SpawnedModuleActor = InWorld->SpawnActor<AActor>(ActorTemplate->GetClass(), SpawnTransform, SpawnParams);
+            if (SpawnedModuleActor) {
+                SpawnedModuleActor->Tags.Add(DungeonTag);
+                SpawnedModuleActor->Tags.Add(FSceneProviderCommand::TagComplexActor);
+            }
+            
+            ChunkActors.Add(SpawnedModuleActor);
+            TemplateToSpawnedActorMap.Add(ActorTemplate, SpawnedModuleActor);
+            
+            if (ASnapConnectionActor* ConnectionActor = Cast<ASnapConnectionActor>(SpawnedModuleActor)) {
+                TArray<ASnapConnectionActor*>& Connections = ModuleConnections.FindOrAdd(AbstractNodeId);
+                Connections.Add(ConnectionActor);
+            }
+        }
+
+        // Replace template actor references
+        for (AActor* ChunkActor : ChunkActors) {
+            if (!ChunkActor) continue;
+            for (TFieldIterator<FProperty> PropertyIterator(ChunkActor->GetClass()); PropertyIterator; ++PropertyIterator) {
+                FProperty* Property = *PropertyIterator;
+                if (!Property) continue;
+                if (const FObjectProperty* ObjProperty = CastField<FObjectProperty>(Property)) {
+                    UObject* PropertyObjectValue = ObjProperty->GetObjectPropertyValue_InContainer(ChunkActor);
+                    if (PropertyObjectValue && PropertyObjectValue->HasAnyFlags(RF_DefaultSubObject | RF_ArchetypeObject)) {
+                        continue;
+                    }
+
+                    if (AActor* PropertyActor = Cast<AActor>(PropertyObjectValue)) {
+                        AActor** CrossReferencePtr = TemplateToSpawnedActorMap.Find(PropertyActor);
+                        if (CrossReferencePtr) {
+                            AActor* CrossReference = *CrossReferencePtr;
+                            ObjProperty->SetObjectPropertyValue_InContainer(ChunkActor, CrossReference);
+                        }
+                    }
                 }
             }
-        });
+        } 
+    }
+
+    
+    // Fix the module connections
+    ULevel* PersistentLevel = InWorld->PersistentLevel;
+    FSnapMapStreamingChunkHandler ChunkHandler(InWorld, SnapMapModel.Get(), nullptr);    // We'll use this to setup our doors
+    TArray<FSnapConnectionInstance> ConnectionInstances = SnapMapModel->Connections;
+    for (const auto& Entry : ModuleConnections) {
+        FGuid ChunkID = Entry.Key;
+        const TArray<ASnapConnectionActor*>& ConnectionActors = Entry.Value;
+        ChunkHandler.Internal_SpawnChunkConnections(ChunkID, ConnectionInstances, ConnectionActors, PersistentLevel, PersistentLevel);
+
+        for (ASnapConnectionActor* ConnectionActor : ConnectionActors) {
+            if (ConnectionActor) {
+                for (AActor* SpawnedConnectionVisualActor : ConnectionActor->GetSpawnedInstances()) {
+                    if (SpawnedConnectionVisualActor) {
+                        SpawnedConnectionVisualActor->Tags.Add(DungeonTag);
+                        SpawnedConnectionVisualActor->Tags.Add(FSceneProviderCommand::TagComplexActor);
+                    }
+                }
+            }
+        } 
+    }
 }
 
 namespace {
