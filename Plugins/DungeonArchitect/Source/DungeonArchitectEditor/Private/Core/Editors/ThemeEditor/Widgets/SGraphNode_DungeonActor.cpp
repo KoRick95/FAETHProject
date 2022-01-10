@@ -394,7 +394,7 @@ void SGraphNode_DungeonActor::RebuildExecutionOrder() {
 }
 
 
-void SGraphNode_DungeonActor::MoveTo(const FVector2D& NewPosition, FNodeSet& NodeFilter) {
+void SGraphNode_DungeonActor::MoveTo(const FVector2D& NewPosition, FNodeSet& NodeFilter, bool bMarkDirty) {
     RebuildExecutionOrder();
     return SGraphNode::MoveTo(NewPosition, NodeFilter);
 }

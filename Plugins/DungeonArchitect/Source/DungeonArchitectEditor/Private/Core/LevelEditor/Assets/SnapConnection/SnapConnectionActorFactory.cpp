@@ -19,12 +19,11 @@ UObject* USnapConnectionActorFactory::GetAssetFromActorInstance(AActor* ActorIns
     return ConnectionActor ? ConnectionActor->ConnectionComponent->ConnectionInfo : nullptr;
 }
 
-AActor* USnapConnectionActorFactory::SpawnActor(UObject* Asset, ULevel* InLevel, const FTransform& Transform,
-                                                   EObjectFlags InObjectFlags, const FName Name) {
-    AActor* Actor = UActorFactory::SpawnActor(Asset, InLevel, Transform, InObjectFlags, Name);
+AActor* USnapConnectionActorFactory::SpawnActor(UObject* InAsset, ULevel* InLevel, const FTransform& InTransform, const FActorSpawnParameters& InSpawnParams) {
+    AActor* Actor = UActorFactory::SpawnActor(InAsset, InLevel, InTransform, InSpawnParams);
     ASnapConnectionActor* ConnectionActor = Cast<ASnapConnectionActor>(Actor);
     if (ConnectionActor) {
-        ConnectionActor->ConnectionComponent->ConnectionInfo = Cast<USnapConnectionInfo>(Asset);
+        ConnectionActor->ConnectionComponent->ConnectionInfo = Cast<USnapConnectionInfo>(InAsset);
         //ConnectionActor->BuildConnection(InLevel->GetWorld());
     }
     return Actor;
