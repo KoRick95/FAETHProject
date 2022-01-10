@@ -17,12 +17,11 @@ UObject* UPlaceableMarkerActorFactory::GetAssetFromActorInstance(AActor* ActorIn
     return MarkerActor ? MarkerActor->PlaceableMarkerComponent->MarkerAsset : nullptr;
 }
 
-AActor* UPlaceableMarkerActorFactory::SpawnActor(UObject* Asset, ULevel* InLevel, const FTransform& Transform,
-                                                   EObjectFlags InObjectFlags, const FName Name) {
-    AActor* Actor = UActorFactory::SpawnActor(Asset, InLevel, Transform, InObjectFlags, Name);
+AActor* UPlaceableMarkerActorFactory::SpawnActor(UObject* InAsset, ULevel* InLevel, const FTransform& InTransform, const FActorSpawnParameters& InSpawnParams) {
+    AActor* Actor = UActorFactory::SpawnActor(InAsset, InLevel, InTransform, InSpawnParams);
     APlaceableMarkerActor* MarkerActor = Cast<APlaceableMarkerActor>(Actor);
     if (MarkerActor) {
-        MarkerActor->PlaceableMarkerComponent->MarkerAsset = Cast<UPlaceableMarkerAsset>(Asset);
+        MarkerActor->PlaceableMarkerComponent->MarkerAsset = Cast<UPlaceableMarkerAsset>(InAsset);
     }
     return Actor;
 }

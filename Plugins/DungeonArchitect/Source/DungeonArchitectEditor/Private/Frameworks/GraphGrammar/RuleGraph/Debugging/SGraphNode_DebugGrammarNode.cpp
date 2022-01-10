@@ -343,7 +343,7 @@ void SGraphNode_DebugGrammarDoorNode::GetNodeInfoPopups(FNodeInfoContext* Contex
 
 }
 
-void SGraphNode_DebugGrammarDoorNode::MoveTo(const FVector2D& NewPosition, FNodeSet& NodeFilter) {
+void SGraphNode_DebugGrammarDoorNode::MoveTo(const FVector2D& NewPosition, FNodeSet& NodeFilter, bool bMarkDirty) {
     // Ignored; position is set by the location of the attached state nodes
 }
 
