@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
-	"Version": 126,
-	"VersionName": "2.23.0",
+	"Version": 129,
+	"VersionName": "2.23.2",
 	"FriendlyName": "Dungeon Architect",
 	"Description": "Build procedural dungeons",
 	"Category": "Procedural",
@@ -10,7 +10,7 @@
 	"DocsURL": "",
 	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/1a4ad2a06f174a26af8a29728241ce42",
 	"SupportURL": "",
-	"EngineVersion": "4.26.0",
+	"EngineVersion": "4.27.0",
 	"CanContainContent": true,
 	"Installed": true,
 	"Modules": [

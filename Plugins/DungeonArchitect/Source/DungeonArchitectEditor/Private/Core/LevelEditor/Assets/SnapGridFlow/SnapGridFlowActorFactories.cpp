@@ -19,12 +19,11 @@ UObject* USnapGridFlowModuleBoundsActorFactory::GetAssetFromActorInstance(AActor
     return ModuleBoundsActor ? ModuleBoundsActor->BoundsComponent->ModuleBounds.LoadSynchronous() : nullptr;
 }
 
-AActor* USnapGridFlowModuleBoundsActorFactory::SpawnActor(UObject* Asset, ULevel* InLevel, const FTransform& Transform,
-                                                   EObjectFlags InObjectFlags, const FName Name) {
-    AActor* Actor = UActorFactory::SpawnActor(Asset, InLevel, Transform, InObjectFlags, Name);
+AActor* USnapGridFlowModuleBoundsActorFactory::SpawnActor(UObject* InAsset, ULevel* InLevel, const FTransform& InTransform, const FActorSpawnParameters& InSpawnParams) {
+    AActor* Actor = UActorFactory::SpawnActor(InAsset, InLevel, InTransform, InSpawnParams);
     ASnapGridFlowModuleBoundsActor* ModuleBoundsActor = Cast<ASnapGridFlowModuleBoundsActor>(Actor);
     if (ModuleBoundsActor) {
-        ModuleBoundsActor->BoundsComponent->ModuleBounds = Cast<USnapGridFlowModuleBoundsAsset>(Asset);
+        ModuleBoundsActor->BoundsComponent->ModuleBounds = Cast<USnapGridFlowModuleBoundsAsset>(InAsset);
     }
     return Actor;
 }

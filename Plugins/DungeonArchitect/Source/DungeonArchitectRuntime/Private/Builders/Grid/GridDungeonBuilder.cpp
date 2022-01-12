@@ -2,6 +2,9 @@
 
 #include "Builders/Grid/GridDungeonBuilder.h"
 
+#include "Builders/Common/SpatialConstraints/GridSpatialConstraint2x2.h"
+#include "Builders/Common/SpatialConstraints/GridSpatialConstraint3x3.h"
+#include "Builders/Common/SpatialConstraints/GridSpatialConstraintEdge.h"
 #include "Builders/Grid/GridDungeonConfig.h"
 #include "Builders/Grid/GridDungeonModel.h"
 #include "Builders/Grid/GridDungeonModelHelper.h"
@@ -9,9 +12,6 @@
 #include "Builders/Grid/GridDungeonSelectorLogic.h"
 #include "Builders/Grid/GridDungeonToolData.h"
 #include "Builders/Grid/GridDungeonTransformLogic.h"
-#include "Builders/Grid/SpatialConstraints/GridSpatialConstraint2x2.h"
-#include "Builders/Grid/SpatialConstraints/GridSpatialConstraint3x3.h"
-#include "Builders/Grid/SpatialConstraints/GridSpatialConstraintEdge.h"
 #include "Builders/Grid/Volumes/GridDungeonPlatformVolume.h"
 #include "Core/Dungeon.h"
 #include "Core/DungeonMarkerNames.h"

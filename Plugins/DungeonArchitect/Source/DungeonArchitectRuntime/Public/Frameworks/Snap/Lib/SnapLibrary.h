@@ -152,7 +152,7 @@ namespace SnapLib {
         FSnapGraphGenerator(IModuleDatabasePtr InModuleDatabase, const FGrowthStaticState& InStaticState);
         virtual ~FSnapGraphGenerator() {}
         FModuleNodePtr Generate(ISnapGraphNodePtr StartNode);
-
+        
     protected:
         virtual bool ModuleOccludes(const FModuleNodePtr ModuleNode, SnapLib::ISnapGraphNodePtr MissionNode, const TArray<FBox>& OcclusionList);
         virtual TArray<FTransform> GetStartingNodeTransforms(SnapLib::FModuleNodePtr ModuleNode, SnapLib::ISnapGraphNodePtr MissionNode);
@@ -170,6 +170,8 @@ namespace SnapLib {
         const FGrowthStaticState StaticState;
         FGrowthSharedState SharedState;
     };
+    
+    void TraverseModuleGraph(FModuleNodePtr StartNode, TFunction<void(FModuleNodePtr Node)> Visit);
 
 }
 

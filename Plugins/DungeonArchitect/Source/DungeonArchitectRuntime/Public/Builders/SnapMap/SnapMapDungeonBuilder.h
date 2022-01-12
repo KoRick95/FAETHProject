@@ -74,6 +74,7 @@ protected:
 
     SnapLib::FModuleNodePtr GenerateModuleNodeGraph(int32 InSeed) const;
     virtual bool IdentifyBuildSucceeded() const override;
+    void BuildPersistentSnapLevel(UWorld* InWorld, SnapLib::FModuleNodePtr InGraphRootNode, TSharedPtr<FDungeonSceneProvider> InSceneProvider);
     
 protected:
     TWeakObjectPtr<USnapMapDungeonModel> SnapMapModel;

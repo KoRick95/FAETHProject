@@ -22,6 +22,8 @@
 #include "Frameworks/ThemeEngine/Markers/PlaceableMarker.h"
 
 #include "EngineUtils.h"
+#include "Core/Utils/DungeonModelHelper.h"
+#include "Frameworks/Snap/Lib/Connection/SnapConnectionActor.h"
 
 class UGridFlowAbstractGraph3D;
 DEFINE_LOG_CATEGORY_STATIC(SnapGridDungeonBuilderLog, Log, All);
@@ -48,19 +50,13 @@ void USnapGridFlowBuilder::BuildNonThemedDungeonImpl(UWorld* World, TSharedPtr<F
         return;
     }
     
+    SnapGridModel->Reset();
+    WorldMarkers.Reset();
+    
     if (LevelStreamHandler.IsValid()) {
         LevelStreamHandler->ClearStreamingLevels();
         LevelStreamHandler.Reset();
     }
-    
-    SnapGridModel->Reset();
-    WorldMarkers.Reset();
-
-    UDungeonLevelStreamingModel* LevelStreamModel = Dungeon ? Dungeon->LevelStreamingModel : nullptr;
-    LevelStreamHandler = MakeShareable(new FSnapGridFlowStreamingChunkHandler(GetWorld(), SnapGridModel.Get(), LevelStreamModel));
-    LevelStreamHandler->ClearStreamingLevels();
-    LevelStreamHandler->ChunkLoadedEvent.BindUObject(this, &USnapGridFlowBuilder::HandleChunkLoaded);
-    LevelStreamHandler->ChunkFullyLoadedEvent.BindUObject(this, &USnapGridFlowBuilder::HandleChunkLoadedAndVisible);
     
     ExecuteFlowGraph();
     
@@ -76,22 +72,36 @@ void USnapGridFlowBuilder::BuildNonThemedDungeonImpl(UWorld* World, TSharedPtr<F
             }
         } 
     }
-    
-    FSnapStreaming::GenerateLevelStreamingModel(World, ModuleGraphNodes, Dungeon->LevelStreamingModel, USnapStreamingChunk::StaticClass(),
-        [this, &SpawnRoomNodes](UDungeonStreamingChunk* InChunk, SnapLib::FModuleNodePtr Node)  {
-            USnapStreamingChunk* Chunk = Cast<USnapStreamingChunk>(InChunk);
-            if (Chunk) {
-                Chunk->ModuleTransform = Node->WorldTransform;
-                if (SpawnRoomNodes.Contains(Node->ModuleInstanceId)) {
-                    Chunk->bSpawnRoomChunk = true;
-                }
-                
-                if (LevelStreamHandler.IsValid()) {
-                    LevelStreamHandler->RegisterEvents(Chunk);
-                }
-            }
-        });
 
+    
+    if (SnapGridConfig->bGenerateSinglePersistentDungeon)
+    {
+        BuildPersistentSnapLevel(World, ModuleGraphNodes, SceneProvider);
+    }
+    else
+    {
+        UDungeonLevelStreamingModel* LevelStreamModel = Dungeon ? Dungeon->LevelStreamingModel : nullptr;
+        LevelStreamHandler = MakeShareable(new FSnapGridFlowStreamingChunkHandler(GetWorld(), SnapGridModel.Get(), LevelStreamModel));
+        LevelStreamHandler->ClearStreamingLevels();
+        LevelStreamHandler->ChunkLoadedEvent.BindUObject(this, &USnapGridFlowBuilder::HandleChunkLoaded);
+        LevelStreamHandler->ChunkFullyLoadedEvent.BindUObject(this, &USnapGridFlowBuilder::HandleChunkLoadedAndVisible);
+    
+        FSnapStreaming::GenerateLevelStreamingModel(World, ModuleGraphNodes, Dungeon->LevelStreamingModel, USnapStreamingChunk::StaticClass(),
+            [this, &SpawnRoomNodes](UDungeonStreamingChunk* InChunk, SnapLib::FModuleNodePtr Node)  {
+                USnapStreamingChunk* Chunk = Cast<USnapStreamingChunk>(InChunk);
+                if (Chunk) {
+                    Chunk->ModuleTransform = Node->WorldTransform;
+                    if (SpawnRoomNodes.Contains(Node->ModuleInstanceId)) {
+                        Chunk->bSpawnRoomChunk = true;
+                    }
+                
+                    if (LevelStreamHandler.IsValid()) {
+                        LevelStreamHandler->RegisterEvents(Chunk);
+                    }
+                }
+            });
+    }
+    
     // Create the debug draw actor
     if (Dungeon) {
         if (Dungeon->bDrawDebugData) {
@@ -271,43 +281,39 @@ void USnapGridFlowBuilder::DestroyDebugVisualizations(const FGuid& DungeonID) co
     }
 }
 
-void USnapGridFlowBuilder::SpawnItem(UFlowGraphItem* ItemInfo, APlaceableMarkerActor* InMarkerActor, USnapStreamingChunk* InChunk) const {
-    if (!SnapGridConfig.IsValid() || !ItemInfo) return;
-
-    const FString MarkerName = ItemInfo->MarkerName.TrimStartAndEnd();
+TArray<AActor*> USnapGridFlowBuilder::SpawnItemWithThemeEngine(UFlowGraphItem* ItemInfo, APlaceableMarkerActor* InMarkerActor) const {
+    TArray<AActor*> SpawnedActors;
+    if (SnapGridConfig.IsValid() && ItemInfo) {
+        const FString MarkerName = ItemInfo->MarkerName.TrimStartAndEnd();
     
-    TArray<FPropSocket> MarkersToEmit;
-    FPropSocket& Marker = MarkersToEmit.AddDefaulted_GetRef();
-    Marker.Id = 0;
-    Marker.SocketType = MarkerName;
-    Marker.Transform = InMarkerActor->GetActorTransform();
+        TArray<FPropSocket> MarkersToEmit;
+        FPropSocket& Marker = MarkersToEmit.AddDefaulted_GetRef();
+        Marker.Id = 0;
+        Marker.SocketType = MarkerName;
+        Marker.Transform = InMarkerActor->GetActorTransform();
 
-    TSharedPtr<FSnapThemeSceneProvider> SceneProvider = MakeShareable(new FSnapThemeSceneProvider(GetWorld()));
-    SceneProvider->SetLevelOverride(InMarkerActor->GetLevel());
+        const TSharedPtr<FSnapThemeSceneProvider> SceneProvider = MakeShareable(new FSnapThemeSceneProvider(GetWorld()));
+        SceneProvider->SetLevelOverride(InMarkerActor->GetLevel());
     
-    FDungeonThemeEngineSettings ThemeEngineSettings;
-    ThemeEngineSettings.Themes = { SnapGridConfig->ItemTheme.LoadSynchronous() };
-    ThemeEngineSettings.SceneProvider = SceneProvider;
-    if (Dungeon) {
-        ThemeEngineSettings.bRoleAuthority = Dungeon->HasAuthority(); 
-    }
+        FDungeonThemeEngineSettings ThemeEngineSettings;
+        ThemeEngineSettings.Themes = { SnapGridConfig->ItemTheme.LoadSynchronous() };
+        ThemeEngineSettings.SceneProvider = SceneProvider;
+        if (Dungeon) {
+            ThemeEngineSettings.bRoleAuthority = Dungeon->HasAuthority(); 
+        }
 
-    const FDungeonThemeEngineEventHandlers ThemeEventHandlers;
+        const FDungeonThemeEngineEventHandlers ThemeEventHandlers;
     
-    // Invoke the Theme Engine
-    FDungeonThemeEngine::Apply(MarkersToEmit, random, ThemeEngineSettings, ThemeEventHandlers);
+        // Invoke the Theme Engine
+        FDungeonThemeEngine::Apply(MarkersToEmit, random, ThemeEngineSettings, ThemeEventHandlers);
 
-    // Register the spawned actors so they can be cleaned up when the chunk is destroyed
-    for (TWeakObjectPtr<AActor> SpawnedActor : SceneProvider->GetSpawnedActors()) {
-        if (SpawnedActor.IsValid()) {
-            InChunk->RegisterManagedActor(SpawnedActor.Get());
-
-            // If it contains a item metadata component, then assign the item
-            if (UDungeonFlowItemMetadataComponent* ItemComponent = SpawnedActor->FindComponentByClass<UDungeonFlowItemMetadataComponent>()) {
-                ItemComponent->SetFlowItem(ItemInfo);
+        for (TWeakObjectPtr<AActor> SpawnedActor : SceneProvider->GetSpawnedActors()) {
+            if (SpawnedActor.IsValid()) {
+                SpawnedActors.Add(SpawnedActor.Get());
             }
         }
     }
+    return SpawnedActors;
 }
 
 void USnapGridFlowBuilder::HandleChunkLoaded(USnapStreamingChunk* InChunk) {
@@ -331,17 +337,12 @@ void USnapGridFlowBuilder::HandleChunkLoaded(USnapStreamingChunk* InChunk) {
     }
 }
 
-void USnapGridFlowBuilder::HandleChunkLoadedAndVisible(USnapStreamingChunk* InChunk) {
-    if (!InChunk) return;
-    
-    // Spawn items
-    if (!SnapGridModel.IsValid() || !SnapGridModel->AbstractGraph) return;
-
+TArray<AActor*> USnapGridFlowBuilder::SpawnChunkPlaceableMarkers(const TArray<AActor*>& ChunkActors, const FGuid& AbstractNodeId, const FBox& ChunkBounds, const FString& ChunkName) {
     // Populate the requested marker list from the abstract node 
     TArray<UFlowGraphItem*> Items;
     {
         // Grab the node from the abstract graph. The chunk id will be the same as the abstract node id
-        UFlowAbstractNode* AbstractNode = SnapGridModel->AbstractGraph->GetNode(InChunk->ID);
+        UFlowAbstractNode* AbstractNode = SnapGridModel->AbstractGraph->GetNode(AbstractNodeId);
 
         // Check if abstract node has any items to spawn
         if (AbstractNode) {
@@ -354,20 +355,22 @@ void USnapGridFlowBuilder::HandleChunkLoadedAndVisible(USnapStreamingChunk* InCh
     }
 
     TArray<APlaceableMarkerActor*> PlaceableMarkers;
-    for (AActor* Actor : InChunk->GetLoadedLevel()->Actors) {
+    for (AActor* Actor : ChunkActors) {
         if (APlaceableMarkerActor* PlaceableMarker = Cast<APlaceableMarkerActor>(Actor)) {
             PlaceableMarkers.Add(PlaceableMarker);
         }
     }
 
+    TArray<AActor*> AllSpawnedActors;
+    
     TMap<APlaceableMarkerActor*, FString> MarkersToEmit;
-    const int32 MarkerRandomSeed = HashCombine(SnapGridConfig->Seed, GetTypeHash(InChunk->Bounds.GetCenter()));
+    const int32 MarkerRandomSeed = HashCombine(SnapGridConfig->Seed, GetTypeHash(ChunkBounds.GetCenter()));
     const FRandomStream RandomMarkerSelection(MarkerRandomSeed);
     FMathUtils::Shuffle(PlaceableMarkers, RandomMarkerSelection);
     for (UFlowGraphItem* ItemInfo : Items) {
         FString Marker = ItemInfo->MarkerName.TrimStartAndEnd();
         if (Marker.Len() == 0) continue;
-        
+    
         APlaceableMarkerActor* MarkerActor = nullptr;
         for (APlaceableMarkerActor* PlaceableMarker : PlaceableMarkers) {
             if (PlaceableMarker->GetAllowedMarkerNames().Contains(Marker)) {
@@ -378,15 +381,129 @@ void USnapGridFlowBuilder::HandleChunkLoadedAndVisible(USnapStreamingChunk* InCh
 
         if (MarkerActor) {
             PlaceableMarkers.Remove(MarkerActor);
-            SpawnItem(ItemInfo, MarkerActor, InChunk);
+            TArray<AActor*> SpawnedActors = SpawnItemWithThemeEngine(ItemInfo, MarkerActor);
+            AllSpawnedActors.Append(SpawnedActors);
+            
+            // If it contains a item metadata component, then assign the item
+            for (const TWeakObjectPtr<AActor> SpawnedActor : SpawnedActors) {
+                if (UDungeonFlowItemMetadataComponent* ItemComponent = SpawnedActor->FindComponentByClass<UDungeonFlowItemMetadataComponent>()) {
+                    ItemComponent->SetFlowItem(ItemInfo);
+                }
+            }
         } else {
-            UE_LOG(SnapGridDungeonBuilderLog, Error, TEXT("Cannot spawn marker \"%s\" in module chunk: %s"), *Marker, *InChunk->GetLoadedLevel()->GetFullName());
+            UE_LOG(SnapGridDungeonBuilderLog, Error, TEXT("Cannot spawn marker \"%s\" in module chunk: %s"), *Marker, *ChunkName);
+        }
+    }
+
+    return AllSpawnedActors;
+}
+
+void USnapGridFlowBuilder::HandleChunkLoadedAndVisible(USnapStreamingChunk* InChunk) {
+    if (!InChunk || !InChunk->GetLoadedLevel()) return;
+    if (!SnapGridModel.IsValid() || !SnapGridModel->AbstractGraph) return;
+
+    const TArray<AActor*>& ChunkActors = InChunk->GetLoadedLevel()->Actors;
+    const FGuid AbstractNodeId = InChunk->ID;
+    const FBox ChunkBounds = InChunk->Bounds;
+    const FString ChunkName = InChunk->GetLoadedLevel()->GetFullName();
+
+    TArray<AActor*> SpawnedActors = SpawnChunkPlaceableMarkers(ChunkActors, AbstractNodeId, ChunkBounds, ChunkName);
+    
+    // Register the spawned actors so they can be cleaned up when the chunk is destroyed
+    if (InChunk) {
+        for (TWeakObjectPtr<AActor> SpawnedActor : SpawnedActors) {
+            if (SpawnedActor.IsValid()) {
+                InChunk->RegisterManagedActor(SpawnedActor.Get());
+            }
         }
     }
 }
 
 bool USnapGridFlowBuilder::IdentifyBuildSucceeded() const {
     return SnapGridModel.IsValid() && SnapGridModel->AbstractGraph && SnapGridModel->ModuleInstances.Num() > 0; 
+}
+
+void USnapGridFlowBuilder::BuildPersistentSnapLevel(UWorld* InWorld, const TArray<SnapLib::FModuleNodePtr>& InModuleNodes,
+        TSharedPtr<FDungeonSceneProvider> InSceneProvider)
+{
+    if (!Dungeon) {
+        UE_LOG(SnapGridDungeonBuilderLog, Error, TEXT("Invalid dungeon state"));
+        return;
+    }
+    
+    if (!InWorld) {
+        UE_LOG(SnapGridDungeonBuilderLog, Error, TEXT("Invalid world state"));
+        return;
+    }
+    
+    bool bDrawModuleBounds = Dungeon && Dungeon->bDrawDebugData;
+    TMap<FGuid, TArray<ASnapConnectionActor*>> ModuleConnections;
+    TMap<AActor*, AActor*> TemplateToSpawnedActorMap;
+    
+    const FName DungeonTag = UDungeonModelHelper::GetDungeonIdTag(Dungeon);
+    for (const SnapLib::FModuleNodePtr Node : InModuleNodes) {
+        TArray<AActor*> ChunkActors;
+        
+        const UWorld* ModuleLevel = Node->ModuleDBItem->GetLevel().LoadSynchronous();
+        const FTransform& NodeTransform = Node->WorldTransform;
+        const FGuid AbstractNodeId = Node->ModuleInstanceId;
+        
+        // Spawn the module actors
+        for (AActor* ActorTemplate : ModuleLevel->PersistentLevel->Actors) {
+            if (!ActorTemplate || ActorTemplate->IsA<AInfo>()) continue;
+            AActor* Template = ActorTemplate;
+            FTransform ActorTransform = FTransform::Identity; 
+            if (Template->IsA<ABrush>()) {
+                Template = nullptr;
+                ActorTransform = ActorTemplate->GetTransform();
+            }
+            
+            FActorSpawnParameters SpawnParams;
+            SpawnParams.Template = Template;
+            const FTransform SpawnTransform = ActorTransform * NodeTransform;
+            AActor* SpawnedModuleActor = InWorld->SpawnActor<AActor>(ActorTemplate->GetClass(), SpawnTransform, SpawnParams);
+            if (SpawnedModuleActor) {
+                SpawnedModuleActor->Tags.Add(DungeonTag);
+                SpawnedModuleActor->Tags.Add(FSceneProviderCommand::TagComplexActor);
+            }
+            
+            ChunkActors.Add(SpawnedModuleActor);
+            TemplateToSpawnedActorMap.Add(ActorTemplate, SpawnedModuleActor);
+
+            if (ASnapConnectionActor* ConnectionActor = Cast<ASnapConnectionActor>(SpawnedModuleActor)) {
+                TArray<ASnapConnectionActor*>& Connections = ModuleConnections.FindOrAdd(AbstractNodeId);
+                Connections.Add(ConnectionActor);
+            }
+
+            if (ASnapGridFlowModuleBoundsActor* BoundsActor = Cast<ASnapGridFlowModuleBoundsActor>(SpawnedModuleActor)) {
+                if (BoundsActor->BoundsComponent) {
+                    BoundsActor->BoundsComponent->bRenderBounds = bDrawModuleBounds;
+                    BoundsActor->BoundsComponent->MarkRenderStateDirty();
+                }
+            }
+        }
+
+        // Spawn the placeable actors
+        const FBox ChunkBounds = Node->GetModuleBounds();
+        const FString ChunkName = ModuleLevel->GetFullName();
+        TArray<AActor*> SpawnedItemActors = SpawnChunkPlaceableMarkers(ChunkActors, AbstractNodeId, ChunkBounds, ChunkName);
+        for (AActor* SpawnedItemActor : SpawnedItemActors) {
+            if (SpawnedItemActor) {
+                SpawnedItemActor->Tags.Add(DungeonTag);
+                SpawnedItemActor->Tags.Add(FSceneProviderCommand::TagComplexActor);
+            }
+        }
+    }
+
+    // Fix the module connections
+    ULevel* PersistentLevel = InWorld->PersistentLevel;
+    FSnapGridFlowStreamingChunkHandler ChunkHandler(InWorld, SnapGridModel.Get(), nullptr);    // We'll use this to setup our doors
+    TArray<FSnapConnectionInstance> ConnectionInstances = SnapGridModel->Connections;
+    for (const auto& Entry : ModuleConnections) {
+        FGuid ChunkID = Entry.Key;
+        const TArray<ASnapConnectionActor*>& ConnectionActors = Entry.Value;
+        ChunkHandler.Internal_SpawnChunkConnections(ChunkID, ConnectionInstances, ConnectionActors, PersistentLevel, PersistentLevel);
+    }
 }
 
 void USnapGridFlowBuilder::DrawDebugData(UWorld* InWorld, bool bPersistent, float LifeTime) {

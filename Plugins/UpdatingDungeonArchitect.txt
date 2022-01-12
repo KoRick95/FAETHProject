@@ -12,9 +12,10 @@ Part 2: Update the Faeth DungeonArchitect plugin
 1) Open Faeth via .uproject
 2) Edit -> Plugins -> Disable DungeonArchitect plugin
 3) Copy the plugin from the new empty C++ project
-4) Paste in I:\Unreal Projects\FaethPrototype\Plugins
-5) Open Faeth via .uproject
-6) Edit -> Plugins -> Enable DungeonArchitect plugin
-7) Close Faeth
-8) Regenerate Visual Studio project files
-9) Run Faeth through Visual Studio
+4) Delete the existing DungeonArchitect in I:\Unreal Projects\FaethPrototype\Plugins
+5) Paste the new DungeonArchitect
+6) Open Faeth via .uproject
+7) Edit -> Plugins -> Enable DungeonArchitect plugin
+8) Close Faeth
+9) Regenerate Visual Studio project files
+10) Run Faeth through Visual Studio

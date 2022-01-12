@@ -29,6 +29,15 @@ struct DUNGEONARCHITECTRUNTIME_API FGridFlowChunkQueryResult {
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Dungeon)
     EGridFlowAbstractNodeRoomType RoomType;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Dungeon)
+    FString PathName;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Dungeon)
+    int PathIndex = 0;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Dungeon)
+    int PathLength = 0;
 };
 
 UCLASS(Blueprintable)
@@ -66,6 +75,9 @@ public:
 
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Dungeon")
     void GetAllChunksOfType(EGridFlowAbstractNodeRoomType RoomType, TArray<FGridFlowChunkQueryResult>& OutChunks) const;
+
+    UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Dungeon")
+    void GetDungeonBounds(FVector& BoundsCenter, FVector& BoundsExtent) const;
 
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = Dungeon)
     static void IsNearMarker(const FTransform& CurrentMarkerTransform, const FString& NearbyMarkerName, float NearbyDistance,

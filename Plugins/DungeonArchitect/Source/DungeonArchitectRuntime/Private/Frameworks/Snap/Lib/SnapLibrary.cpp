@@ -360,9 +360,36 @@ bool SnapLib::FSnapGraphGenerator::CanConnectDoors(SnapLib::FModuleDoorPtr A, Sn
     return true;
 }
 
+void SnapLib::TraverseModuleGraph(FModuleNodePtr StartNode, TFunction<void(FModuleNodePtr Node)> Visit) {
+    TSet<FModuleNodePtr> Visited;
+    TArray<FModuleNodePtr> Stack;
+    Stack.Add(StartNode);
+    Visited.Add(StartNode);
+    
+    while (Stack.Num() > 0) {
+        const FModuleNodePtr Top = Stack.Pop();
+
+        Visit(Top);
+        
+        TSet<FModuleDoorPtr> ConnectedNodes;
+        ConnectedNodes.Add(Top->Incoming);
+        ConnectedNodes.Append(Top->Outgoing);
+        
+        for (FModuleDoorPtr Door : ConnectedNodes) {
+            if (Door.IsValid() && Door->ConnectedDoor.IsValid() && Door->ConnectedDoor->Owner.IsValid()) {
+                SnapLib::FModuleNodePtr Child = Door->ConnectedDoor->Owner;
+                if (!Visited.Contains(Child)) {
+                    Stack.Push(Child);
+                    Visited.Add(Child);
+                }
+            }
+        }
+    }
+}
+
 bool SnapLib::FSnapGraphGenerator::GetDoorFitConfiguration(SnapLib::FModuleDoorPtr RemoteDoor,
-                                                     SnapLib::FModuleDoorPtr DoorToFit, bool bAllowModuleRotation,
-                                                     TArray<FTransform>& OutNewTransforms) {
+                                                           SnapLib::FModuleDoorPtr DoorToFit, bool bAllowModuleRotation,
+                                                           TArray<FTransform>& OutNewTransforms) {
     if (!RemoteDoor.IsValid()) {
         // No incoming door. This is the first node in the graph
         OutNewTransforms = { FTransform::Identity };
