@@ -118,11 +118,6 @@ void UQuest::SetActiveQuestStep(int Step, bool bHideInactiveObjectives)
 	ActiveQuestStep = Step;
 }
 
-bool UQuest::HasQuestManager()
-{
-	return QuestManager->IsValidLowLevel();
-}
-
 bool UQuest::SetQuestStatus(EProgressStatus NewStatus, FProgressStatusBlockFlags Flags)
 {
 	if (QuestStatus == NewStatus)
