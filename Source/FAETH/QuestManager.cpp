@@ -16,6 +16,8 @@ void UQuestManager::Init()
 		}
 	}
 #endif
+
+	OnInitialise();
 }
 
 const TArray<UQuest*>& UQuestManager::GetAllQuests()
