@@ -26,14 +26,24 @@ bool UQuest::IsQuestStatusBlocked(const FProgressStatusBlockFlags& Flags)
 		(QuestStatus == EProgressStatus::Completed && Flags.bBlockCompleted);
 }
 
-int UQuest::GetActiveQuestStep()
-{
-	return ActiveQuestStep;
-}
-
 EProgressStatus UQuest::GetQuestStatus()
 {
 	return QuestStatus;
+}
+
+const TArray<UQuestObjective*>& UQuest::GetObjectives()
+{
+	return Objectives;
+}
+
+const TArray<UQuestObjective*>& UQuest::GetActiveObjectives()
+{
+	return ActiveObjectives;
+}
+
+int UQuest::GetActiveQuestStep()
+{
+	return ActiveQuestStep;
 }
 
 UQuestObjective* UQuest::GetObjectiveByID(FName ObjectiveID)
@@ -60,16 +70,6 @@ UQuestObjective* UQuest::GetObjectiveByClass(TSubclassOf<UQuestObjective> Object
 	}
 
 	return nullptr;
-}
-
-const TArray<UQuestObjective*>& UQuest::GetObjectives()
-{
-	return Objectives;
-}
-
-const TArray<UQuestObjective*>& UQuest::GetActiveObjectives()
-{
-	return ActiveObjectives;
 }
 
 TArray<UQuestObjective*> UQuest::GetObjectivesByQuestStep(int Step)

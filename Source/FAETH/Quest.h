@@ -62,11 +62,17 @@ public:
 
 private:
 	UQuestManager* QuestManager;
+
+	UPROPERTY(BlueprintGetter = GetQuestStatus, Category = "Quest")
 	EProgressStatus QuestStatus;
+
+	UPROPERTY(BlueprintGetter = GetObjectives, Category = "Quest")
 	TArray<UQuestObjective*> Objectives;
+
+	UPROPERTY(BlueprintGetter = GetActiveObjectives, Category = "Quest")
 	TArray<UQuestObjective*> ActiveObjectives;
 
-	UPROPERTY(BlueprintGetter=GetActiveQuestStep, Category = "Quest")
+	UPROPERTY(BlueprintGetter = GetActiveQuestStep, Category = "Quest")
 	int ActiveQuestStep;
 
 public:
@@ -75,23 +81,23 @@ public:
 	// Returns true if the current quest status is being flagged to ignore.
 	bool IsQuestStatusBlocked(const FProgressStatusBlockFlags& Flags);
 
-	UFUNCTION(BlueprintGetter, Category = "Quest")
-	int GetActiveQuestStep();
-
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintGetter)
 	EProgressStatus GetQuestStatus();
+
+	UFUNCTION(BlueprintGetter)
+	const TArray<UQuestObjective*>& GetObjectives();
+
+	UFUNCTION(BlueprintGetter)
+	const TArray<UQuestObjective*>& GetActiveObjectives();
+
+	UFUNCTION(BlueprintGetter)
+	int GetActiveQuestStep();
 
 	UFUNCTION(BlueprintCallable, Category = "Quest")
 	UQuestObjective* GetObjectiveByID(FName ObjectiveID);
 
 	UFUNCTION(BlueprintCallable, Category = "Quest")
 	UQuestObjective* GetObjectiveByClass(TSubclassOf<UQuestObjective> ObjectiveClass);
-
-	UFUNCTION(BlueprintCallable, Category = "Quest")
-	const TArray<UQuestObjective*>& GetObjectives();
-
-	UFUNCTION(BlueprintCallable, Category = "Quest")
-	const TArray<UQuestObjective*>& GetActiveObjectives();
 
 	UFUNCTION(BlueprintCallable, Category = "Quest")
 	// Returns an array of objectives of the given quest step.
