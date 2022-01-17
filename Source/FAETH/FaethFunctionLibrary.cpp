@@ -46,6 +46,21 @@ UQuest* UFaethFunctionLibrary::GetQuestByID(const TArray<UQuest*>& QuestArray, F
     return nullptr;
 }
 
+TArray<UQuest*> UFaethFunctionLibrary::GetQuestsByStatus(const TArray<UQuest*>& QuestArray, EProgressStatus QuestStatus)
+{
+    TArray<UQuest*> filteredQuests;
+
+    for (UQuest* quest : QuestArray)
+    {
+        if (quest->GetQuestStatus() == QuestStatus)
+        {
+            filteredQuests.Add(quest);
+        }
+    }
+
+    return filteredQuests;
+}
+
 UQuestObjective* UFaethFunctionLibrary::GetObjectiveByClass(const TArray<UQuestObjective*>& ObjectiveArray, TSubclassOf<UQuestObjective> ObjectiveClass)
 {
     for (UQuestObjective* objective : ObjectiveArray)
@@ -70,4 +85,19 @@ UQuestObjective* UFaethFunctionLibrary::GetObjectiveByID(const TArray<UQuestObje
     }
 
     return nullptr;
+}
+
+TArray<UQuestObjective*> UFaethFunctionLibrary::GetObjectivesByStatus(const TArray<UQuestObjective*>& ObjectiveArray, EProgressStatus ObjectiveStatus)
+{
+    TArray<UQuestObjective*> filteredObjectives;
+
+    for (UQuestObjective* objective : ObjectiveArray)
+    {
+        if (objective->GetObjectiveStatus() == ObjectiveStatus)
+        {
+            filteredObjectives.Add(objective);
+        }
+    }
+
+    return filteredObjectives;
 }
