@@ -26,6 +26,11 @@ bool UQuest::IsQuestStatusBlocked(const FProgressStatusBlockFlags& Flags)
 		(QuestStatus == EProgressStatus::Completed && Flags.bBlockCompleted);
 }
 
+int UQuest::GetActiveQuestStep()
+{
+	return ActiveQuestStep;
+}
+
 EProgressStatus UQuest::GetQuestStatus()
 {
 	return QuestStatus;
@@ -67,7 +72,7 @@ const TArray<UQuestObjective*>& UQuest::GetActiveObjectives()
 	return ActiveObjectives;
 }
 
-TArray<UQuestObjective*> UQuest::GetObjectivesByQuestStep(int Step, bool bEqualsStep)
+TArray<UQuestObjective*> UQuest::GetObjectivesByQuestStep(int Step)
 {
 	TArray<UQuestObjective*> objectives;
 
@@ -78,14 +83,7 @@ TArray<UQuestObjective*> UQuest::GetObjectivesByQuestStep(int Step, bool bEquals
 
 	for (UQuestObjective* objective : Objectives)
 	{
-		if (bEqualsStep && objective->QuestStep == Step)
-		{
-			objectives.Add(objective);
-		}
-		else if (!bEqualsStep && objective->QuestStep != Step)
-		{
-			objectives.Add(objective);
-		}
+		objectives.Add(objective);
 	}
 
 	return objectives;
@@ -110,12 +108,6 @@ void UQuest::SetActiveQuestStep(int Step, bool bHideInactiveObjectives)
 {
 	TArray<UQuestObjective*> newActiveObjectives = GetObjectivesByQuestStep(Step);
 	
-	if (newActiveObjectives.Num() > 0)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Get objectives by group index failed: Cannot find objectives of group index %i"), Step);
-		return;
-	}
-
 	for (UQuestObjective* objective : Objectives)
 	{
 		// Set active objectives as not hidden, and set inactive objectives as hidden if bHideInactiveObjectives is true.
@@ -124,11 +116,6 @@ void UQuest::SetActiveQuestStep(int Step, bool bHideInactiveObjectives)
 
 	ActiveObjectives = newActiveObjectives;
 	ActiveQuestStep = Step;
-}
-
-bool UQuest::HasQuestManager()
-{
-	return QuestManager->IsValidLowLevel();
 }
 
 bool UQuest::SetQuestStatus(EProgressStatus NewStatus, FProgressStatusBlockFlags Flags)
