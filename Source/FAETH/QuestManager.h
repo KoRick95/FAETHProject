@@ -107,4 +107,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Quest")
 	const TArray<UQuest*>& SortQuestByStatus();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Quest")
+	void OnInitialise();
 };
