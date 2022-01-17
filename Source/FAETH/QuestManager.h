@@ -11,7 +11,7 @@ class UQuestObjective;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnQuestUpdated, UQuest*, Quest);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnObjectiveUpdated, UQuestObjective*, Objective);
 
-UCLASS()
+UCLASS(BlueprintType)
 class FAETH_API UQuestManager : public UObject
 {
 	GENERATED_BODY()
