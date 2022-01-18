@@ -1,26 +1,14 @@
 #include "QuestManager.h"
+#include "FaethFunctionLibrary.h"
 #include "Quest.h"
 #include "QuestObjective.h"
 
 void UQuestManager::Init()
 {
-#if !UE_BUILD_SHIPPING
-	for (int i = 0; i < Quests.Num(); ++i)
-	{
-		for (int j = i + 1; j < Quests.Num(); ++j)
-		{
-			if (Quests[i]->QuestID == Quests[j]->QuestID)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Found a duplicate quest ID: %s"), *Quests[i]->QuestID.ToString());
-			}
-		}
-	}
-#endif
-
 	OnInitialise();
 }
 
-const TArray<UQuest*>& UQuestManager::GetAllQuests()
+const TArray<UQuest*>& UQuestManager::GetQuests()
 {
 	return Quests;
 }
@@ -28,47 +16,6 @@ const TArray<UQuest*>& UQuestManager::GetAllQuests()
 const TArray<UQuest*>& UQuestManager::GetTrackedQuests()
 {
 	return TrackedQuests;
-}
-
-TArray<UQuest*> UQuestManager::GetQuestsByStatus(EProgressStatus Status)
-{
-	TArray<UQuest*> filteredQuests;
-
-	for (UQuest* quest : Quests)
-	{
-		if (quest->GetQuestStatus() == Status)
-		{
-			filteredQuests.Add(quest);
-		}
-	}
-
-	return filteredQuests;
-}
-
-UQuest* UQuestManager::GetQuestByClass(TSubclassOf<UQuest> QuestClass)
-{
-	for (UQuest* quest : Quests)
-	{
-		if (quest->GetClass() == QuestClass)
-		{
-			return quest;
-		}
-	}
-
-	return nullptr;
-}
-
-UQuest* UQuestManager::GetQuestByID(FName QuestID)
-{
-	for (UQuest* quest : Quests)
-	{
-		if (quest->QuestID == QuestID)
-		{
-			return quest;
-		}
-	}
-
-	return nullptr;
 }
 
 bool UQuestManager::DoesQuestIDExist(FName QuestID)
@@ -86,7 +33,7 @@ bool UQuestManager::DoesQuestIDExist(FName QuestID)
 
 void UQuestManager::AddNewQuest(UQuest* NewQuest, bool bOverwriteDuplicateID)
 {
-	if (UQuest* quest = GetQuestByID(NewQuest->QuestID))
+	if (UQuest* quest = UFaethFunctionLibrary::GetQuestByID(Quests, NewQuest->QuestID))
 	{
 		if (bOverwriteDuplicateID)
 		{
@@ -106,6 +53,18 @@ void UQuestManager::AddNewQuest(UQuest* NewQuest, bool bOverwriteDuplicateID)
 
 void UQuestManager::TrackQuest(UQuest* Quest, bool bReplaceOldest)
 {
+	if (!Quests.Contains(Quest))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Track quest failed: Quest has not been added to the QuestManager."));
+		return;
+	}
+
+	if (TrackedQuests.Contains(Quest))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Track quest failed: Quest is already being tracked."));
+		return;
+	}
+
 	if (TrackedQuests.Num() >= MaxTrackedQuests)
 	{
 		if (bReplaceOldest && TrackedQuests.Num() > 0)
@@ -178,7 +137,7 @@ const TArray<UQuest*>& UQuestManager::SortQuestsByID()
 	return Quests;
 }
 
-const TArray<UQuest*>& UQuestManager::SortQuestByStatus()
+const TArray<UQuest*>& UQuestManager::SortQuestsByStatus()
 {
 	// Use selection sort
 	for (int i = 0; i < Quests.Num(); ++i)

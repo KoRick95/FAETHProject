@@ -17,22 +17,16 @@ public:
 	UQuestObjectiveComponent();
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Quest")
-	TArray<FQuestObjectiveInfo> RelatedObjectivesInfo;
+	TArray<FQuestObjectivePair> RelatedQuestObjectivePairs;
 
 public:
 	virtual void BeginPlay() override;
 
-	void InitRelatedObjectives();
+	void Init();
 
 	UFUNCTION(BlueprintCallable, Category = "Quest")
-	UQuestObjective* GetObjectiveByClass(TSubclassOf<UQuestObjective> ObjectiveClass);
+	TArray<UQuestObjective*> GetInitialisedObjectives();
 
-	UFUNCTION(BlueprintCallable, Category = "Quest")
-	UQuestObjective* GetObjectiveByID(FName ObjectiveID);
-
-	UFUNCTION(BlueprintCallable, Category = "Quest")
-	TArray<UQuestObjective*> GetObjectivesByStatus(EProgressStatus ObjectiveStatus);
-
-	UFUNCTION(BlueprintCallable, Category = "Quest")
-	void SetObjectivesByQuest(UQuest* NewQuest);
+	UFUNCTION(BlueprintCallable, Category = "Quest", DisplayName = "Set Objective Refs From Quest")
+	void SetObjectivesFromQuest(UQuest* NewQuest);
 };
