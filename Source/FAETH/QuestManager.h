@@ -66,26 +66,20 @@ public:
 	FOnObjectiveUpdated OnAnyObjectiveCompleted;
 
 private:
+	UPROPERTY(BlueprintGetter = GetQuests, Category = "Quest")
 	TArray<UQuest*> Quests;
+
+	UPROPERTY(BlueprintGetter = GetTrackedQuests, Category = "Quest")
 	TArray<UQuest*> TrackedQuests;
 
 public:
 	void Init();
 
-	UFUNCTION(BlueprintCallable, Category = "Quest")
-	const TArray<UQuest*>& GetAllQuests();
+	UFUNCTION(BlueprintGetter)
+	const TArray<UQuest*>& GetQuests();
 
-	UFUNCTION(BlueprintCallable, Category = "Quest")
+	UFUNCTION(BlueprintGetter)
 	const TArray<UQuest*>& GetTrackedQuests();
-
-	UFUNCTION(BlueprintCallable, Category = "Quest")
-	TArray<UQuest*> GetQuestsByStatus(EProgressStatus Status);
-
-	UFUNCTION(BlueprintCallable, Category = "Quest")
-	UQuest* GetQuestByClass(TSubclassOf<UQuest> QuestClass);
-
-	UFUNCTION(BlueprintCallable, Category = "Quest")
-	UQuest* GetQuestByID(FName QuestID);
 
 	UFUNCTION(BlueprintCallable, Category = "Quest")
 	// Returns true if quest ID exist in the quest list.
@@ -106,7 +100,7 @@ public:
 	const TArray<UQuest*>& SortQuestsByID();
 
 	UFUNCTION(BlueprintCallable, Category = "Quest")
-	const TArray<UQuest*>& SortQuestByStatus();
+	const TArray<UQuest*>& SortQuestsByStatus();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Quest")
 	void OnInitialise();

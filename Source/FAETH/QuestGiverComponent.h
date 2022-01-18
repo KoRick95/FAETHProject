@@ -24,7 +24,7 @@ private:
 public:
 	virtual void BeginPlay() override;
 
-	void InitAssignedQuests();
+	void Init();
 
 	UFUNCTION(BlueprintCallable, Category = "Quest")
 	UQuest* GetQuestByClass(TSubclassOf<UQuest> QuestClass);
