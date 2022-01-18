@@ -12,10 +12,10 @@ void UQuestGiverComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	InitAssignedQuests();
+	Init();
 }
 
-void UQuestGiverComponent::InitAssignedQuests()
+void UQuestGiverComponent::Init()
 {
 	UQuestManager* questManager = UFaethFunctionLibrary::GetQuestManager(this);
 

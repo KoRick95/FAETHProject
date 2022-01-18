@@ -69,29 +69,23 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct FQuestObjectiveInfo
+struct FQuestObjectivePair
 {
 	GENERATED_BODY()
 
 public:
-	FQuestObjectiveInfo() {}
-	FQuestObjectiveInfo(UQuestObjective* ObjectivePtr);
+	FQuestObjectivePair() {}
+	FQuestObjectivePair(UQuestObjective* ObjectivePtr);
 
 	UPROPERTY(BlueprintReadOnly)
 	UQuest* Quest;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSubclassOf<UQuest> QuestClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FName QuestID;
 
 	UPROPERTY(BlueprintReadOnly)
 	UQuestObjective* Objective;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSubclassOf<UQuestObjective> ObjectiveClass;
+	TSubclassOf<UQuest> QuestClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FName ObjectiveID;
+	TSubclassOf<UQuestObjective> ObjectiveClass;
 };

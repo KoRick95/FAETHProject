@@ -66,7 +66,7 @@ public:
 	EProgressStatus GetObjectiveStatus();
 
 	UFUNCTION(BlueprintCallable, Category = "Quest")
-	FQuestObjectiveInfo GetObjectiveInfo();
+	FQuestObjectivePair GetObjectiveInfo();
 
 	UFUNCTION(BlueprintCallable, Category = "Quest")
 	// Convenience function that calls the appropriate status changing function depending on the NewStatus passed.

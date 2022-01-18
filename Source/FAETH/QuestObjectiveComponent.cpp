@@ -13,10 +13,10 @@ void UQuestObjectiveComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	InitRelatedObjectives();
+	Init();
 }
 
-void UQuestObjectiveComponent::InitRelatedObjectives()
+void UQuestObjectiveComponent::Init()
 {
 	UQuestManager* questManager = UFaethFunctionLibrary::GetQuestManager(this);
 
@@ -28,18 +28,18 @@ void UQuestObjectiveComponent::InitRelatedObjectives()
 
 	bool bBindObjectiveSetter = false;
 
-	for (auto objectiveInfo : RelatedObjectivesInfo)
+	for (FQuestObjectivePair pair : RelatedQuestObjectivePairs)
 	{
 		// Get quest ptr from the QuestManager.
-		UQuest* quest = UFaethFunctionLibrary::GetQuestByClass(questManager->GetQuests(), objectiveInfo.QuestClass);
+		UQuest* quest = UFaethFunctionLibrary::GetQuestByClass(questManager->GetQuests(), pair.QuestClass);
 		
 		// Get objective ptr if Quest is not null, otherwise set objective as null.
-		UQuestObjective* objective = (quest) ? UFaethFunctionLibrary::GetObjectiveByClass(quest->GetObjectives(), objectiveInfo.ObjectiveClass) : nullptr;
+		UQuestObjective* objective = (quest) ? UFaethFunctionLibrary::GetObjectiveByClass(quest->GetObjectives(), pair.ObjectiveClass) : nullptr;
 
 		if (objective)
 		{
 			// If ptr exists, store the ptr to the objective info.
-			objectiveInfo.Objective = objective;
+			pair.Objective = objective;
 		}
 		else
 		{
@@ -51,69 +51,43 @@ void UQuestObjectiveComponent::InitRelatedObjectives()
 	if (bBindObjectiveSetter)
 	{
 		// Set the objective ptrs when its quest is added to the QuestManager.
-		questManager->OnAnyQuestAdded.AddDynamic(this, &UQuestObjectiveComponent::SetObjectivesByQuest);
+		questManager->OnAnyQuestAdded.AddDynamic(this, &UQuestObjectiveComponent::SetObjectivesFromQuest);
 	}
 }
 
-UQuestObjective* UQuestObjectiveComponent::GetObjectiveByClass(TSubclassOf<UQuestObjective> ObjectiveClass)
+TArray<UQuestObjective*> UQuestObjectiveComponent::GetInitialisedObjectives()
 {
-	for (FQuestObjectiveInfo objectiveInfo : RelatedObjectivesInfo)
+	TArray<UQuestObjective*> objectives;
+
+	for (FQuestObjectivePair pair : RelatedQuestObjectivePairs)
 	{
-		if (objectiveInfo.Objective->GetClass() == ObjectiveClass)
+		if (pair.Objective)
 		{
-			return objectiveInfo.Objective;
+			objectives.Add(pair.Objective);
 		}
 	}
-
-	return nullptr;
+	
+	return objectives;
 }
 
-UQuestObjective* UQuestObjectiveComponent::GetObjectiveByID(FName ObjectiveID)
+void UQuestObjectiveComponent::SetObjectivesFromQuest(UQuest* NewQuest)
 {
-	for (FQuestObjectiveInfo objectiveInfo : RelatedObjectivesInfo)
-	{
-		if (objectiveInfo.Objective->ObjectiveID == ObjectiveID)
-		{
-			objectiveInfo.Objective;
-		}
-	}
-
-	return nullptr;
-}
-
-TArray<UQuestObjective*> UQuestObjectiveComponent::GetObjectivesByStatus(EProgressStatus ObjectiveStatus)
-{
-	TArray<UQuestObjective*> filteredObjectives;
-
-	for (FQuestObjectiveInfo objectiveInfo : RelatedObjectivesInfo)
-	{
-		if (objectiveInfo.Objective->GetObjectiveStatus() == ObjectiveStatus)
-		{
-			filteredObjectives.Add(objectiveInfo.Objective);
-		}
-	}
-
-	return filteredObjectives;
-}
-
-void UQuestObjectiveComponent::SetObjectivesByQuest(UQuest* NewQuest)
-{
-	for (FQuestObjectiveInfo objectiveInfo : RelatedObjectivesInfo)
+	for (FQuestObjectivePair pair : RelatedQuestObjectivePairs)
 	{
 		// If the objective ptr already exists, continue to the next objective info.
-		if (objectiveInfo.Objective)
+		if (pair.Objective)
 		{
 			continue;
 		}
 
 		// If the objective has the same quest class as the new quest...
-		if (objectiveInfo.QuestClass == NewQuest->GetClass())
+		if (pair.QuestClass == NewQuest->GetClass())
 		{
-			// Try to find a matching objective from the quest.
-			UQuestObjective* objective = UFaethFunctionLibrary::GetObjectiveByClass(NewQuest->GetObjectives(), objectiveInfo.ObjectiveClass);
-
-			// If a matching objective is found, set it as the new objective ptr.
-			objectiveInfo.Objective = (objective) ? objective : nullptr;
+			//If a matching objective is found, set it as the new objective ptr.
+			if (UQuestObjective* objective = UFaethFunctionLibrary::GetObjectiveByClass(NewQuest->GetObjectives(), pair.ObjectiveClass))
+			{
+				pair.Objective = objective;
+			}
 		}
 	}
 }

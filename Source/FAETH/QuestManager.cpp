@@ -53,6 +53,18 @@ void UQuestManager::AddNewQuest(UQuest* NewQuest, bool bOverwriteDuplicateID)
 
 void UQuestManager::TrackQuest(UQuest* Quest, bool bReplaceOldest)
 {
+	if (!Quests.Contains(Quest))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Track quest failed: Quest has not been added to the QuestManager."));
+		return;
+	}
+
+	if (TrackedQuests.Contains(Quest))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Track quest failed: Quest is already being tracked."));
+		return;
+	}
+
 	if (TrackedQuests.Num() >= MaxTrackedQuests)
 	{
 		if (bReplaceOldest && TrackedQuests.Num() > 0)
