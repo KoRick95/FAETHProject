@@ -31,10 +31,10 @@ void UQuestObjectiveComponent::InitRelatedObjectives()
 	for (auto objectiveInfo : RelatedObjectivesInfo)
 	{
 		// Get quest ptr from the QuestManager.
-		UQuest* quest = questManager->GetQuestByClass(objectiveInfo.QuestClass);
+		UQuest* quest = UFaethFunctionLibrary::GetQuestByClass(questManager->GetQuests(), objectiveInfo.QuestClass);
 		
 		// Get objective ptr if Quest is not null, otherwise set objective as null.
-		UQuestObjective* objective = (quest) ? quest->GetObjectiveByClass(objectiveInfo.ObjectiveClass) : nullptr;
+		UQuestObjective* objective = (quest) ? UFaethFunctionLibrary::GetObjectiveByClass(quest->GetObjectives(), objectiveInfo.ObjectiveClass) : nullptr;
 
 		if (objective)
 		{
@@ -110,7 +110,7 @@ void UQuestObjectiveComponent::SetObjectivesByQuest(UQuest* NewQuest)
 		if (objectiveInfo.QuestClass == NewQuest->GetClass())
 		{
 			// Try to find a matching objective from the quest.
-			UQuestObjective* objective = NewQuest->GetObjectiveByClass(objectiveInfo.ObjectiveClass);
+			UQuestObjective* objective = UFaethFunctionLibrary::GetObjectiveByClass(NewQuest->GetObjectives(), objectiveInfo.ObjectiveClass);
 
 			// If a matching objective is found, set it as the new objective ptr.
 			objectiveInfo.Objective = (objective) ? objective : nullptr;

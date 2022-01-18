@@ -94,17 +94,8 @@ public:
 	int GetActiveQuestStep();
 
 	UFUNCTION(BlueprintCallable, Category = "Quest")
-	UQuestObjective* GetObjectiveByID(FName ObjectiveID);
-
-	UFUNCTION(BlueprintCallable, Category = "Quest")
-	UQuestObjective* GetObjectiveByClass(TSubclassOf<UQuestObjective> ObjectiveClass);
-
-	UFUNCTION(BlueprintCallable, Category = "Quest")
 	// Returns an array of objectives of the given quest step.
 	TArray<UQuestObjective*> GetObjectivesByQuestStep(int Step);
-
-	UFUNCTION(BlueprintCallable, Category = "Quest")
-	TArray<UQuestObjective*> GetObjectivesByStatus(EProgressStatus ObjectiveStatus);
 
 	UFUNCTION(BlueprintCallable, Category = "Quest")
 	// Sets all the objectives of the given quest step active.

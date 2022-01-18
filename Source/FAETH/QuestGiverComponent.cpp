@@ -28,7 +28,7 @@ void UQuestGiverComponent::InitAssignedQuests()
 	for (auto questClass : AssignedQuestClasses)
 	{
 		// Get quest ptr from the QuestManager.
-		UQuest* quest = questManager->GetQuestByClass(questClass);
+		UQuest* quest = UFaethFunctionLibrary::GetQuestByClass(questManager->GetQuests(), questClass);
 
 		// If ptr is null, create a new quest object.
 		quest = (quest) ? quest : NewObject<UQuest>(this, questClass);
