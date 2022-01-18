@@ -1,5 +1,5 @@
 #include "BaseCharacter.h"
-#include "GASObjects.h"
+#include "FaethObjectTypes.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
