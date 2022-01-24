@@ -28,7 +28,7 @@ void UQuestObjectiveComponent::Init()
 
 	bool bBindObjectiveSetter = false;
 
-	for (FQuestObjectivePair pair : RelatedQuestObjectivePairs)
+	for (FQuestObjectivePair pair : QuestObjectivePairs)
 	{
 		// Get quest ptr from the QuestManager.
 		UQuest* quest = UFaethFunctionLibrary::GetQuestByClass(questManager->GetQuests(), pair.QuestClass);
@@ -59,7 +59,7 @@ TArray<UQuestObjective*> UQuestObjectiveComponent::GetInitialisedObjectives()
 {
 	TArray<UQuestObjective*> objectives;
 
-	for (FQuestObjectivePair pair : RelatedQuestObjectivePairs)
+	for (FQuestObjectivePair pair : QuestObjectivePairs)
 	{
 		if (pair.Objective)
 		{
@@ -72,7 +72,7 @@ TArray<UQuestObjective*> UQuestObjectiveComponent::GetInitialisedObjectives()
 
 void UQuestObjectiveComponent::SetObjectivesFromQuest(UQuest* NewQuest)
 {
-	for (FQuestObjectivePair pair : RelatedQuestObjectivePairs)
+	for (FQuestObjectivePair pair : QuestObjectivePairs)
 	{
 		// If the objective ptr already exists, continue to the next objective info.
 		if (pair.Objective)
