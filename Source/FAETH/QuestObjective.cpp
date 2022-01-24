@@ -3,11 +3,6 @@
 #include "Quest.h"
 #include "QuestManager.h"
 
-void UQuestObjective::Init(UQuest* OwningQuest)
-{
-	Quest = OwningQuest;
-}
-
 bool UQuestObjective::IsObjectiveStatusBlocked(const FProgressStatusBlockFlags& Flags)
 {
 	return (ObjectiveStatus == EProgressStatus::Locked && Flags.bBlockLocked) ||

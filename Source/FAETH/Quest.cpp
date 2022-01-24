@@ -4,15 +4,18 @@
 #include "QuestObjective.h"
 #include "QuestRewards.h"
 
-void UQuest::Init(UQuestManager* OwningQuestManager)
+void UQuest::PostInitProperties()
 {
-	QuestManager = OwningQuestManager;
-
-	for (auto objectiveClass : QuestObjectiveClasses)
+	Super::PostInitProperties();
+	
+	if (GetOuter() && GetOuter()->GetWorld())
 	{
-		UQuestObjective* objective = NewObject<UQuestObjective>(this, objectiveClass);
-		objective->Init(this);
-		Objectives.Add(objective);
+		for (auto objectiveClass : QuestObjectiveClasses)
+		{
+			UQuestObjective* objective = NewObject<UQuestObjective>(this, objectiveClass);
+			objective->Quest = this;
+			Objectives.Add(objective);
+		}
 	}
 }
 

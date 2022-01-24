@@ -3,9 +3,14 @@
 #include "Quest.h"
 #include "QuestObjective.h"
 
-void UQuestManager::Init()
+void UQuestManager::PostInitProperties()
 {
-	OnInitialise();
+	Super::PostInitProperties();
+
+	if (GetOuter() && GetOuter()->GetWorld())
+	{
+		Init();
+	}
 }
 
 const TArray<UQuest*>& UQuestManager::GetQuests()
@@ -47,7 +52,7 @@ void UQuestManager::AddNewQuest(UQuest* NewQuest, bool bOverwriteDuplicateID)
 	}
 
 	Quests.Add(NewQuest);
-	NewQuest->Init(this);
+	NewQuest->QuestManager = this;
 	OnAnyQuestAdded.Broadcast(NewQuest);
 }
 

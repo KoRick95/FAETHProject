@@ -73,7 +73,7 @@ private:
 	TArray<UQuest*> TrackedQuests;
 
 public:
-	void Init();
+	virtual void PostInitProperties() override;
 
 	UFUNCTION(BlueprintGetter)
 	const TArray<UQuest*>& GetQuests();
@@ -103,5 +103,5 @@ public:
 	const TArray<UQuest*>& SortQuestsByStatus();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Quest")
-	void OnInitialise();
+	void Init();
 };
