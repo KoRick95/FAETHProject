@@ -16,25 +16,17 @@ public:
 	UQuestGiverComponent();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Quest")
-	TArray<TSubclassOf<UQuest>> AssignedQuestClasses;
+	TArray<TSubclassOf<UQuest>> QuestClasses;
 
 private:
-	TArray<UQuest*> AssignedQuests;
+	UPROPERTY(BlueprintGetter = GetQuests, Category = "Quest")
+	TArray<UQuest*> Quests;
 
 public:
 	virtual void BeginPlay() override;
 
-	void Init();
+	virtual void Init();
 
 	UFUNCTION(BlueprintCallable, Category = "Quest")
-	UQuest* GetQuestByClass(TSubclassOf<UQuest> QuestClass);
-
-	UFUNCTION(BlueprintCallable, Category = "Quest")
-	UQuest* GetQuestByID(FName QuestID);
-
-	UFUNCTION(BlueprintCallable, Category = "Quest")
-	TArray<UQuest*> GetAssignedQuests();
-
-	UFUNCTION(BlueprintCallable, Category = "Quest")
-	TArray<UQuest*> GetQuestsByStatus(EProgressStatus QuestStatus);
+	TArray<UQuest*> GetQuests();
 };

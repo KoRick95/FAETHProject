@@ -25,7 +25,7 @@ void UQuestGiverComponent::Init()
 		return;
 	}
 
-	for (auto questClass : AssignedQuestClasses)
+	for (auto questClass : QuestClasses)
 	{
 		// Get quest ptr from the QuestManager.
 		UQuest* quest = UFaethFunctionLibrary::GetQuestByClass(questManager->GetQuests(), questClass);
@@ -34,52 +34,11 @@ void UQuestGiverComponent::Init()
 		quest = (quest) ? quest : NewObject<UQuest>(this, questClass);
 
 		// Store the ptr to the array.
-		AssignedQuests.Add(quest);
+		Quests.Add(quest);
 	}
 }
 
-UQuest* UQuestGiverComponent::GetQuestByClass(TSubclassOf<UQuest> QuestClass)
+TArray<UQuest*> UQuestGiverComponent::GetQuests()
 {
-	for (UQuest* quest : AssignedQuests)
-	{
-		if (quest->GetClass() == QuestClass)
-		{
-			return quest;
-		}
-	}
-
-	return nullptr;
-}
-
-UQuest* UQuestGiverComponent::GetQuestByID(FName QuestID)
-{
-	for (UQuest* quest : AssignedQuests)
-	{
-		if (quest->QuestID == QuestID)
-		{
-			return quest;
-		}
-	}
-
-	return nullptr;
-}
-
-TArray<UQuest*> UQuestGiverComponent::GetAssignedQuests()
-{
-	return AssignedQuests;
-}
-
-TArray<UQuest*> UQuestGiverComponent::GetQuestsByStatus(EProgressStatus QuestStatus)
-{
-	TArray<UQuest*> filteredQuests;
-
-	for (UQuest* quest : AssignedQuests)
-	{
-		if (quest->GetQuestStatus() == QuestStatus)
-		{
-			filteredQuests.Add(quest);
-		}
-	}
-
-	return filteredQuests;
+	return Quests;
 }
