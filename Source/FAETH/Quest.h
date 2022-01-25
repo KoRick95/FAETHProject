@@ -15,6 +15,8 @@ class FAETH_API UQuest : public UObject
 	GENERATED_BODY()
 	
 public:
+	UQuestManager* QuestManager;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Quest")
 	FName QuestID;
 
@@ -61,8 +63,6 @@ public:
 	FDateTime TimeLastCompleted;
 
 private:
-	UQuestManager* QuestManager;
-
 	UPROPERTY(BlueprintGetter = GetQuestStatus, Category = "Quest")
 	EProgressStatus QuestStatus;
 
@@ -76,7 +76,7 @@ private:
 	int ActiveQuestStep;
 
 public:
-	void Init(UQuestManager* OwningQuestManager);
+	virtual void PostInitProperties() override;
 
 	// Returns true if the current quest status is being flagged to ignore.
 	bool IsQuestStatusBlocked(const FProgressStatusBlockFlags& Flags);

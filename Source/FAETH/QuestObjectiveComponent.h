@@ -13,16 +13,16 @@ class FAETH_API UQuestObjectiveComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	UQuestObjectiveComponent();
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Quest")
-	TArray<FQuestObjectivePair> RelatedQuestObjectivePairs;
+	TArray<FQuestObjectivePair> QuestObjectivePairs;
 
 public:
 	virtual void BeginPlay() override;
 
-	void Init();
+	virtual void Init();
 
 	UFUNCTION(BlueprintCallable, Category = "Quest")
 	TArray<UQuestObjective*> GetInitialisedObjectives();

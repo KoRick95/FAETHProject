@@ -11,9 +11,7 @@ GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 #include "AbilitySystemComponent.h"
 #include "CharacterAttributeSet.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChangeDelegate, float, Health, float, MaxHealth);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnManaChangeDelegate, float, Mana, float, MaxMana);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnStaminaChangeDelegate, float, Stamina, float, MaxStamina);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAttributeChangeDelegate, float, Attribute, float, MaxAttribute);
 
 UCLASS()
 class FAETH_API UCharacterAttributeSet : public UAttributeSet
@@ -23,9 +21,9 @@ class FAETH_API UCharacterAttributeSet : public UAttributeSet
 public:
 	UCharacterAttributeSet();
 
-	FOnHealthChangeDelegate OnHealthChange;
-	FOnManaChangeDelegate OnManaChange;
-	FOnStaminaChangeDelegate OnStaminaChange;
+	FOnAttributeChangeDelegate OnHealthChange;
+	FOnAttributeChangeDelegate OnManaChange;
+	FOnAttributeChangeDelegate OnStaminaChange;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FGameplayAttributeData Health;
