@@ -33,6 +33,29 @@ enum class EAbilityInputID : uint8
 };
 
 UENUM(BlueprintType)
+enum class ECharacterAttributeType : uint8
+{
+	Health,
+	MaxHealth,
+	Mana,
+	MaxMana,
+	Stamina,
+	MaxStamina,
+	Strength,
+	Dexterity,
+	Attrib1,
+	Attrib2,
+	Attrib3,
+	Attrib4,
+	Attrib5,
+	Attrib6,
+	Attrib7,
+	Attrib8,
+	Attrib9,
+	Attrib0,
+};
+
+UENUM(BlueprintType)
 enum class EProgressStatus : uint8
 {
 	Locked,
