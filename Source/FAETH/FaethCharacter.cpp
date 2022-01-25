@@ -1,8 +1,8 @@
-#include "BaseCharacter.h"
+#include "FaethCharacter.h"
 #include "FaethObjectTypes.h"
 
 // Sets default values
-ABaseCharacter::ABaseCharacter()
+AFaethCharacter::AFaethCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -12,22 +12,22 @@ ABaseCharacter::ABaseCharacter()
 }
 
 // Called when the game starts or when spawned
-void ABaseCharacter::BeginPlay()
+void AFaethCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	CharacterAttributeSet->OnHealthChange.AddDynamic(this, &ABaseCharacter::OnHealthChanged);
-	CharacterAttributeSet->OnManaChange.AddDynamic(this, &ABaseCharacter::OnManaChanged);
-	CharacterAttributeSet->OnStaminaChange.AddDynamic(this, &ABaseCharacter::OnStaminaChanged);
+	CharacterAttributeSet->OnHealthChange.AddDynamic(this, &AFaethCharacter::OnHealthChanged);
+	CharacterAttributeSet->OnManaChange.AddDynamic(this, &AFaethCharacter::OnManaChanged);
+	CharacterAttributeSet->OnStaminaChange.AddDynamic(this, &AFaethCharacter::OnStaminaChanged);
 }
 
 // Called every frame
-void ABaseCharacter::Tick(float DeltaTime)
+void AFaethCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
 
 // Called to bind functionality to input
-void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AFaethCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
@@ -35,37 +35,12 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	//	FGameplayAbilityInputBinds(FString("ConfirmTarget"), FString("CancelTarget"), FString("AbilityInputID"), static_cast<int32>(EAbilityInputID::Confirm), static_cast<int32>(EAbilityInputID::Cancel)));
 }
 
-UAbilitySystemComponent* ABaseCharacter::GetAbilitySystemComponent() const
+UAbilitySystemComponent* AFaethCharacter::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
 }
 
-void ABaseCharacter::OnHealthChanged(float Health, float MaxHealth)
-{
-	if (Health <= 0.0f && !bIsDead)
-	{
-		bIsDead = true;
-		BP_Death();
-	}
-	BP_OnHealthChanged(Health, MaxHealth);
-}
-
-void ABaseCharacter::OnManaChanged(float Mana, float MaxMana)
-{
-	BP_OnManaChanged(Mana, MaxMana);
-}
-
-void ABaseCharacter::OnStaminaChanged(float Stamina, float MaxStamina)
-{
-	BP_OnStaminaChanged(Stamina, MaxStamina);
-}
-
-void ABaseCharacter::OnStaggerChanged(float Stagger, float MaxStagger)
-{
-	BP_OnStaggerChanged(Stagger, MaxStagger);
-}
-
-void ABaseCharacter::InitBaseAttributes()
+void AFaethCharacter::InitBaseAttributes()
 {
 	CharacterAttributeSet->InitHealth(BaseHealth);
 	CharacterAttributeSet->InitMana(BaseMana);
@@ -85,57 +60,57 @@ void ABaseCharacter::InitBaseAttributes()
 	CharacterAttributeSet->InitStaggerPower(BaseStaggerPower);
 }
 
-void ABaseCharacter::SetHealth(float Value)
+void AFaethCharacter::SetHealth(float Value)
 {
 	CharacterAttributeSet->Health = Value;
 }
 
-void ABaseCharacter::SetMaxHealth(float Value)
+void AFaethCharacter::SetMaxHealth(float Value)
 {
 	CharacterAttributeSet->MaxHealth = Value;
 }
 
-void ABaseCharacter::SetMana(float Value)
+void AFaethCharacter::SetMana(float Value)
 {
 	CharacterAttributeSet->Mana = Value;
 }
 
-void ABaseCharacter::SetMaxMana(float Value)
+void AFaethCharacter::SetMaxMana(float Value)
 {
 	CharacterAttributeSet->MaxMana = Value;
 }
 
-void ABaseCharacter::SetStamina(float Value)
+void AFaethCharacter::SetStamina(float Value)
 {
 	CharacterAttributeSet->Stamina = Value;
 }
 
-void ABaseCharacter::SetMaxStamina(float Value)
+void AFaethCharacter::SetMaxStamina(float Value)
 {
 	CharacterAttributeSet->MaxStamina = Value;
 }
 
-void ABaseCharacter::SetStagger(float Value)
+void AFaethCharacter::SetStagger(float Value)
 {
 	CharacterAttributeSet->Stagger = Value;
 }
 
-void ABaseCharacter::SetMaxStagger(float Value)
+void AFaethCharacter::SetMaxStagger(float Value)
 {
 	CharacterAttributeSet->MaxStagger = Value;
 }
 
-void ABaseCharacter::SetStrength(float Value)
+void AFaethCharacter::SetStrength(float Value)
 {
 	CharacterAttributeSet->Strength = Value;
 }
 
-void ABaseCharacter::SetDefence(float Value)
+void AFaethCharacter::SetDefence(float Value)
 {
 	CharacterAttributeSet->Defence = Value;
 }
 
-bool ABaseCharacter::GetIsHostile(ABaseCharacter* other)
+bool AFaethCharacter::GetIsHostile(AFaethCharacter* other)
 {
 	if (TeamID != other->TeamID)
 		return true;
@@ -143,7 +118,7 @@ bool ABaseCharacter::GetIsHostile(ABaseCharacter* other)
 		return false;
 }
 
-void ABaseCharacter::GainAbility(TSubclassOf<UGameplayAbility> Ability)
+void AFaethCharacter::GainAbility(TSubclassOf<UGameplayAbility> Ability)
 {
 	if (AbilitySystemComponent)
 	{
@@ -156,10 +131,31 @@ void ABaseCharacter::GainAbility(TSubclassOf<UGameplayAbility> Ability)
 	}
 }
 
-void ABaseCharacter::ApplyGameplayEffectToTarget(const FGameplayEffectSpecHandle& GESpecHandle, const FGameplayAbilityTargetDataHandle& GATargetDataHandle)
+void AFaethCharacter::ApplyGameplayEffectToTarget(const FGameplayEffectSpecHandle& GESpecHandle, const FGameplayAbilityTargetDataHandle& GATargetDataHandle)
 {
 	for (TSharedPtr<FGameplayAbilityTargetData> Data : GATargetDataHandle.Data)
 	{
 		Data->ApplyGameplayEffectSpec(*GESpecHandle.Data.Get());
 	}
+}
+
+void AFaethCharacter::OnHealthChanged_Implementation(float Health, float MaxHealth)
+{
+	if (Health <= 0.0f && !bIsDead)
+	{
+		bIsDead = true;
+		BP_Death();
+	}
+}
+
+void AFaethCharacter::OnManaChanged_Implementation(float Mana, float MaxMana)
+{
+}
+
+void AFaethCharacter::OnStaminaChanged_Implementation(float Stamina, float MaxStamina)
+{
+}
+
+void AFaethCharacter::OnStaggerChanged_Implementation(float Stagger, float MaxStagger)
+{
 }

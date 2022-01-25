@@ -81,5 +81,5 @@ public:
 	virtual void InitBaseAttributes();
 
 	UFUNCTION(BlueprintCallable)
-	void AddStatsToCharacter(class ABaseCharacter* Character);
+	void AddStatsToCharacter(class AFaethCharacter* Character);
 };

@@ -1,5 +1,5 @@
 #include "BaseEquipment.h"
-#include "BaseCharacter.h"
+#include "FaethCharacter.h"
 
 // Sets default values
 ABaseEquipment::ABaseEquipment()
@@ -43,7 +43,7 @@ void ABaseEquipment::InitBaseAttributes()
 	EquipmentAttributeSet->InitStaggerPower(BaseStaggerPower);
 }
 
-void ABaseEquipment::AddStatsToCharacter(ABaseCharacter* Character)
+void ABaseEquipment::AddStatsToCharacter(AFaethCharacter* Character)
 {
 	UCharacterAttributeSet* CharAttribSet = Character->CharacterAttributeSet;
 
