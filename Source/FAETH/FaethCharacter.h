@@ -73,16 +73,9 @@ public:
 	float BaseStaggerPower = 0;
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	bool bIsDead;
 
 public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 	UFUNCTION(BlueprintCallable)
@@ -143,5 +136,11 @@ public:
 	void BP_Death();
 
 protected:
-	bool bIsDead;
+	virtual void BeginPlay() override;
+
+	virtual void Tick(float DeltaTime) override;
+
+	virtual void PossessedBy(AController* NewController) override;
+
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 };

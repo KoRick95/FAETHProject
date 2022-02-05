@@ -60,5 +60,9 @@ void UCharacterAttributeSet::InitAttribute(ECharacterAttributeType AttributeType
 	case ECharacterAttributeType::Mana:
 		InitMaxMana(InitValue);
 		break;
+
+	case ECharacterAttributeType::MaxMana:
+		InitMaxMana(InitValue);
+		break;
 	}
 }
