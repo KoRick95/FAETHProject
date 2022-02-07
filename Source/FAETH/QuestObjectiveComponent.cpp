@@ -91,7 +91,8 @@ void UQuestObjectiveComponent::SetObjectivesFromQuest(UQuest* NewQuest)
 		{
 			UE_LOG(LogTemp, Display, TEXT("Found a matching quest..."));
 			//If a matching objective is found, set it as the new objective ptr.
-			if (UQuestObjective* objective = UFaethFunctionLibrary::GetObjectiveByClass(NewQuest->GetObjectives(), pair.ObjectiveClass))
+			UQuestObjective* objective = UFaethFunctionLibrary::GetObjectiveByClass(NewQuest->GetObjectives(), pair.ObjectiveClass);
+			if (objective)
 			{
 				UE_LOG(LogTemp, Display, TEXT("Found the objective to set."));
 				pair.Objective = objective;
