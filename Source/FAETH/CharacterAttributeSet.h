@@ -9,6 +9,7 @@ GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 #include "CoreMinimal.h"
 #include "AttributeSet.h"
 #include "AbilitySystemComponent.h"
+#include "FaethObjectTypes.h"
 #include "CharacterAttributeSet.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAttributeChangeDelegate, float, Attribute, float, MaxAttribute);
@@ -25,89 +26,94 @@ public:
 	FOnAttributeChangeDelegate OnManaChange;
 	FOnAttributeChangeDelegate OnStaminaChange;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, Health);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, MaxHealth);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 	FGameplayAttributeData Mana;
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, Mana);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 	FGameplayAttributeData MaxMana;
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, MaxMana);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 	FGameplayAttributeData Stamina;
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, Stamina);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 	FGameplayAttributeData MaxStamina;
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, MaxStamina);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 	FGameplayAttributeData Stagger;
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, Stagger);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 	FGameplayAttributeData MaxStagger;
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, MaxStagger);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 	FGameplayAttributeData Strength;
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, Strength);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 	FGameplayAttributeData Dexterity;
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, Dexterity);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 	FGameplayAttributeData Intelligence;
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, Intelligence);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 	FGameplayAttributeData Agility;
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, Agility);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 	FGameplayAttributeData Defence;
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, Defence);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 	FGameplayAttributeData Resistance;
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, Resistance);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 	FGameplayAttributeData PhysicalAttack;
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, PhysicalAttack);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 	FGameplayAttributeData MagicAttack;
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, MagicAttack);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 	FGameplayAttributeData AttackSpeed;
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, AttackSpeed);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 	FGameplayAttributeData HealthRegen;
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, HealthRegen);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 	FGameplayAttributeData ManaRegen;
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, ManaRegen);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 	FGameplayAttributeData StaminaRegen;
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, StaminaRegen);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 	FGameplayAttributeData StaggerPower;
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, StaggerPower);
 
+public:
+	void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
+
+	UFUNCTION(BlueprintCallable)
+	void InitAttribute(ECharacterAttributeType AttributeType, float InitValue);
 };

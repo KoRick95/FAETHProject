@@ -52,6 +52,7 @@ void UQuestObjectiveComponent::Init()
 	{
 		// Set the objective ptrs when its quest is added to the QuestManager.
 		questManager->OnAnyQuestAdded.AddDynamic(this, &UQuestObjectiveComponent::SetObjectivesFromQuest);
+		UE_LOG(LogTemp, Display, TEXT("Binding objective setter to Quest Manager..."));
 	}
 }
 
@@ -72,20 +73,24 @@ TArray<UQuestObjective*> UQuestObjectiveComponent::GetInitialisedObjectives()
 
 void UQuestObjectiveComponent::SetObjectivesFromQuest(UQuest* NewQuest)
 {
+	UE_LOG(LogTemp, Display, TEXT("Calling objective setter from a newly added quest."));
 	for (FQuestObjectivePair pair : QuestObjectivePairs)
 	{
 		// If the objective ptr already exists, continue to the next objective info.
 		if (pair.Objective)
 		{
+			UE_LOG(LogTemp, Display, TEXT("Objective already exists, skipping to the next objective."));
 			continue;
 		}
 
 		// If the objective has the same quest class as the new quest...
 		if (pair.QuestClass == NewQuest->GetClass())
 		{
+			UE_LOG(LogTemp, Display, TEXT("Found a matching quest..."));
 			//If a matching objective is found, set it as the new objective ptr.
 			if (UQuestObjective* objective = UFaethFunctionLibrary::GetObjectiveByClass(NewQuest->GetObjectives(), pair.ObjectiveClass))
 			{
+				UE_LOG(LogTemp, Display, TEXT("Found the objective to set."));
 				pair.Objective = objective;
 			}
 		}

@@ -12,6 +12,16 @@ UCharacterAttributeSet::UCharacterAttributeSet()
 	Stamina = MaxStamina;
 }
 
+void UCharacterAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
+{
+	Super::PreAttributeChange(Attribute, NewValue);
+
+	if (Attribute == GetHealthAttribute())
+	{
+
+	}
+}
+
 void UCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
@@ -32,5 +42,27 @@ void UCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModC
 	{
 		SetStamina(FMath::Clamp(GetStamina(), 0.0f, GetMaxStamina()));
 		OnStaminaChange.Broadcast(GetStamina(), GetMaxStamina());
+	}
+}
+
+void UCharacterAttributeSet::InitAttribute(ECharacterAttributeType AttributeType, float InitValue)
+{
+	switch (AttributeType)
+	{
+	case ECharacterAttributeType::Health:
+		InitHealth(InitValue);
+		break;
+
+	case ECharacterAttributeType::MaxHealth:
+		InitMaxHealth(InitValue);
+		break;
+
+	case ECharacterAttributeType::Mana:
+		InitMaxMana(InitValue);
+		break;
+
+	case ECharacterAttributeType::MaxMana:
+		InitMaxMana(InitValue);
+		break;
 	}
 }
