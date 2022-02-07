@@ -4,16 +4,16 @@
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
 #include "CharacterAttributeSet.h"
-#include "BaseCharacter.generated.h"
+#include "FaethCharacter.generated.h"
 
 UCLASS()
-class FAETH_API ABaseCharacter : public ACharacter, public IAbilitySystemInterface
+class FAETH_API AFaethCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
-	ABaseCharacter();
+	AFaethCharacter();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UAbilitySystemComponent* AbilitySystemComponent;
@@ -73,29 +73,10 @@ public:
 	float BaseStaggerPower = 0;
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	bool bIsDead;
 
 public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-
-	UFUNCTION()
-	void OnHealthChanged(float Health, float MaxHealth);
-
-	UFUNCTION()
-	void OnManaChanged(float Mana, float MaxMana);
-
-	UFUNCTION()
-	void OnStaminaChanged(float Stamina, float MaxStamina);
-
-	UFUNCTION()
-	void OnStaggerChanged(float Stagger, float MaxStagger);
 
 	UFUNCTION(BlueprintCallable)
 	void InitBaseAttributes();
@@ -131,7 +112,7 @@ public:
 	void SetDefence(float Value);
 
 	UFUNCTION(BlueprintCallable)
-	bool GetIsHostile(ABaseCharacter* other);
+	bool GetIsHostile(AFaethCharacter* other);
 
 	UFUNCTION(BlueprintCallable)
 	void GainAbility(TSubclassOf<UGameplayAbility> Ability);
@@ -139,21 +120,27 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ApplyGameplayEffectToTarget(const FGameplayEffectSpecHandle& GESpecHandle, const FGameplayAbilityTargetDataHandle& GATargetDataHandle);
 
-	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnHealthChanged"))
-	void BP_OnHealthChanged(float Health, float MaxHealth);
+	UFUNCTION(BlueprintNativeEvent, Category = "Gameplay")
+	void OnHealthChanged(float Health, float MaxHealth);
 
-	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnManaChanged"))
-	void BP_OnManaChanged(float Mana, float MaxMana);
+	UFUNCTION(BlueprintNativeEvent, Category = "Gameplay")
+	void OnManaChanged(float Mana, float MaxMana);
 
-	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnStaminaChanged"))
-	void BP_OnStaminaChanged(float Stamina, float MaxStamina);
+	UFUNCTION(BlueprintNativeEvent, Category = "Gameplay")
+	void OnStaminaChanged(float Stamina, float MaxStamina);
 
-	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnStaggerChanged"))
-	void BP_OnStaggerChanged(float Stagger, float MaxStagger);
+	UFUNCTION(BlueprintNativeEvent, Category = "Gameplay")
+	void OnStaggerChanged(float Stagger, float MaxStagger);
 
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnDeath"))
 	void BP_Death();
 
 protected:
-	bool bIsDead;
+	virtual void BeginPlay() override;
+
+	virtual void Tick(float DeltaTime) override;
+
+	virtual void PossessedBy(AController* NewController) override;
+
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 };
