@@ -62,8 +62,11 @@ TArray<UQuestObjective*> UQuestObjectiveComponent::GetInitialisedObjectives()
 
 	for (FQuestObjectivePair pair : QuestObjectivePairs)
 	{
+		UE_LOG(LogTemp, Display, TEXT("Checking quest objective %s."), *pair.ObjectiveClass.Get()->GetFName().ToString());
+
 		if (pair.Objective)
 		{
+			UE_LOG(LogTemp, Display, TEXT("Found an initialised quest objective."));
 			objectives.Add(pair.Objective);
 		}
 	}
