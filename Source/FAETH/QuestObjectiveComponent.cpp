@@ -28,22 +28,24 @@ void UQuestObjectiveComponent::Init()
 
 	bool bBindObjectiveSetter = false;
 
-	for (FQuestObjectivePair pair : QuestObjectivePairs)
+	for (FQuestObjectiveData data : RelatedObjectivesData)
 	{
 		// Get quest ptr from the QuestManager.
-		UQuest* quest = UFaethFunctionLibrary::GetQuestByClass(questManager->GetQuests(), pair.QuestClass);
+		UQuest* quest = UFaethFunctionLibrary::GetQuestByClass(questManager->GetQuests(), data.QuestClass);
 		
 		// Get objective ptr if Quest is not null, otherwise set objective as null.
-		UQuestObjective* objective = (quest) ? UFaethFunctionLibrary::GetObjectiveByClass(quest->GetObjectives(), pair.ObjectiveClass) : nullptr;
+		UQuestObjective* objective = (quest) ? UFaethFunctionLibrary::GetObjectiveByClass(quest->GetObjectives(), data.ObjectiveClass) : nullptr;
 
 		if (objective)
 		{
-			// If ptr exists, store the ptr to the objective info.
-			pair.Objective = objective;
+			// If ptr exists, store the ptr to the array.
+			InitialisedObjectives.Add(objective);
+			UE_LOG(LogTemp, Display, TEXT("Successfully initiated objective: %s"), *objective->GetClass()->GetName());
 		}
 		else
 		{
-			// If ptr is null, bind an objective setter function later.
+			// If ptr is null, add it to the array of unitialised objectives and bind the objective setter function later.
+			UninitialisedObjectivesData.Add(data);
 			bBindObjectiveSetter = true;
 		}
 	}
@@ -52,50 +54,23 @@ void UQuestObjectiveComponent::Init()
 	{
 		// Set the objective ptrs when its quest is added to the QuestManager.
 		questManager->OnAnyQuestAdded.AddDynamic(this, &UQuestObjectiveComponent::SetObjectivesFromQuest);
-		UE_LOG(LogTemp, Display, TEXT("Binding objective setter to Quest Manager..."));
 	}
-}
-
-TArray<UQuestObjective*> UQuestObjectiveComponent::GetInitialisedObjectives()
-{
-	TArray<UQuestObjective*> objectives;
-
-	for (FQuestObjectivePair pair : QuestObjectivePairs)
-	{
-		UE_LOG(LogTemp, Display, TEXT("Checking quest objective %s."), *pair.ObjectiveClass.Get()->GetFName().ToString());
-
-		if (pair.Objective)
-		{
-			UE_LOG(LogTemp, Display, TEXT("Found an initialised quest objective."));
-			objectives.Add(pair.Objective);
-		}
-	}
-	
-	return objectives;
 }
 
 void UQuestObjectiveComponent::SetObjectivesFromQuest(UQuest* NewQuest)
 {
-	UE_LOG(LogTemp, Display, TEXT("Calling objective setter from a newly added quest."));
-	for (FQuestObjectivePair pair : QuestObjectivePairs)
+	for (int i = 0; i < UninitialisedObjectivesData.Num(); ++i)
 	{
-		// If the objective ptr already exists, continue to the next objective info.
-		if (pair.Objective)
-		{
-			UE_LOG(LogTemp, Display, TEXT("Objective already exists, skipping to the next objective."));
-			continue;
-		}
-
 		// If the objective has the same quest class as the new quest...
-		if (pair.QuestClass == NewQuest->GetClass())
+		if (UninitialisedObjectivesData[i].QuestClass == NewQuest->GetClass())
 		{
-			UE_LOG(LogTemp, Display, TEXT("Found a matching quest..."));
-			//If a matching objective is found, set it as the new objective ptr.
-			UQuestObjective* objective = UFaethFunctionLibrary::GetObjectiveByClass(NewQuest->GetObjectives(), pair.ObjectiveClass);
-			if (objective)
+			//If a matching objective is found, add it to the array of initialised objectives.
+			if (UQuestObjective* objective = UFaethFunctionLibrary::GetObjectiveByClass(NewQuest->GetObjectives(), UninitialisedObjectivesData[i].ObjectiveClass))
 			{
-				UE_LOG(LogTemp, Display, TEXT("Found the objective to set."));
-				pair.Objective = objective;
+				InitialisedObjectives.Add(objective);
+				UninitialisedObjectivesData.RemoveAt(i);
+				i--;
+				UE_LOG(LogTemp, Display, TEXT("Successfully initiated objective: %s"), *objective->GetClass()->GetName());
 			}
 		}
 	}

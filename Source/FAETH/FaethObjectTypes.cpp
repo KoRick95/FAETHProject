@@ -2,17 +2,15 @@
 #include "Quest.h"
 #include "QuestObjective.h"
 
-FQuestObjectivePair::FQuestObjectivePair(UQuestObjective* ObjectivePtr)
+FQuestObjectiveData::FQuestObjectiveData(UQuestObjective* ObjectivePtr)
 {
 	if (ObjectivePtr)
 	{
-		Objective = ObjectivePtr;
 		ObjectiveClass = ObjectivePtr->GetClass();
 
-		if (ObjectivePtr->Quest)
+		if (UQuest* quest = ObjectivePtr->Quest)
 		{
-			Quest = ObjectivePtr->Quest;
-			QuestClass = Quest->GetClass();
+			QuestClass = quest->GetClass();
 		}
 	}
 }
