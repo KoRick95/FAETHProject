@@ -18,9 +18,9 @@ EProgressStatus UQuestObjective::GetObjectiveStatus()
 	return ObjectiveStatus;
 }
 
-FQuestObjectivePair UQuestObjective::GetObjectiveInfo()
+FQuestObjectiveData UQuestObjective::GetObjectiveData()
 {
-	return FQuestObjectivePair(this);
+	return FQuestObjectiveData(this);
 }
 
 bool UQuestObjective::SetObjectiveStatus(EProgressStatus NewStatus, FProgressStatusBlockFlags Flags)

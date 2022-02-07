@@ -17,15 +17,18 @@ public:
 	UQuestObjectiveComponent();
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Quest")
-	TArray<FQuestObjectivePair> QuestObjectivePairs;
+	TArray<FQuestObjectiveData> RelatedObjectivesData;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Quest")
+	TArray<FQuestObjectiveData> UninitialisedObjectivesData;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Quest")
+	TArray<UQuestObjective*> InitialisedObjectives;
 
 public:
 	virtual void BeginPlay() override;
 
 	virtual void Init();
-
-	UFUNCTION(BlueprintCallable, Category = "Quest")
-	TArray<UQuestObjective*> GetInitialisedObjectives();
 
 	UFUNCTION(BlueprintCallable, Category = "Quest", DisplayName = "Set Objective Refs From Quest")
 	void SetObjectivesFromQuest(UQuest* NewQuest);
