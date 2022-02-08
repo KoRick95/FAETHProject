@@ -17,8 +17,29 @@ UAbilitySystemComponent* AFaethCharacter::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
-void AFaethCharacter::InitBaseAttributes()
+void AFaethCharacter::InitAttributes()
 {
+	if (!AbilitySystemComponent)
+	{
+		UE_LOG(LogTemp, Error, TEXT("ASC does not exist for %s."), *GetClass()->GetName());
+		return;
+	}
+
+	if (!BaseAttributes)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s does not have base attributes to initialise."), *GetClass()->GetName());
+	}
+	else
+	{
+		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+		EffectContext.AddSourceObject(this);
+
+		// Apply gameplay effect to initialise attributes
+		AbilitySystemComponent->ApplyGameplayEffectToSelf(BaseAttributes.GetDefaultObject(), CharacterAttributeSet->GetLevel(), EffectContext);
+
+		return;
+	}
+
 	CharacterAttributeSet->InitHealth(BaseHealth);
 	CharacterAttributeSet->InitMana(BaseMana);
 	CharacterAttributeSet->InitStamina(BaseStamina);
@@ -143,6 +164,8 @@ void AFaethCharacter::BeginPlay()
 	CharacterAttributeSet->OnHealthChange.AddDynamic(this, &AFaethCharacter::OnHealthChanged);
 	CharacterAttributeSet->OnManaChange.AddDynamic(this, &AFaethCharacter::OnManaChanged);
 	CharacterAttributeSet->OnStaminaChange.AddDynamic(this, &AFaethCharacter::OnStaminaChanged);
+
+	InitAttributes();
 }
 
 void AFaethCharacter::Tick(float DeltaTime)
