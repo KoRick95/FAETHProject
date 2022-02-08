@@ -110,6 +110,14 @@ public:
 	FGameplayAttributeData StaggerPower;
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, StaggerPower);
 
+	UPROPERTY(BlueprintReadWrite)
+	FGameplayAttributeData Level;
+	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, Level);
+
+	UPROPERTY(BlueprintReadWrite)
+	FGameplayAttributeData Experience;
+	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, Experience);
+
 public:
 	void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
