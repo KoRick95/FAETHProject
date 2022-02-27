@@ -63,48 +63,44 @@ public:
 	FDateTime TimeLastCompleted;
 
 private:
-	UPROPERTY(BlueprintGetter = GetQuestStatus, Category = "Quest")
 	EProgressStatus QuestStatus;
 
-	UPROPERTY(BlueprintGetter = GetObjectives, Category = "Quest")
 	TArray<UQuestObjective*> Objectives;
 
-	UPROPERTY(BlueprintGetter = GetActiveObjectives, Category = "Quest")
 	TArray<UQuestObjective*> ActiveObjectives;
 
-	UPROPERTY(BlueprintGetter = GetActiveQuestStep, Category = "Quest")
 	int ActiveQuestStep;
 
 public:
 	virtual void PostInitProperties() override;
 
 	// Returns true if the current quest status is being flagged to ignore.
-	bool IsQuestStatusBlocked(const FProgressStatusBlockFlags& Flags);
+	bool IsQuestStatusBlocked(const FProgressStatusBlockFlags& Flags) const;
 
-	UFUNCTION(BlueprintGetter)
-	EProgressStatus GetQuestStatus();
+	UFUNCTION(BlueprintCallable)
+	EProgressStatus GetQuestStatus() const;
 
-	UFUNCTION(BlueprintGetter)
-	const TArray<UQuestObjective*>& GetObjectives();
+	UFUNCTION(BlueprintCallable)
+	TArray<UQuestObjective*> GetObjectives() const;
 
-	UFUNCTION(BlueprintGetter)
-	const TArray<UQuestObjective*>& GetActiveObjectives();
+	UFUNCTION(BlueprintCallable)
+	TArray<UQuestObjective*> GetActiveObjectives() const;
 
-	UFUNCTION(BlueprintGetter)
-	int GetActiveQuestStep();
+	UFUNCTION(BlueprintCallable)
+	int GetActiveQuestStep() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Quest")
-	// Returns an array of objectives of the given quest step.
-	TArray<UQuestObjective*> GetObjectivesByQuestStep(int Step);
+	// @return An array of objectives of the given quest step.
+	TArray<UQuestObjective*> GetObjectivesByQuestStep(int Step) const;
 
 	UFUNCTION(BlueprintCallable, Category = "Quest")
 	// Sets all the objectives of the given quest step active.
-	// * bHideInactiveGroup = Sets all other objectives as hidden if set to true. Default value is true.
+	// @param bHideInactiveGroup = Sets all other objectives as hidden if set to true. Default value is true.
 	void SetActiveQuestStep(int Step, bool bHideInactiveObjectives = true);
 
 	UFUNCTION(BlueprintCallable, Category = "Quest")
-	// Convenience function that calls the appropriate status changing function depending on the NewStatus passed.
-	// Preliminarily returns false if NewStatus is the same as current quest status.
+	// Convenience function that calls the appropriate status setter function depending on the NewStatus passed.
+	// @return Preliminarily returns false if NewStatus is the same as current quest status.
 	bool SetQuestStatus(EProgressStatus NewStatus, FProgressStatusBlockFlags Flags);
 
 	UFUNCTION(BlueprintCallable, Category = "Quest")

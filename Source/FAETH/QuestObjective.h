@@ -53,18 +53,17 @@ public:
 	FDateTime TimeLastCompleted;
 
 private:
-	UPROPERTY(BlueprintGetter = GetObjectiveStatus, Category = "Quest")
 	EProgressStatus ObjectiveStatus;
 
 public:
 	// Returns true if the current objective status is being flagged to ignore.
-	bool IsObjectiveStatusBlocked(const FProgressStatusBlockFlags& Flags);
+	bool IsObjectiveStatusBlocked(const FProgressStatusBlockFlags& Flags) const;
 
-	UFUNCTION(BlueprintGetter)
-	EProgressStatus GetObjectiveStatus();
+	UFUNCTION(BlueprintCallable)
+	EProgressStatus GetObjectiveStatus() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Quest")
-	FQuestObjectiveData GetObjectiveData();
+	FQuestObjectiveData GetObjectiveData() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Quest")
 	// Convenience function that calls the appropriate status changing function depending on the NewStatus passed.

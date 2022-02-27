@@ -25,8 +25,10 @@ public:
 	int TeamID = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	// The gameplay effect for initialising the character's base attributes
-	TSubclassOf<UGameplayEffect> BaseAttributes;
+	TSubclassOf<UGameplayEffect> InitialAttributes;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<TSubclassOf<UGameplayAbility>> InitialAbilities;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
 	float BaseHealth = 0;
@@ -82,6 +84,8 @@ protected:
 public:
 	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+	void InitCharacterAbilities();
+
 	UFUNCTION(BlueprintCallable)
 	void InitAttributes();
 
@@ -119,10 +123,7 @@ public:
 	bool GetIsHostile(AFaethCharacter* other);
 
 	UFUNCTION(BlueprintCallable)
-	void GainAbility(TSubclassOf<UGameplayAbility> Ability);
-
-	UFUNCTION(BlueprintCallable)
-	void ApplyGameplayEffectToTarget(const FGameplayEffectSpecHandle& GESpecHandle, const FGameplayAbilityTargetDataHandle& GATargetDataHandle);
+	void GainAbility(TSubclassOf<UGameplayAbility>& Ability);
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Gameplay")
 	void OnHealthChanged(float Health, float MaxHealth);

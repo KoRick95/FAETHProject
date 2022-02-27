@@ -19,13 +19,13 @@ void UQuestGiverComponent::Init()
 {
 	UQuestManager* questManager = UFaethFunctionLibrary::GetQuestManager(this);
 
-	if (!questManager->IsValidLowLevel())
+	if (!IsValid(questManager))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Init assigned quests failed: Quest Manager is null."));
 		return;
 	}
 
-	auto quests = questManager->GetQuests();
+	TArray<UQuest*> quests = questManager->GetQuests();
 
 	for (auto questClass : QuestClasses)
 	{
@@ -40,7 +40,7 @@ void UQuestGiverComponent::Init()
 	}
 }
 
-const TArray<UQuest*>& UQuestGiverComponent::GetQuests()
+TArray<UQuest*> UQuestGiverComponent::GetQuests() const
 {
 	return Quests;
 }

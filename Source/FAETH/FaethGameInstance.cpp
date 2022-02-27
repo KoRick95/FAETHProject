@@ -11,8 +11,3 @@ void UFaethGameInstance::Init()
 	QuestManagerClass = (QuestManagerClass) ? QuestManagerClass : UQuestManager::StaticClass();
 	QuestManager = NewObject<UQuestManager>(this, QuestManagerClass, "Quest Manager");
 }
-
-UQuestManager* UFaethGameInstance::GetQuestManager()
-{
-	return QuestManager;
-}
