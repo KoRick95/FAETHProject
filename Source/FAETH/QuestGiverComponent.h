@@ -19,7 +19,6 @@ public:
 	TArray<TSubclassOf<UQuest>> QuestClasses;
 
 private:
-	UPROPERTY(BlueprintGetter = GetQuests, Category = "Quest")
 	TArray<UQuest*> Quests;
 
 public:
@@ -27,6 +26,6 @@ public:
 
 	virtual void Init();
 
-	UFUNCTION(BlueprintGetter)
-	const TArray<UQuest*>& GetQuests();
+	UFUNCTION(BlueprintCallable)
+	TArray<UQuest*>& GetQuests();
 };

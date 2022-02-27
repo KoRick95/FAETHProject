@@ -38,7 +38,7 @@ void UQuestGiverComponent::Init()
 	}
 }
 
-const TArray<UQuest*>& UQuestGiverComponent::GetQuests()
+TArray<UQuest*>& UQuestGiverComponent::GetQuests()
 {
 	return Quests;
 }

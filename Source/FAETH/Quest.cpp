@@ -34,12 +34,12 @@ EProgressStatus UQuest::GetQuestStatus()
 	return QuestStatus;
 }
 
-const TArray<UQuestObjective*>& UQuest::GetObjectives()
+TArray<UQuestObjective*>& UQuest::GetObjectives()
 {
 	return Objectives;
 }
 
-const TArray<UQuestObjective*>& UQuest::GetActiveObjectives()
+TArray<UQuestObjective*>& UQuest::GetActiveObjectives()
 {
 	return ActiveObjectives;
 }
