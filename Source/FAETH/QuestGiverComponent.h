@@ -27,5 +27,5 @@ public:
 	virtual void Init();
 
 	UFUNCTION(BlueprintCallable)
-	TArray<UQuest*>& GetQuests();
+	TArray<UQuest*> GetQuests() const;
 };

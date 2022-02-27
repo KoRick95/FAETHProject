@@ -73,10 +73,10 @@ public:
 	virtual void PostInitProperties() override;
 
 	UFUNCTION(BlueprintCallable)
-	TArray<UQuest*>& GetQuests();
+	TArray<UQuest*> GetQuests() const;
 
 	UFUNCTION(BlueprintCallable)
-	TArray<UQuest*>& GetTrackedQuests();
+	TArray<UQuest*> GetTrackedQuests() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Quest")
 	// Returns true if quest ID exist in the quest list.

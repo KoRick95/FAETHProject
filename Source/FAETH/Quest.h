@@ -75,23 +75,23 @@ public:
 	virtual void PostInitProperties() override;
 
 	// Returns true if the current quest status is being flagged to ignore.
-	bool IsQuestStatusBlocked(const FProgressStatusBlockFlags& Flags);
+	bool IsQuestStatusBlocked(const FProgressStatusBlockFlags& Flags) const;
 
 	UFUNCTION(BlueprintCallable)
-	EProgressStatus GetQuestStatus();
+	EProgressStatus GetQuestStatus() const;
 
 	UFUNCTION(BlueprintCallable)
-	TArray<UQuestObjective*>& GetObjectives();
+	TArray<UQuestObjective*> GetObjectives() const;
 
 	UFUNCTION(BlueprintCallable)
-	TArray<UQuestObjective*>& GetActiveObjectives();
+	TArray<UQuestObjective*> GetActiveObjectives() const;
 
 	UFUNCTION(BlueprintCallable)
-	int GetActiveQuestStep();
+	int GetActiveQuestStep() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Quest")
 	// @return An array of objectives of the given quest step.
-	TArray<UQuestObjective*> GetObjectivesByQuestStep(int Step);
+	TArray<UQuestObjective*> GetObjectivesByQuestStep(int Step) const;
 
 	UFUNCTION(BlueprintCallable, Category = "Quest")
 	// Sets all the objectives of the given quest step active.

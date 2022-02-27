@@ -13,12 +13,12 @@ void UQuestManager::PostInitProperties()
 	}
 }
 
-TArray<UQuest*>& UQuestManager::GetQuests()
+TArray<UQuest*> UQuestManager::GetQuests() const
 {
 	return Quests;
 }
 
-TArray<UQuest*>& UQuestManager::GetTrackedQuests()
+TArray<UQuest*> UQuestManager::GetTrackedQuests() const
 {
 	return TrackedQuests;
 }

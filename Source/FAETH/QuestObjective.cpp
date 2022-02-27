@@ -3,7 +3,7 @@
 #include "Quest.h"
 #include "QuestManager.h"
 
-bool UQuestObjective::IsObjectiveStatusBlocked(const FProgressStatusBlockFlags& Flags)
+bool UQuestObjective::IsObjectiveStatusBlocked(const FProgressStatusBlockFlags& Flags) const
 {
 	return (ObjectiveStatus == EProgressStatus::Locked && Flags.bBlockLocked) ||
 		(ObjectiveStatus == EProgressStatus::Unlocked && Flags.bBlockUnlocked) ||
@@ -13,12 +13,12 @@ bool UQuestObjective::IsObjectiveStatusBlocked(const FProgressStatusBlockFlags& 
 		(ObjectiveStatus == EProgressStatus::Completed && Flags.bBlockCompleted);
 }
 
-EProgressStatus UQuestObjective::GetObjectiveStatus()
+EProgressStatus UQuestObjective::GetObjectiveStatus() const
 {
 	return ObjectiveStatus;
 }
 
-FQuestObjectiveData UQuestObjective::GetObjectiveData()
+FQuestObjectiveData UQuestObjective::GetObjectiveData() const
 {
 	return FQuestObjectiveData(this);
 }
