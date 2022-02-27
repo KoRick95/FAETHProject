@@ -14,7 +14,7 @@ UQuestManager* UFaethFunctionLibrary::GetQuestManager(const UObject* WorldContex
 {
     if (UFaethGameInstance* instance = GetFaethGameInstance(WorldContextObject))
     {
-        return instance->GetQuestManager();
+        return instance->QuestManager;
     }
 
     return nullptr;

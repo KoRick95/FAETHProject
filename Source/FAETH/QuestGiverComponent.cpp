@@ -19,7 +19,7 @@ void UQuestGiverComponent::Init()
 {
 	UQuestManager* questManager = UFaethFunctionLibrary::GetQuestManager(this);
 
-	if (!questManager)
+	if (!IsValid(questManager))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Init assigned quests failed: Quest Manager is null."));
 		return;
