@@ -17,6 +17,14 @@ UAbilitySystemComponent* AFaethCharacter::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
+void AFaethCharacter::InitCharacterAbilities()
+{
+	for (TSubclassOf<UGameplayAbility>& ability : InitialAbilities)
+	{
+		GainAbility(ability);
+	}
+}
+
 void AFaethCharacter::InitAttributes()
 {
 	if (!AbilitySystemComponent)
@@ -25,7 +33,7 @@ void AFaethCharacter::InitAttributes()
 		return;
 	}
 
-	if (!BaseAttributes)
+	if (!InitialAttributes)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s does not have base attributes to initialise."), *GetClass()->GetName());
 	}
@@ -35,7 +43,7 @@ void AFaethCharacter::InitAttributes()
 		EffectContext.AddSourceObject(this);
 
 		// Apply gameplay effect to initialise attributes
-		AbilitySystemComponent->ApplyGameplayEffectToSelf(BaseAttributes.GetDefaultObject(), CharacterAttributeSet->GetLevel(), EffectContext);
+		AbilitySystemComponent->ApplyGameplayEffectToSelf(InitialAttributes.GetDefaultObject(), CharacterAttributeSet->GetLevel(), EffectContext);
 
 		return;
 	}
@@ -116,7 +124,7 @@ bool AFaethCharacter::GetIsHostile(AFaethCharacter* other)
 		return false;
 }
 
-void AFaethCharacter::GainAbility(TSubclassOf<UGameplayAbility> Ability)
+void AFaethCharacter::GainAbility(TSubclassOf<UGameplayAbility>& Ability)
 {
 	if (AbilitySystemComponent)
 	{
@@ -126,14 +134,6 @@ void AFaethCharacter::GainAbility(TSubclassOf<UGameplayAbility> Ability)
 		}
 
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);
-	}
-}
-
-void AFaethCharacter::ApplyGameplayEffectToTarget(const FGameplayEffectSpecHandle& GESpecHandle, const FGameplayAbilityTargetDataHandle& GATargetDataHandle)
-{
-	for (TSharedPtr<FGameplayAbilityTargetData> Data : GATargetDataHandle.Data)
-	{
-		Data->ApplyGameplayEffectSpec(*GESpecHandle.Data.Get());
 	}
 }
 
