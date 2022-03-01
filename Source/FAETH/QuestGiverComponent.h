@@ -19,6 +19,7 @@ public:
 	TArray<TSubclassOf<UQuest>> QuestClasses;
 
 private:
+	UPROPERTY()
 	TArray<UQuest*> Quests;
 
 public:
