@@ -15,6 +15,7 @@ class FAETH_API UQuest : public UObject
 	GENERATED_BODY()
 	
 public:
+	UPROPERTY(BlueprintReadOnly)
 	UQuestManager* QuestManager;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Quest")
@@ -63,12 +64,16 @@ public:
 	FDateTime TimeLastCompleted;
 
 private:
+	UPROPERTY()
 	EProgressStatus QuestStatus;
 
+	UPROPERTY()
 	TArray<UQuestObjective*> Objectives;
-
+	
+	UPROPERTY()
 	TArray<UQuestObjective*> ActiveObjectives;
 
+	UPROPERTY()
 	int ActiveQuestStep;
 
 public:

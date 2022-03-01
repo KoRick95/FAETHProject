@@ -66,7 +66,10 @@ public:
 	FOnObjectiveUpdated OnAnyObjectiveCompleted;
 
 private:
+	UPROPERTY()
 	TArray<UQuest*> Quests;
+
+	UPROPERTY()
 	TArray<UQuest*> TrackedQuests;
 
 public:

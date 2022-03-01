@@ -53,6 +53,7 @@ public:
 	FDateTime TimeLastCompleted;
 
 private:
+	UPROPERTY()
 	EProgressStatus ObjectiveStatus;
 
 public:
