@@ -117,7 +117,7 @@ bool UQuest::SetQuestStatus(EProgressStatus NewStatus, FProgressStatusBlockFlags
 
 bool UQuest::LockQuest(FProgressStatusBlockFlags Flags)
 {
-	if (!IsQuestStatusBlocked(Flags))
+	if (IsQuestStatusBlocked(Flags))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Lock quest failed: Quest status is blocked."));
 		return false;

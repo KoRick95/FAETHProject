@@ -60,7 +60,7 @@ bool UQuestObjective::SetObjectiveStatus(EProgressStatus NewStatus, FProgressSta
 
 bool UQuestObjective::LockObjective(FProgressStatusBlockFlags Flags)
 {
-	if (!IsObjectiveStatusBlocked(Flags))
+	if (IsObjectiveStatusBlocked(Flags))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Lock objective failed: Objective status is blocked."));
 		return false;
@@ -75,7 +75,7 @@ bool UQuestObjective::LockObjective(FProgressStatusBlockFlags Flags)
 
 bool UQuestObjective::UnlockObjective(FProgressStatusBlockFlags Flags)
 {
-	if (!IsObjectiveStatusBlocked(Flags))
+	if (IsObjectiveStatusBlocked(Flags))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Unlock objective failed: Objective status is blocked."));
 		return false;
@@ -90,7 +90,7 @@ bool UQuestObjective::UnlockObjective(FProgressStatusBlockFlags Flags)
 
 bool UQuestObjective::StartObjective(FProgressStatusBlockFlags Flags)
 {
-	if (!IsObjectiveStatusBlocked(Flags))
+	if (IsObjectiveStatusBlocked(Flags))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Start objective failed: Objective status is blocked."));
 		return false;
@@ -106,7 +106,7 @@ bool UQuestObjective::StartObjective(FProgressStatusBlockFlags Flags)
 
 bool UQuestObjective::AbandonObjective(FProgressStatusBlockFlags Flags)
 {
-	if (!IsObjectiveStatusBlocked(Flags))
+	if (IsObjectiveStatusBlocked(Flags))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Start objective failed: Objective status is blocked."));
 		return false;
@@ -122,7 +122,7 @@ bool UQuestObjective::AbandonObjective(FProgressStatusBlockFlags Flags)
 
 bool UQuestObjective::FailObjective(FProgressStatusBlockFlags Flags)
 {
-	if (!IsObjectiveStatusBlocked(Flags))
+	if (IsObjectiveStatusBlocked(Flags))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Start objective failed: Objective status is blocked."));
 		return false;
@@ -138,7 +138,7 @@ bool UQuestObjective::FailObjective(FProgressStatusBlockFlags Flags)
 
 bool UQuestObjective::CompleteObjective(FProgressStatusBlockFlags Flags)
 {
-	if (!IsObjectiveStatusBlocked(Flags))
+	if (IsObjectiveStatusBlocked(Flags))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Start objective failed: Objective status is blocked."));
 		return false;
