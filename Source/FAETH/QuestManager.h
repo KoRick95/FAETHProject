@@ -66,20 +66,20 @@ public:
 	FOnObjectiveUpdated OnAnyObjectiveCompleted;
 
 private:
-	UPROPERTY(BlueprintGetter = GetQuests, Category = "Quest")
+	UPROPERTY()
 	TArray<UQuest*> Quests;
 
-	UPROPERTY(BlueprintGetter = GetTrackedQuests, Category = "Quest")
+	UPROPERTY()
 	TArray<UQuest*> TrackedQuests;
 
 public:
 	virtual void PostInitProperties() override;
 
-	UFUNCTION(BlueprintGetter)
-	const TArray<UQuest*>& GetQuests();
+	UFUNCTION(BlueprintCallable)
+	TArray<UQuest*> GetQuests() const;
 
-	UFUNCTION(BlueprintGetter)
-	const TArray<UQuest*>& GetTrackedQuests();
+	UFUNCTION(BlueprintCallable)
+	TArray<UQuest*> GetTrackedQuests() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Quest")
 	// Returns true if quest ID exist in the quest list.

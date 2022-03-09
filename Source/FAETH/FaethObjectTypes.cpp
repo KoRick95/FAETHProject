@@ -2,7 +2,7 @@
 #include "Quest.h"
 #include "QuestObjective.h"
 
-FQuestObjectiveData::FQuestObjectiveData(UQuestObjective* ObjectivePtr)
+FQuestObjectiveData::FQuestObjectiveData(const UQuestObjective* ObjectivePtr)
 {
 	if (ObjectivePtr)
 	{

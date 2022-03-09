@@ -19,7 +19,7 @@ void UQuest::PostInitProperties()
 	}
 }
 
-bool UQuest::IsQuestStatusBlocked(const FProgressStatusBlockFlags& Flags)
+bool UQuest::IsQuestStatusBlocked(const FProgressStatusBlockFlags& Flags) const
 {
 	return (QuestStatus == EProgressStatus::Locked && Flags.bBlockLocked) ||
 		(QuestStatus == EProgressStatus::Unlocked && Flags.bBlockUnlocked) ||
@@ -29,27 +29,27 @@ bool UQuest::IsQuestStatusBlocked(const FProgressStatusBlockFlags& Flags)
 		(QuestStatus == EProgressStatus::Completed && Flags.bBlockCompleted);
 }
 
-EProgressStatus UQuest::GetQuestStatus()
+EProgressStatus UQuest::GetQuestStatus() const
 {
 	return QuestStatus;
 }
 
-const TArray<UQuestObjective*>& UQuest::GetObjectives()
+TArray<UQuestObjective*> UQuest::GetObjectives() const
 {
 	return Objectives;
 }
 
-const TArray<UQuestObjective*>& UQuest::GetActiveObjectives()
+TArray<UQuestObjective*> UQuest::GetActiveObjectives() const
 {
 	return ActiveObjectives;
 }
 
-int UQuest::GetActiveQuestStep()
+int UQuest::GetActiveQuestStep() const
 {
 	return ActiveQuestStep;
 }
 
-TArray<UQuestObjective*> UQuest::GetObjectivesByQuestStep(int Step)
+TArray<UQuestObjective*> UQuest::GetObjectivesByQuestStep(int Step) const
 {
 	TArray<UQuestObjective*> objectives;
 
@@ -117,7 +117,7 @@ bool UQuest::SetQuestStatus(EProgressStatus NewStatus, FProgressStatusBlockFlags
 
 bool UQuest::LockQuest(FProgressStatusBlockFlags Flags)
 {
-	if (!IsQuestStatusBlocked(Flags))
+	if (IsQuestStatusBlocked(Flags))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Lock quest failed: Quest status is blocked."));
 		return false;

@@ -15,12 +15,9 @@ public:
 	UPROPERTY(EditAnywhere, DisplayName = "Quest Manager")
 	TSubclassOf<UQuestManager> QuestManagerClass;
 
-private:
+	UPROPERTY(BlueprintReadOnly)
 	UQuestManager* QuestManager;
 
 public:
 	virtual void Init() override;
-
-	UFUNCTION(BlueprintCallable, Category = "Quest")
-	UQuestManager* GetQuestManager();
 };

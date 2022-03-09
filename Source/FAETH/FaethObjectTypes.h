@@ -98,7 +98,7 @@ struct FQuestObjectiveData
 
 public:
 	FQuestObjectiveData() {}
-	FQuestObjectiveData(UQuestObjective* ObjectivePtr);
+	FQuestObjectiveData(const UQuestObjective* ObjectivePtr);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<UQuest> QuestClass;
