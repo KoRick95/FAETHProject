@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+#include "FaethObjectBase.h"
 #include "FaethObjectTypes.h"
 #include "QuestManager.generated.h"
 
@@ -12,7 +13,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnQuestUpdated, UQuest*, Quest);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnObjectiveUpdated, UQuestObjective*, Objective);
 
 UCLASS(Blueprintable)
-class FAETH_API UQuestManager : public UObject
+class FAETH_API UQuestManager : public UFaethObjectBase
 {
 	GENERATED_BODY()
 	
