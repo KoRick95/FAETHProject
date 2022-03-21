@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "FaethObjectBase.h"
 #include "FaethObjectTypes.h"
 #include "Quest.generated.h"
 
@@ -10,7 +11,7 @@ class UQuestObjective;
 class UQuestRewards;
 
 UCLASS(Blueprintable)
-class FAETH_API UQuest : public UObject
+class FAETH_API UQuest : public UFaethObjectBase
 {
 	GENERATED_BODY()
 	
