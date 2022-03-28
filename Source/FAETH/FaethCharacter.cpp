@@ -44,7 +44,7 @@ void AFaethCharacter::InitAttributes()
 		GEContext.AddSourceObject(this);
 
 		// Create a new GE object from the class
-		UGameplayEffect* GEInitAttributes = NewObject<UGameplayEffect>(GetTransientPackage(), FName(TEXT("InitAttributes")));
+		UGameplayEffect* GEInitAttributes = NewObject<UGameplayEffect>(GetTransientPackage(), InitAttributesEffectClass);
 
 		// Apply gameplay effect to initialise attributes
 		AbilitySystemComponent->ApplyGameplayEffectToSelf(GEInitAttributes, CharacterAttributeSet->GetLevel(), GEContext);
