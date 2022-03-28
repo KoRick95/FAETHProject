@@ -19,7 +19,7 @@ UAbilitySystemComponent* AFaethCharacter::GetAbilitySystemComponent() const
 
 void AFaethCharacter::InitCharacterAbilities()
 {
-	for (TSubclassOf<UGameplayAbility>& ability : InitialAbilities)
+	for (TSubclassOf<UGameplayAbility>& ability : InitialAbilityClasses)
 	{
 		GainAbility(ability);
 	}
@@ -33,17 +33,21 @@ void AFaethCharacter::InitAttributes()
 		return;
 	}
 
-	if (!InitialAttributes)
+	if (!InitAttributesEffectClass)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s does not have base attributes to initialise."), *GetClass()->GetName());
 	}
 	else
 	{
-		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
-		EffectContext.AddSourceObject(this);
+		// Create a GE context and set the character as the source object
+		FGameplayEffectContextHandle GEContext = AbilitySystemComponent->MakeEffectContext();
+		GEContext.AddSourceObject(this);
+
+		// Create a new GE object from the class
+		UGameplayEffect* GEInitAttributes = NewObject<UGameplayEffect>(GetTransientPackage(), FName(TEXT("InitAttributes")));
 
 		// Apply gameplay effect to initialise attributes
-		AbilitySystemComponent->ApplyGameplayEffectToSelf(InitialAttributes.GetDefaultObject(), CharacterAttributeSet->GetLevel(), EffectContext);
+		AbilitySystemComponent->ApplyGameplayEffectToSelf(GEInitAttributes, CharacterAttributeSet->GetLevel(), GEContext);
 
 		return;
 	}
