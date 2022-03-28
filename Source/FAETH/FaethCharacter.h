@@ -24,11 +24,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int TeamID = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<UGameplayEffect> InitialAttributes;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "Init Attributes Effect")
+	TSubclassOf<UGameplayEffect> InitAttributesEffectClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<TSubclassOf<UGameplayAbility>> InitialAbilities;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "Initial Abilities")
+	TArray<TSubclassOf<UGameplayAbility>> InitialAbilityClasses;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
 	float BaseHealth = 0;
