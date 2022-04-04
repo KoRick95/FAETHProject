@@ -122,6 +122,5 @@ public:
 	void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 
-	UFUNCTION(BlueprintCallable)
-	void InitAttribute(ECharacterAttributeType AttributeType, float InitValue);
+	//void AdjustAttributeForMaxChange(FGameplayAttributeData& Attribute, const FGameplayAttributeData& MaxAttribute, float NewMaxValue, const )
 };
