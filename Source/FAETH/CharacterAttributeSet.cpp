@@ -16,11 +16,11 @@ void UCharacterAttributeSet::PreAttributeChange(const FGameplayAttribute& Attrib
 	}
 	else if (Attribute == GetManaAttribute())
 	{
-		NewValue = FMath::Clamp(GetMana(), 0.0f, GetMaxMana());
+		NewValue = FMath::Clamp(NewValue, 0.0f, GetMaxMana());
 	}
 	else if (Attribute == GetStaminaAttribute())
 	{
-		NewValue = FMath::Clamp(GetStamina(), 0.0f, GetMaxStamina());
+		NewValue = FMath::Clamp(NewValue, 0.0f, GetMaxStamina());
 	}
 }
 
@@ -32,39 +32,18 @@ void UCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModC
 
 	if (Attribute == GetHealthAttribute())
 	{
-		SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth()));
+		//SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth()));
 		OnHealthChange.Broadcast(GetHealth(), GetMaxHealth());
 	}
 	else if (Attribute == GetManaAttribute())
 	{
-		SetMana(FMath::Clamp(GetMana(), 0.0f, GetMaxMana()));
+		//SetMana(FMath::Clamp(GetMana(), 0.0f, GetMaxMana()));
 		OnManaChange.Broadcast(GetMana(), GetMaxMana());
 	}
 	else if (Attribute == GetStaminaAttribute())
 	{
-		SetStamina(FMath::Clamp(GetStamina(), 0.0f, GetMaxStamina()));
+		//SetStamina(FMath::Clamp(GetStamina(), 0.0f, GetMaxStamina()));
 		OnStaminaChange.Broadcast(GetStamina(), GetMaxStamina());
 	}
 }
 
-void UCharacterAttributeSet::InitAttribute(ECharacterAttributeType AttributeType, float InitValue)
-{
-	switch (AttributeType)
-	{
-	case ECharacterAttributeType::Health:
-		InitHealth(InitValue);
-		break;
-
-	case ECharacterAttributeType::MaxHealth:
-		InitMaxHealth(InitValue);
-		break;
-
-	case ECharacterAttributeType::Mana:
-		InitMaxMana(InitValue);
-		break;
-
-	case ECharacterAttributeType::MaxMana:
-		InitMaxMana(InitValue);
-		break;
-	}
-}
