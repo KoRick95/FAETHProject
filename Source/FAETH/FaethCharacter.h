@@ -30,54 +30,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "Initial Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> InitialAbilityClasses;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseHealth = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseMana = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseStamina = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseStrength = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseDexterity = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseIntelligence = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseAgility = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseDefence = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseResistance = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BasePhysicalAttack = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseMagicAttack = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseAttackSpeed = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseHealthRegen = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseManaRegen = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseStaminaRegen = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseStaggerPower = 0;
-
 protected:
 	bool bIsDead;
 

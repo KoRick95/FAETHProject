@@ -51,24 +51,6 @@ void AFaethCharacter::InitAttributes()
 
 		return;
 	}
-
-	// Deprecated init attribute code
-	CharacterAttributeSet->InitHealth(BaseHealth);
-	CharacterAttributeSet->InitMana(BaseMana);
-	CharacterAttributeSet->InitStamina(BaseStamina);
-	CharacterAttributeSet->InitStrength(BaseStrength);
-	CharacterAttributeSet->InitDexterity(BaseDexterity);
-	CharacterAttributeSet->InitIntelligence(BaseIntelligence);
-	CharacterAttributeSet->InitAgility(BaseAgility);
-	CharacterAttributeSet->InitDefence(BaseDefence);
-	CharacterAttributeSet->InitResistance(BaseResistance);
-	CharacterAttributeSet->InitPhysicalAttack(BasePhysicalAttack);
-	CharacterAttributeSet->InitMagicAttack(BaseMagicAttack);
-	CharacterAttributeSet->InitAttackSpeed(BaseAttackSpeed);
-	CharacterAttributeSet->InitHealthRegen(BaseHealthRegen);
-	CharacterAttributeSet->InitManaRegen(BaseManaRegen);
-	CharacterAttributeSet->InitStaminaRegen(BaseStaminaRegen);
-	CharacterAttributeSet->InitStaggerPower(BaseStaggerPower);
 }
 
 void AFaethCharacter::SetHealth(float Value)
