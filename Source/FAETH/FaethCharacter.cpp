@@ -17,9 +17,9 @@ UAbilitySystemComponent* AFaethCharacter::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
-void AFaethCharacter::InitCharacterAbilities()
+void AFaethCharacter::InitAbilities()
 {
-	for (TSubclassOf<UGameplayAbility>& ability : InitialAbilityClasses)
+	for (TSubclassOf<UGameplayAbility> ability : InitialAbilityClasses)
 	{
 		GainAbility(ability);
 	}
@@ -52,6 +52,7 @@ void AFaethCharacter::InitAttributes()
 		return;
 	}
 
+	// Deprecated init attribute code
 	CharacterAttributeSet->InitHealth(BaseHealth);
 	CharacterAttributeSet->InitMana(BaseMana);
 	CharacterAttributeSet->InitStamina(BaseStamina);
@@ -128,7 +129,7 @@ bool AFaethCharacter::GetIsHostile(AFaethCharacter* other)
 		return false;
 }
 
-void AFaethCharacter::GainAbility(TSubclassOf<UGameplayAbility>& Ability)
+void AFaethCharacter::GainAbility(TSubclassOf<UGameplayAbility> Ability)
 {
 	if (AbilitySystemComponent)
 	{
@@ -170,6 +171,7 @@ void AFaethCharacter::BeginPlay()
 	CharacterAttributeSet->OnStaminaChange.AddDynamic(this, &AFaethCharacter::OnStaminaChanged);
 
 	InitAttributes();
+	InitAbilities();
 }
 
 void AFaethCharacter::Tick(float DeltaTime)

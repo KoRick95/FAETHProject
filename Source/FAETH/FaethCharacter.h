@@ -84,7 +84,7 @@ protected:
 public:
 	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
-	void InitCharacterAbilities();
+	void InitAbilities();
 
 	UFUNCTION(BlueprintCallable)
 	void InitAttributes();
@@ -123,7 +123,7 @@ public:
 	bool GetIsHostile(AFaethCharacter* other);
 
 	UFUNCTION(BlueprintCallable)
-	void GainAbility(TSubclassOf<UGameplayAbility>& Ability);
+	void GainAbility(TSubclassOf<UGameplayAbility> Ability);
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Gameplay")
 	void OnHealthChanged(float Health, float MaxHealth);
