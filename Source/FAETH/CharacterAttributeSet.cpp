@@ -4,12 +4,6 @@
 
 UCharacterAttributeSet::UCharacterAttributeSet()
 {
-	MaxHealth = 100;
-	Health = MaxHealth;
-	MaxMana = 100;
-	Mana = MaxMana;
-	MaxStamina = 100;
-	Stamina = MaxStamina;
 }
 
 void UCharacterAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -34,16 +28,21 @@ void UCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModC
 {
 	Super::PostGameplayEffectExecute(Data);
 
-	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
+	FGameplayAttribute Attribute = Data.EvaluatedData.Attribute;
+
+	if (Attribute == GetHealthAttribute())
 	{
+		SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth()));
 		OnHealthChange.Broadcast(GetHealth(), GetMaxHealth());
 	}
-	else if (Data.EvaluatedData.Attribute == GetManaAttribute())
+	else if (Attribute == GetManaAttribute())
 	{
+		SetMana(FMath::Clamp(GetMana(), 0.0f, GetMaxMana()));
 		OnManaChange.Broadcast(GetMana(), GetMaxMana());
 	}
-	else if (Data.EvaluatedData.Attribute == GetStaminaAttribute())
+	else if (Attribute == GetStaminaAttribute())
 	{
+		SetStamina(FMath::Clamp(GetStamina(), 0.0f, GetMaxStamina()));
 		OnStaminaChange.Broadcast(GetStamina(), GetMaxStamina());
 	}
 }
