@@ -119,8 +119,9 @@ public:
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, Experience);
 
 public:
+	void AdjustAttributeForMaxChange(FGameplayAttributeData& Attribute, const FGameplayAttributeData& MaxAttribute, float NewMaxValue, const FGameplayAttribute& AttributeProperty);
+
+protected:
 	void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
-
-	//void AdjustAttributeForMaxChange(FGameplayAttributeData& Attribute, const FGameplayAttributeData& MaxAttribute, float NewMaxValue, const )
 };
