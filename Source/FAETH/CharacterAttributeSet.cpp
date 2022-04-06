@@ -35,7 +35,7 @@ void UCharacterAttributeSet::PreAttributeChange(const FGameplayAttribute& Attrib
 	{
 		AdjustAttributeForMaxChange(Mana, MaxMana, NewValue, GetManaAttribute());
 	}
-	else if (Attribute == GetStaminaAttribute())
+	else if (Attribute == GetMaxStaminaAttribute())
 	{
 		AdjustAttributeForMaxChange(Stamina, MaxStamina, NewValue, GetStaminaAttribute());
 	}

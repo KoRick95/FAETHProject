@@ -32,25 +32,28 @@ void AFaethCharacter::InitAttributes()
 		UE_LOG(LogTemp, Error, TEXT("ASC does not exist for %s."), *GetClass()->GetName());
 		return;
 	}
-
-	if (!InitAttributesEffectClass)
+	else if (!InitAttributesEffectClass)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s does not have base attributes to initialise."), *GetClass()->GetName());
-	}
-	else
-	{
-		// Create a GE context and set the character as the source object
-		FGameplayEffectContextHandle GEContext = AbilitySystemComponent->MakeEffectContext();
-		GEContext.AddSourceObject(this);
-
-		// Create a new GE object from the class
-		UGameplayEffect* GEInitAttributes = NewObject<UGameplayEffect>(GetTransientPackage(), InitAttributesEffectClass);
-
-		// Apply gameplay effect to initialise attributes
-		AbilitySystemComponent->ApplyGameplayEffectToSelf(GEInitAttributes, CharacterAttributeSet->GetLevel(), GEContext);
-
 		return;
 	}
+	else if (bHasInitialisedAttributes)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Attributes has already been initialised for %s."), *GetClass()->GetName());
+		return;
+	}
+
+	// Create a GE context and set the character as the source object
+	FGameplayEffectContextHandle GEContext = AbilitySystemComponent->MakeEffectContext();
+	GEContext.AddSourceObject(this);
+
+	// Create a new GE object from the class
+	UGameplayEffect* GEInitAttributes = NewObject<UGameplayEffect>(GetTransientPackage(), InitAttributesEffectClass);
+
+	// Apply gameplay effect to initialise attributes
+	AbilitySystemComponent->ApplyGameplayEffectToSelf(GEInitAttributes, CharacterAttributeSet->GetLevel(), GEContext);
+
+	bHasInitialisedAttributes = true;
 }
 
 void AFaethCharacter::SetHealth(float Value)
@@ -119,14 +122,12 @@ void AFaethCharacter::GainAbility(TSubclassOf<UGameplayAbility> Ability)
 		{
 			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability, 1, 0));
 		}
-
-		AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	}
 }
 
 void AFaethCharacter::OnHealthChanged_Implementation(float Health, float MaxHealth)
 {
-	if (Health <= 0.0f && !bIsDead)
+	if (bHasInitialisedAttributes && !bIsDead && Health <= 0.0f)
 	{
 		bIsDead = true;
 		BP_Death();
@@ -152,8 +153,12 @@ void AFaethCharacter::BeginPlay()
 	CharacterAttributeSet->OnManaChange.AddDynamic(this, &AFaethCharacter::OnManaChanged);
 	CharacterAttributeSet->OnStaminaChange.AddDynamic(this, &AFaethCharacter::OnStaminaChanged);
 
-	InitAttributes();
-	InitAbilities();
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+		InitAttributes();
+		InitAbilities();
+	}
 }
 
 void AFaethCharacter::Tick(float DeltaTime)
@@ -164,9 +169,6 @@ void AFaethCharacter::Tick(float DeltaTime)
 void AFaethCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-
-	if (AbilitySystemComponent)
-		AbilitySystemComponent->InitAbilityActorInfo(this, this);
 }
 
 void AFaethCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

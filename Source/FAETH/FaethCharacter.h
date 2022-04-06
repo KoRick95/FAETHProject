@@ -31,6 +31,10 @@ public:
 	TArray<TSubclassOf<UGameplayAbility>> InitialAbilityClasses;
 
 protected:
+	UPROPERTY(BlueprintReadOnly)
+	bool bHasInitialisedAttributes;
+
+	UPROPERTY(BlueprintReadOnly)
 	bool bIsDead;
 
 public:
