@@ -175,6 +175,16 @@ void AFaethCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	//AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent,
-	//	FGameplayAbilityInputBinds(FString("ConfirmTarget"), FString("CancelTarget"), FString("AbilityInputID"), static_cast<int32>(EAbilityInputID::Confirm), static_cast<int32>(EAbilityInputID::Cancel)));
+	if (AbilitySystemComponent && PlayerInputComponent)
+	{
+		// Bind input to ASC
+		AbilitySystemComponent->BindAbilityActivationToInputComponent(
+			PlayerInputComponent,
+			FGameplayAbilityInputBinds(
+				FString("Confirm"),
+				FString("Cancel"),
+				FString("AbilityInputID"),
+				static_cast<int32>(EAbilityInputID::Confirm),
+				static_cast<int32>(EAbilityInputID::Cancel)));
+	}
 }
