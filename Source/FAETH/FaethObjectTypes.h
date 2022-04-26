@@ -18,41 +18,7 @@ enum class EAbilityInputID : uint8
 	HeavyAttack		UMETA(DisplayName = "Heavy Attack"),
 	Dodge			UMETA(DisplayName = "Dodge"),
 	Block			UMETA(DisplayName = "Block"),
-	Ability1		UMETA(DisplayName = "Ability 1"),
-	Ability2		UMETA(DisplayName = "Ability 2"),
-	Ability3		UMETA(DisplayName = "Ability 3"),
-	Ability4		UMETA(DisplayName = "Ability 4"),
-	Ability5		UMETA(DisplayName = "Ability 5"),
-	Ability6		UMETA(DisplayName = "Ability 6"),
-	Ability7		UMETA(DisplayName = "Ability 7"),
-	Ability8		UMETA(DisplayName = "Ability 8"),
-	Item1			UMETA(DisplayName = "Item 1"),
-	Item2			UMETA(DisplayName = "Item 2"),
-	Item3			UMETA(DisplayName = "Item 3"),
-	Item4			UMETA(DisplayName = "Item 4"),
-};
-
-UENUM(BlueprintType)
-enum class ECharacterAttributeType : uint8
-{
-	Health,
-	MaxHealth,
-	Mana,
-	MaxMana,
-	Stamina,
-	MaxStamina,
-	Strength,
-	Dexterity,
-	Attrib1,
-	Attrib2,
-	Attrib3,
-	Attrib4,
-	Attrib5,
-	Attrib6,
-	Attrib7,
-	Attrib8,
-	Attrib9,
-	Attrib0,
+	UseItem			UMETA(DisplayName = "Use Item"),
 };
 
 UENUM(BlueprintType)
