@@ -11,6 +11,7 @@ class FAETH_API UFaethGameplayAbility : public UGameplayAbility
 	GENERATED_BODY()
 	
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EAbilityInputID AbilityInputID = EAbilityInputID::None;
 
 public:
