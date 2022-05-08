@@ -1,4 +1,5 @@
 #include "FaethCharacter.h"
+#include "FaethGameplayAbility.h"
 #include "FaethObjectTypes.h"
 
 // Sets default values
@@ -19,7 +20,7 @@ UAbilitySystemComponent* AFaethCharacter::GetAbilitySystemComponent() const
 
 void AFaethCharacter::InitAbilities()
 {
-	for (TSubclassOf<UGameplayAbility> ability : InitialAbilityClasses)
+	for (TSubclassOf<UFaethGameplayAbility> ability : InitialAbilityClasses)
 	{
 		GainAbility(ability);
 	}
@@ -114,13 +115,13 @@ bool AFaethCharacter::GetIsHostile(AFaethCharacter* other)
 		return false;
 }
 
-void AFaethCharacter::GainAbility(TSubclassOf<UGameplayAbility> Ability)
+void AFaethCharacter::GainAbility(TSubclassOf<UFaethGameplayAbility> Ability)
 {
 	if (AbilitySystemComponent)
 	{
 		if (HasAuthority() && Ability)
 		{
-			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability, 1, 0));
+			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability, 1, static_cast<int32>(Ability.GetDefaultObject()->AbilityInputID), this));
 		}
 	}
 }

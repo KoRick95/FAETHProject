@@ -6,6 +6,8 @@
 #include "CharacterAttributeSet.h"
 #include "FaethCharacter.generated.h"
 
+class UFaethGameplayAbility;
+
 UCLASS()
 class FAETH_API AFaethCharacter : public ACharacter, public IAbilitySystemInterface
 {
@@ -79,7 +81,7 @@ public:
 	bool GetIsHostile(AFaethCharacter* other);
 
 	UFUNCTION(BlueprintCallable)
-	void GainAbility(TSubclassOf<UGameplayAbility> Ability);
+	void GainAbility(TSubclassOf<UFaethGameplayAbility> Ability);
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Gameplay")
 	void OnHealthChanged(float Health, float MaxHealth);
@@ -104,4 +106,6 @@ protected:
 	virtual void PossessedBy(AController* NewController) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	//irtual void AbilityLocalInputPressed(int32 InputID) override;
 };
