@@ -171,22 +171,3 @@ void AFaethCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 }
-
-void AFaethCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	if (AbilitySystemComponent && InputComponent)
-	{
-		// Set up the ability input bind info
-		FGameplayAbilityInputBinds abilityInputBinds = FGameplayAbilityInputBinds(
-			FString("Confirm"),
-			FString("Cancel"),
-			FString("EAbilityInputID"),
-			static_cast<int32>(EAbilityInputID::Confirm),
-			static_cast<int32>(EAbilityInputID::Cancel));
-
-		// Bind input to ASC
-		AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, abilityInputBinds);
-	}
-}

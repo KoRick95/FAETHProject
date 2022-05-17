@@ -8,4 +8,7 @@ UCLASS()
 class FAETH_API APlayerCharacter : public AFaethCharacter
 {
 	GENERATED_BODY()
+
+protected:
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 };
