@@ -26,8 +26,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int TeamID = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "Init Attributes Effect")
-	TSubclassOf<UGameplayEffect> InitAttributesEffectClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "Initial Attributes")
+	TArray<TSubclassOf<UGameplayEffect>> InitAttributesEffectClasses;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "Initial Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> InitialAbilityClasses;

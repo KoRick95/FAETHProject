@@ -33,7 +33,7 @@ void AFaethCharacter::InitAttributes()
 		UE_LOG(LogTemp, Error, TEXT("ASC does not exist for %s."), *GetClass()->GetName());
 		return;
 	}
-	else if (!InitAttributesEffectClass)
+	else if (InitAttributesEffectClasses.Num() == 0)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s does not have base attributes to initialise."), *GetClass()->GetName());
 		return;
@@ -48,13 +48,19 @@ void AFaethCharacter::InitAttributes()
 	FGameplayEffectContextHandle GEContext = AbilitySystemComponent->MakeEffectContext();
 	GEContext.AddSourceObject(this);
 
-	// Create a new GE object from the class
-	UGameplayEffect* GEInitAttributes = NewObject<UGameplayEffect>(GetTransientPackage(), InitAttributesEffectClass);
+	for (int i = 0; i < InitAttributesEffectClasses.Num(); ++i)
+	{
+		if (!InitAttributesEffectClasses[i])
+			continue;
 
-	// Apply gameplay effect to initialise attributes
-	AbilitySystemComponent->ApplyGameplayEffectToSelf(GEInitAttributes, CharacterAttributeSet->GetLevel(), GEContext);
+		// Create a new GE object from the class
+		UGameplayEffect* GEInitAttributes = NewObject<UGameplayEffect>(GetTransientPackage(), InitAttributesEffectClasses[i]);
 
-	bHasInitialisedAttributes = true;
+		// Apply gameplay effect to initialise attributes
+		AbilitySystemComponent->ApplyGameplayEffectToSelf(GEInitAttributes, CharacterAttributeSet->GetLevel(), GEContext);
+
+		bHasInitialisedAttributes = true;
+	}
 }
 
 void AFaethCharacter::SetHealth(float Value)
