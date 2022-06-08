@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Core/Actors/DungeonInstancedMeshActor.h"
 
@@ -85,6 +85,7 @@ UHierarchicalInstancedStaticMeshComponent* ADungeonInstancedMeshActor::GetInstan
     Component->SetMobility(EComponentMobility::Static);
 
     if (Mesh->Template != nullptr) {
+        /*
         // Copy over the collision responses from the template
         const FCollisionResponseContainer& ResponseToChannel = Mesh->Template->GetCollisionResponseToChannels();
         Component->SetCollisionResponseToChannels(ResponseToChannel);
@@ -96,6 +97,12 @@ UHierarchicalInstancedStaticMeshComponent* ADungeonInstancedMeshActor::GetInstan
         // Set collision enabled
         ECollisionEnabled::Type CollisionEnabled = Mesh->Template->GetCollisionEnabled();
         Component->SetCollisionEnabled(CollisionEnabled);
+        */
+
+        if (Mesh->bUseCustomCollision) {
+            Component->BodyInstance = Mesh->BodyInstance;
+        }
+        Component->RecreatePhysicsState();
     }
 
     // Set the material overrides

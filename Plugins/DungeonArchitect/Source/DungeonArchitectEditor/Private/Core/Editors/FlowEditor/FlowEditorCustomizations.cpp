@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Core/Editors/FlowEditor/FlowEditorCustomizations.h"
 
@@ -80,19 +80,6 @@ void FFlowEditorTaskCustomizations::CustomizeDetails(IDetailLayoutBuilder& Detai
             }
         }
     }
-
-    // Add the task extenders
-    for (UFlowExecTaskExtender* Extender : Task->Extenders) {
-        if (!Extender) continue;
-        FString CategoryName = Extender->GetDetailsPanelCategoryName();
-        IDetailCategoryBuilder& Category = DetailBuilder.EditCategory(*CategoryName);
-        for (TFieldIterator<FProperty> PropIt(Extender->GetClass()); PropIt; ++PropIt) {
-            FProperty* Property = *PropIt;
-            if (Property && Property->HasAnyPropertyFlags(CPF_Edit)) {
-                Category.AddExternalObjectProperty({ Extender }, *Property->GetName());
-            }
-        }
-    } 
 }
 
 TSharedRef<IDetailCustomization> FFlowEditorTaskCustomizations::MakeInstance() {

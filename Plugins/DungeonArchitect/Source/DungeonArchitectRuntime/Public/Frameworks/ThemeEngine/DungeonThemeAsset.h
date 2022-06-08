@@ -1,10 +1,12 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
 #include "Core/DungeonProp.h"
 #include "Core/Utils/DungeonEditorViewportProperties.h"
 #include "DungeonThemeAsset.generated.h"
+
+class UMarkerGenModel;
 
 /** A Dungeon Theme asset lets you design the look and feel of you dungeon with an intuitive graph based approach */
 UCLASS(Blueprintable)
@@ -16,6 +18,9 @@ public:
     UPROPERTY()
     TArray<FPropTypeData> Props;
 
+    UPROPERTY()
+    UMarkerGenModel* MarkerGenerationModel;
+    
 #if WITH_EDITORONLY_DATA
     /** EdGraph based representation */
     UPROPERTY()

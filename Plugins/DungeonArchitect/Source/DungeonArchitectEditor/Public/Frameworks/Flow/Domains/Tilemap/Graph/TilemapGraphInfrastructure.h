@@ -1,10 +1,10 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
 #include "Frameworks/Flow/Common/Widgets/SGridFlowItemOverlayDelegates.h"
 #include "Frameworks/Flow/Domains/AbstractGraph/Core/FlowAbstractItem.h"
-#include "Frameworks/Flow/Domains/Tilemap/GridFlowTilemap.h"
+#include "Frameworks/FlowImpl/GridFlow/Tilemap/GridFlowTilemap.h"
 
 #include "ConnectionDrawingPolicy.h"
 #include "EdGraph/EdGraph.h"
@@ -15,7 +15,7 @@
 
 class UTexture;
 class UGridFlowTilemap;
-struct FGridFlowTilemapRendererSettings;
+struct FFlowTilemapRendererSettings;
 
 DECLARE_DELEGATE_TwoParams(FGridFlowTilemapNodeCellClicked, const FIntPoint& /* TileCoords */,
                            bool /* bDoubleClicked */);
@@ -27,13 +27,13 @@ class DUNGEONARCHITECTEDITOR_API UGridFlowTilemapEdGraph : public UEdGraph {
 
 public:
     void Initialize();
-    void GeneratePreviewTexture(UGridFlowTilemap* InTilemap, const FGridFlowTilemapRendererSettings& InRenderSettings,
+    void GeneratePreviewTexture(UGridFlowTilemap* InTilemap, const FFlowTilemapRendererSettings& InRenderSettings,
                                 const TArray<UFlowGraphItem*>& InItems);
     UTexture* GetPreviewTexture();
 
 public:
     UPROPERTY()
-    class UGridFlowTilemapEdGraphNode* PreviewNode;
+    class UGridFlowTilemapEdGraphNode* PreviewNode = nullptr;
 
     FGridFlowTilemapNodeCellClicked OnCellClicked;
     FGridFlowItemWidgetEvent OnItemWidgetClicked;
@@ -47,14 +47,14 @@ class DUNGEONARCHITECTEDITOR_API UGridFlowTilemapEdGraphNode : public UEdGraphNo
     GENERATED_BODY()
 public:
 
-    void SetItemInfo(const TMap<FGuid, FGridFlowTilemapCoord>& InTileItems, const TMap<FGuid, TWeakObjectPtr<UFlowGraphItem>>& InItemList);
+    void SetItemInfo(const TMap<FGuid, FFlowTilemapCoord>& InTileItems, const TMap<FGuid, TWeakObjectPtr<UFlowGraphItem>>& InItemList);
     void ClearItemInfo();
 
 public:
     UPROPERTY()
     UTexture* PreviewTexture = nullptr;
 
-    TMap<FGuid, FGridFlowTilemapCoord> TileItems;
+    TMap<FGuid, FFlowTilemapCoord> TileItems;
     TMap<FGuid, TWeakObjectPtr<UFlowGraphItem>> ItemList;
 };
 
@@ -187,7 +187,7 @@ public:
         FGuid ItemId;
         TWeakObjectPtr<UFlowGraphItem> Item;
         TSharedPtr<class SGridFlowItemOverlay> Widget;
-        FGridFlowTilemapCoord TileCoord;
+        FFlowTilemapCoord TileCoord;
         FVector2D RenderOffset;
     };
 

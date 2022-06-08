@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Frameworks/ThemeEngine/SceneProviders/SceneProviderCommand.h"
 
@@ -92,19 +92,23 @@ void SceneProviderCommand_CreateMesh::ExecuteImpl(UWorld* World) {
     MeshActor->SetMobility(EComponentMobility::Movable);
     MeshComponent->SetStaticMesh(Mesh->StaticMesh);
     MeshActor->SetMobility(OriginialMobility);
-    MeshActor->FinishSpawning(Context.transform);
 
     for (const FMaterialOverride& MaterialOverride : Mesh->MaterialOverrides) {
         MeshComponent->SetMaterial(MaterialOverride.index, MaterialOverride.Material);
     }
 
     SetMeshComponentAttributes(MeshComponent, Mesh->Template);
-    MeshActor->MarkComponentsRenderStateDirty();
+
+    if (Mesh->bUseCustomCollision) {
+        MeshComponent->BodyInstance = Mesh->BodyInstance;
+    }
+    MeshComponent->RecreatePhysicsState();
+
+    MeshActor->FinishSpawning(Context.transform);
 
     AddNodeTag(MeshActor, Context.NodeId);
     MoveToFolder(MeshActor);
 
-    MeshActor->ReregisterAllComponents();
 
     PostInitializeActor(MeshActor);
 }

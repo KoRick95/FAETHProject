@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
@@ -17,10 +17,10 @@ struct DUNGEONARCHITECTRUNTIME_API FGridToolPaintStrokeData {
     GENERATED_BODY()
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Dungeon)
-    FIntVector Location;
+    FIntVector Location = FIntVector::ZeroValue;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Dungeon)
-    EGridPaintToolCellType CellType;
+    EGridPaintToolCellType CellType = EGridPaintToolCellType::Corridor;
 };
 
 USTRUCT(Blueprintable)
@@ -31,7 +31,7 @@ struct DUNGEONARCHITECTRUNTIME_API FGridToolRectStrokeData {
     FRectangle Rectangle;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Dungeon)
-    EGridPaintToolCellType CellType;
+    EGridPaintToolCellType CellType = EGridPaintToolCellType::Corridor;
 
 };
 

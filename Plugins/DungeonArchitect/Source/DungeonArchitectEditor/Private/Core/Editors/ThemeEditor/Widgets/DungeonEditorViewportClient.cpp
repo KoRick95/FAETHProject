@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Core/Editors/ThemeEditor/Widgets/DungeonEditorViewportClient.h"
 
@@ -11,11 +11,9 @@ namespace DungeonEditorViewportConstants {
     static const int32 CellSize = 16;
 }
 
-FDungeonEditorViewportClient::FDungeonEditorViewportClient(TWeakPtr<FDungeonArchitectThemeEditor> pInDungeonEditor,
-                                                           TWeakPtr<SDungeonEditorViewport> pInDungeonEditorViewport,
+FDungeonEditorViewportClient::FDungeonEditorViewportClient(TWeakPtr<SThemePreviewViewport> pInDungeonEditorViewport,
                                                            FPreviewScene& pInPreviewScene, UDungeonThemeAsset* pInProp)
     : FEditorViewportClient(nullptr, &pInPreviewScene, pInDungeonEditorViewport),
-      InDungeonEditor(pInDungeonEditor),
       InDungeonEditorViewport(pInDungeonEditorViewport),
       InProp(pInProp) {
 

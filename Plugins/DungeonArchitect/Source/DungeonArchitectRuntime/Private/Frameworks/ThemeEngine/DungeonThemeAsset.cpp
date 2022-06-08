@@ -1,11 +1,12 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Frameworks/ThemeEngine/DungeonThemeAsset.h"
 
+#include "Frameworks/MarkerGenerator/MarkerGenModel.h"
 
 UDungeonThemeAsset::UDungeonThemeAsset(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
-    PreviewViewportProperties = ObjectInitializer.CreateDefaultSubobject<UDungeonEditorViewportProperties>(
-        this, "PreviewProperties");
+    PreviewViewportProperties = ObjectInitializer.CreateDefaultSubobject<UDungeonEditorViewportProperties>( this, "PreviewProperties");
+    MarkerGenerationModel = ObjectInitializer.CreateDefaultSubobject<UMarkerGenModel>(this, "MarkerGenerationModel");
 }
 
 void UDungeonThemeAsset::AddReferencedObjects(UObject* InThis, FReferenceCollector& Collector) {

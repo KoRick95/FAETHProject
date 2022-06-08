@@ -1,12 +1,12 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
 #include "Core/DungeonBuilder.h"
 #include "Core/Utils/Attributes.h"
 #include "Frameworks/Flow/Domains/AbstractGraph/Core/FlowAbstractItem.h"
-#include "Frameworks/Flow/Domains/Tilemap/GridFlowTilemap.h"
 #include "Frameworks/Flow/FlowProcessor.h"
+#include "Frameworks/FlowImpl/GridFlow/Tilemap/GridFlowTilemap.h"
 
 #include "Components/ActorComponent.h"
 #include "GridFlowBuilder.generated.h"
@@ -20,9 +20,9 @@ class UGridFlowQuery;
 class UGridFlowModel;
 
 class UGridFlowTilemap;
-struct FGridFlowTilemapEdge;
+struct FFlowTilemapEdge;
 
-UCLASS(EarlyAccessPreview)
+UCLASS()
 class DUNGEONARCHITECTRUNTIME_API UGridFlowBuilder : public UDungeonBuilder {
     GENERATED_BODY()
 
@@ -38,10 +38,8 @@ public:
     virtual bool ProcessSpatialConstraint(UDungeonSpatialConstraint* SpatialConstraint, const FTransform& Transform,
                                   FQuat& OutRotationOffset) override;
     virtual void GetDefaultMarkerNames(TArray<FString>& OutMarkerNames) override;
-    virtual bool PerformSelectionLogic(const TArray<UDungeonSelectorLogic*>& SelectionLogics,
-                               const FPropSocket& socket) override;
-    virtual FTransform PerformTransformLogic(const TArray<UDungeonTransformLogic*>& TransformLogics,
-                                     const FPropSocket& socket) override;
+    virtual bool PerformSelectionLogic(const TArray<UDungeonSelectorLogic*>& SelectionLogics, const FDAMarkerInfo& socket) override;
+    virtual FTransform PerformTransformLogic(const TArray<UDungeonTransformLogic*>& TransformLogics, const FDAMarkerInfo& socket) override;
     virtual void ProcessThemeItemUserData(TSharedPtr<IDungeonMarkerUserData> UserData, AActor* SpawnedActor) override;
 
 
@@ -52,7 +50,7 @@ protected:
     void EmitMarkerAt(const FVector& WorldLocation, const FString& MarkerName, float Angle,
                       TSharedPtr<class IDungeonMarkerUserData> InUserData = nullptr);
 
-    void EmitEdgeMarker(const FGridFlowTilemapEdge& Edge, const FVector& TileCoord,
+    void EmitEdgeMarker(const FFlowTilemapEdge& Edge, const FVector& TileCoord,
                         const FVector& GridSize, UGridFlowTilemap* Tilemap, const TMap<FGuid, const UFlowGraphItem*>& Items);
 
     virtual bool IdentifyBuildSucceeded() const override;
@@ -67,7 +65,7 @@ private:
 
 class DUNGEONARCHITECTRUNTIME_API FGridFlowBuilderMarkerUserData : public IDungeonMarkerUserData {
 public:
-    FGridFlowTilemapCoord TileCoord;
+    FFlowTilemapCoord TileCoord;
     bool bIsItem = false;
     TWeakObjectPtr<const UFlowGraphItem> Item;
 };

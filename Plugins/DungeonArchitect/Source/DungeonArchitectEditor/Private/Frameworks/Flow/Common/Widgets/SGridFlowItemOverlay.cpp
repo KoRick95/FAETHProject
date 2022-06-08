@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Frameworks/Flow/Common/Widgets/SGridFlowItemOverlay.h"
 
@@ -93,15 +93,15 @@ FReply SGridFlowItemOverlay::OnMouseButtonDoubleClick(const FGeometry& InMyGeome
 }
 
 FSlateColor SGridFlowItemOverlay::GetColor() const {
-    return FGridFlowItemVisuals::GetBackgroundColor(Item.Get(), bHovered);
+    return FFlowItemVisuals::GetBackgroundColor(Item.Get(), bHovered);
 }
 
 FSlateColor SGridFlowItemOverlay::GetTextColor() const {
-    return FGridFlowItemVisuals::GetTextColor(Item.Get(), bHovered);
+    return FFlowItemVisuals::GetTextColor(Item.Get(), bHovered);
 }
 
 FText SGridFlowItemOverlay::GetItemText() const {
-    return FText::FromString(FGridFlowItemVisuals::GetText(Item.Get()));
+    return FText::FromString(FFlowItemVisuals::GetText(Item.Get()));
 }
 
 void SGridFlowItemOverlay::SetBaseOffset(const FVector2D& InBaseOffset) {

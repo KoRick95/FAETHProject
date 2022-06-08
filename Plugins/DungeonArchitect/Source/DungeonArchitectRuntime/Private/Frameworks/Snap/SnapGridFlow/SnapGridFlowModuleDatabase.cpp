@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Frameworks/Snap/SnapGridFlow/SnapGridFlowModuleDatabase.h"
 
@@ -6,7 +6,9 @@
 #include "Core/Utils/Stats.h"
 #include "Frameworks/Flow/Domains/AbstractGraph/Core/FlowAbstractGraphConstraints.h"
 #include "Frameworks/Flow/Domains/AbstractGraph/Core/FlowAbstractGraphQuery.h"
-#include "Frameworks/Flow/Domains/AbstractGraph/Tasks/Common/Lib/FlowAbstractGraphPathUtils.h"
+#include "Frameworks/Flow/Domains/AbstractGraph/Tasks/Lib/FlowAbstractGraphPathUtils.h"
+#include "Frameworks/Snap/Lib/Connection/SnapConnectionInfo.h"
+#include "Frameworks/Snap/SnapGridFlow/SnapGridFlowStats.h"
 
 //////////////////////////// Snap Grid Flow Module Assembly ////////////////////////////
 
@@ -45,6 +47,8 @@ void FSGFModuleAssembly::Initialize(const FIntVector& InNumChunks) {
 }
 
 bool FSGFModuleAssembly::CanFit(const FSGFModuleAssembly& AssemblyToFit, TArray<FSGFModuleAssemblySideCell>& OutDoorIndices) const {
+    SCOPE_CYCLE_COUNTER(STAT_SGFAsmCanFit);
+    
     if (NumChunks != AssemblyToFit.NumChunks) return false;
     const FSGFModuleAssemblySide* HostSides[] = { &Front, &Left, &Back, &Right, &Top, &Down };
     const FSGFModuleAssemblySide* TargetSides[] = { &AssemblyToFit.Front, &AssemblyToFit.Left, &AssemblyToFit.Back, &AssemblyToFit.Right, &AssemblyToFit.Top, &AssemblyToFit.Down };
@@ -75,8 +79,8 @@ bool FSGFModuleAssembly::CanFit(const FSGFModuleAssembly& AssemblyToFit, TArray<
 }
 
 void FSGFModuleAssemblyBuilder::Build(const FVector& InChunkSize,
-                                                const FSnapGridFlowModuleDatabaseItem& InModuleInfo,
-                                                FSGFModuleAssembly& OutAssembly) {
+                                      const FSnapGridFlowModuleDatabaseItem& InModuleInfo,
+                                      FSGFModuleAssembly& OutAssembly) {
     const FIntVector& NumChunks = InModuleInfo.NumChunks;
     OutAssembly = FSGFModuleAssembly();
     OutAssembly.Initialize(NumChunks);
@@ -92,7 +96,7 @@ void FSGFModuleAssemblyBuilder::Build(const FVector& InChunkSize,
 
         struct FAssemblyAttachmentDistance {
             EAssemblySide Side = EAssemblySide::Unknown;
-            float Distance = 0;
+            FVector::FReal Distance = 0;
         };
 
         /*
@@ -169,21 +173,23 @@ void FSGFModuleAssemblyBuilder::Build(const FVector& InChunkSize,
 void FSGFModuleAssemblyBuilder::Build(const FFlowAbstractGraphQuery& InGraphQuery, const FFlowAGPathNodeGroup& Group,
         const TArray<FFAGConstraintsLink>& IncomingNodes, FSGFModuleAssembly& OutAssembly) {
     
+    SCOPE_CYCLE_COUNTER(STAT_SGFAsmBuild);
+    
     FVector MinCoordF, MaxCoordF;
-    for (int i = 0; i < Group.GroupEdgeNodes.Num(); i++) {
-        FGuid EdgeNodeId = Group.GroupEdgeNodes[i];
-        UFlowAbstractNode* EdgeNode = InGraphQuery.GetNode(EdgeNodeId);
-        if (!EdgeNode) {
-            EdgeNode = InGraphQuery.GetSubNode(EdgeNodeId);
+    for (int i = 0; i < Group.GroupNodes.Num(); i++) {
+        FGuid GroupNodeId = Group.GroupNodes[i];
+        UFlowAbstractNode* GroupNode = InGraphQuery.GetNode(GroupNodeId);
+        if (!GroupNode) {
+            GroupNode = InGraphQuery.GetSubNode(GroupNodeId);
         }
-        check(EdgeNode);
+        check(GroupNode);
         
         if (i == 0) {
-            MinCoordF = MaxCoordF = EdgeNode->Coord; 
+            MinCoordF = MaxCoordF = GroupNode->Coord; 
         }
         else {
-            MinCoordF = MinCoordF.ComponentMin(EdgeNode->Coord);
-            MaxCoordF = MaxCoordF.ComponentMax(EdgeNode->Coord);
+            MinCoordF = MinCoordF.ComponentMin(GroupNode->Coord);
+            MaxCoordF = MaxCoordF.ComponentMax(GroupNode->Coord);
         }
     }
 

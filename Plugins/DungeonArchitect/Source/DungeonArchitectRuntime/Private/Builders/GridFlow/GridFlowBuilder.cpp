@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Builders/GridFlow/GridFlowBuilder.h"
 
@@ -11,13 +11,14 @@
 #include "Core/Dungeon.h"
 #include "Core/DungeonMarkerNames.h"
 #include "Frameworks/Flow/Domains/AbstractGraph/Core/FlowAbstractGraph.h"
-#include "Frameworks/Flow/Domains/AbstractGraph/Implementations/GridFlowAbstractGraph.h"
-#include "Frameworks/Flow/Domains/Tilemap/GridFlowTilemap.h"
-#include "Frameworks/Flow/Domains/Tilemap/GridFlowTilemapDomain.h"
 #include "Frameworks/Flow/ExecGraph/FlowExecGraphScript.h"
 #include "Frameworks/Flow/ExecGraph/FlowExecTask.h"
 #include "Frameworks/Flow/ExecGraph/FlowExecTaskStructs.h"
 #include "Frameworks/Flow/FlowProcessor.h"
+#include "Frameworks/FlowImpl/GridFlow/LayoutGraph/GridFlowAbstractGraph.h"
+#include "Frameworks/FlowImpl/GridFlow/LayoutGraph/GridFlowAbstractGraphDomain.h"
+#include "Frameworks/FlowImpl/GridFlow/Tilemap/GridFlowTilemap.h"
+#include "Frameworks/FlowImpl/GridFlow/Tilemap/GridFlowTilemapDomain.h"
 
 #include "Components/BrushComponent.h"
 #include "DrawDebugHelpers.h"
@@ -78,7 +79,7 @@ bool UGridFlowBuilder::ExecuteGraph() {
         FFlowProcessorSettings GridFlowProcessorSettings;
         GridFlowProcessorSettings.AttributeList = AttributeList;
         GridFlowProcessorSettings.SerializedAttributeList = GridFlowConfig->ParameterOverrides;
-        Result = FlowProcessor.Process(GridFlowAsset->ExecScript, random, GridFlowProcessorSettings);
+        Result = FlowProcessor.Process(GridFlowAsset->ExecScript, Random, GridFlowProcessorSettings);
         NumTries++;
         if (Result.ExecResult == EFlowTaskExecutionResult::Success) {
             break;
@@ -127,14 +128,14 @@ bool UGridFlowBuilder::ExecuteGraph() {
 }
 
 namespace {
-    bool IsWallOnOffset(UGridFlowTilemap* Tilemap, const FGridFlowTilemapCell& Cell, int32 dx, int32 dy) {
-        FGridFlowTilemapCell* NCell = Tilemap->GetSafe(Cell.TileCoord.X + dx, Cell.TileCoord.Y + dy);
+    bool IsWallOnOffset(UGridFlowTilemap* Tilemap, const FFlowTilemapCell& Cell, int32 dx, int32 dy) {
+        FFlowTilemapCell* NCell = Tilemap->GetSafe(Cell.TileCoord.X + dx, Cell.TileCoord.Y + dy);
         if (!NCell) return false;
-        return NCell->CellType == EGridFlowTilemapCellType::Wall || NCell->CellType == EGridFlowTilemapCellType::Door;
+        return NCell->CellType == EFlowTilemapCellType::Wall || NCell->CellType == EFlowTilemapCellType::Door;
     }
 
-    bool IsLayoutTile(UGridFlowTilemap* Tilemap, const FGridFlowTilemapCell& Cell, int32 dx, int32 dy) {
-        FGridFlowTilemapCell* NCell = Tilemap->GetSafe(Cell.TileCoord.X + dx, Cell.TileCoord.Y + dy);
+    bool IsLayoutTile(UGridFlowTilemap* Tilemap, const FFlowTilemapCell& Cell, int32 dx, int32 dy) {
+        FFlowTilemapCell* NCell = Tilemap->GetSafe(Cell.TileCoord.X + dx, Cell.TileCoord.Y + dy);
         return NCell ? NCell->bLayoutCell : false;
     }
 
@@ -186,20 +187,20 @@ void UGridFlowBuilder::EmitDungeonMarkers_Implementation() {
     for (int32 y = 0; y < Height; y++) {
         for (int32 x = 0; x < Width; x++) {
             bool bEmitFloor = false;
-            const FGridFlowTilemapCell& Cell = Tilemap->Get(x, y);
-            if (Cell.CellType != EGridFlowTilemapCellType::Empty) {
+            const FFlowTilemapCell& Cell = Tilemap->Get(x, y);
+            if (Cell.CellType != EFlowTilemapCellType::Empty) {
                 FString MarkerName;
                 float Angle = 0;
 
-                if (Cell.CellType == EGridFlowTilemapCellType::Floor) {
+                if (Cell.CellType == EFlowTilemapCellType::Floor) {
                     bEmitFloor = true;
                 }
-                else if (Cell.CellType == EGridFlowTilemapCellType::Door) {
+                else if (Cell.CellType == EFlowTilemapCellType::Door) {
                     bEmitFloor = true;
                     MarkerName = FGridFlowBuilderMarkers::MARKER_DOOR;
 
-                    FGridFlowTilemapCellDoorInfo DoorInfo;
-                    if (Tilemap->GetDoorMeta(FGridFlowTilemapCoord(Cell.TileCoord), DoorInfo)) {
+                    FFlowTilemapCellDoorInfo DoorInfo;
+                    if (Tilemap->GetDoorMeta(FFlowTilemapCoord(Cell.TileCoord), DoorInfo)) {
                         if (DoorInfo.bOneWay) {
                             MarkerName = FGridFlowBuilderMarkers::MARKER_DOOR_ONEWAY;
                         }
@@ -210,10 +211,10 @@ void UGridFlowBuilder::EmitDungeonMarkers_Implementation() {
                         Angle = DoorInfo.Angle;
                     }
                 }
-                else if (Cell.CellType == EGridFlowTilemapCellType::Custom) {
+                else if (Cell.CellType == EFlowTilemapCellType::Custom) {
                     MarkerName = Cell.CustomCellInfo.MarkerName;
                 }
-                else if (Cell.CellType == EGridFlowTilemapCellType::Wall) {
+                else if (Cell.CellType == EFlowTilemapCellType::Wall) {
                     MarkerName = FGridFlowBuilderMarkers::MARKER_WALL;
                     bool bLeft = IsWallOnOffset(Tilemap, Cell, -1, 0);
                     bool bRight = IsWallOnOffset(Tilemap, Cell, 1, 0);
@@ -272,7 +273,7 @@ void UGridFlowBuilder::EmitDungeonMarkers_Implementation() {
                     EmitMarkerAt(TileCenter, FGridFlowBuilderMarkers::MARKER_GROUND, Angle);
                 }
 
-                if (Cell.CellType != EGridFlowTilemapCellType::Empty && Cell.bHasOverlay) {
+                if (Cell.CellType != EFlowTilemapCellType::Empty && Cell.bHasOverlay) {
                     EmitMarkerAt(TileCenter, Cell.Overlay.MarkerName, Angle);
                 }
 
@@ -282,7 +283,7 @@ void UGridFlowBuilder::EmitDungeonMarkers_Implementation() {
                         const UFlowGraphItem* Item = *SearchResult;
                         TSharedPtr<FGridFlowBuilderMarkerUserData> ItemMetaData = MakeShareable(
                             new FGridFlowBuilderMarkerUserData);
-                        ItemMetaData->TileCoord = FGridFlowTilemapCoord(Cell.TileCoord);
+                        ItemMetaData->TileCoord = FFlowTilemapCoord(Cell.TileCoord);
                         ItemMetaData->bIsItem = true;
                         ItemMetaData->Item = Item;
                         EmitMarkerAt(TileCenter, Item->MarkerName, Angle, ItemMetaData);
@@ -298,27 +299,27 @@ void UGridFlowBuilder::EmitDungeonMarkers_Implementation() {
         for (int32 x = 0; x <= Width; x++) {
             const int32 TileX = x - OffsetIdxX;
             const int32 TileY = y - OffsetIdxY;
-            const FGridFlowTilemapEdge* EdgeH = Tilemap->GetEdgeHSafe(x, y);
+            const FFlowTilemapEdge* EdgeH = Tilemap->GetEdgeHSafe(x, y);
             if (EdgeH) {
                 EmitEdgeMarker(*EdgeH, FVector(TileX, TileY, EdgeH->HeightCoord), GridSize, Tilemap, Items);
-                if (EdgeH->EdgeType == EGridFlowTilemapEdgeType::Wall) {
+                if (EdgeH->EdgeType == EFlowTilemapEdgeType::Wall) {
                     WallSeparators.Add(FIntPoint(x, y));
                     WallSeparators.Add(FIntPoint(x + 1, y));
                 }
-                if (EdgeH->EdgeType == EGridFlowTilemapEdgeType::Fence) {
+                if (EdgeH->EdgeType == EFlowTilemapEdgeType::Fence) {
                     FenceSeparators.Add(FIntPoint(x, y));
                     FenceSeparators.Add(FIntPoint(x + 1, y));
                 }
             }
 
-            const FGridFlowTilemapEdge* EdgeV = Tilemap->GetEdgeVSafe(x, y);
+            const FFlowTilemapEdge* EdgeV = Tilemap->GetEdgeVSafe(x, y);
             if (EdgeV) {
                 EmitEdgeMarker(*EdgeV, FVector(TileX, TileY, EdgeV->HeightCoord), GridSize, Tilemap, Items);
-                if (EdgeV->EdgeType == EGridFlowTilemapEdgeType::Wall) {
+                if (EdgeV->EdgeType == EFlowTilemapEdgeType::Wall) {
                     WallSeparators.Add(FIntPoint(x, y));
                     WallSeparators.Add(FIntPoint(x, y + 1));
                 }
-                if (EdgeV->EdgeType == EGridFlowTilemapEdgeType::Fence) {
+                if (EdgeV->EdgeType == EFlowTilemapEdgeType::Fence) {
                     FenceSeparators.Add(FIntPoint(x, y));
                     FenceSeparators.Add(FIntPoint(x, y + 1));
                 }
@@ -350,11 +351,11 @@ void UGridFlowBuilder::EmitMarkerAt(const FVector& WorldLocation, const FString&
     EmitMarkerAt(WorldLocation, MarkerName, Rotation, InUserData);
 }
 
-void UGridFlowBuilder::EmitEdgeMarker(const FGridFlowTilemapEdge& Edge, const FVector& TileCoord, const FVector& GridSize,
+void UGridFlowBuilder::EmitEdgeMarker(const FFlowTilemapEdge& Edge, const FVector& TileCoord, const FVector& GridSize,
                                       UGridFlowTilemap* Tilemap, const TMap<FGuid, const UFlowGraphItem*>& Items) {
     check(Edge.EdgeCoord.bIsEdgeCoord);
     
-    if (Edge.EdgeType == EGridFlowTilemapEdgeType::Empty) {
+    if (Edge.EdgeType == EFlowTilemapEdgeType::Empty) {
         return;
     }
 
@@ -362,11 +363,11 @@ void UGridFlowBuilder::EmitEdgeMarker(const FGridFlowTilemapEdge& Edge, const FV
     Location += Edge.EdgeCoord.bHorizontalEdge ? FVector(0.5f, 0, 0) : FVector(0, 0.5f, 0);
     Location *= GridSize;
     
-    if (Edge.EdgeType == EGridFlowTilemapEdgeType::Wall) {
+    if (Edge.EdgeType == EFlowTilemapEdgeType::Wall) {
         EmitMarkerAt(Location, FGridFlowBuilderMarkers::MARKER_WALL, Edge.MarkerAngle);
     }
-    else if (Edge.EdgeType == EGridFlowTilemapEdgeType::Door) {
-        FGridFlowTilemapCellDoorInfo DoorMeta;
+    else if (Edge.EdgeType == EFlowTilemapEdgeType::Door) {
+        FFlowTilemapCellDoorInfo DoorMeta;
         if (Tilemap->GetDoorMeta(Edge.EdgeCoord, DoorMeta)) {
             if (!DoorMeta.bLocked) {
                 const FString MarkerName = DoorMeta.bOneWay ? FGridFlowBuilderMarkers::MARKER_DOOR_ONEWAY : FGridFlowBuilderMarkers::MARKER_DOOR; 
@@ -386,7 +387,7 @@ void UGridFlowBuilder::EmitEdgeMarker(const FGridFlowTilemapEdge& Edge, const FV
             }
         }
     }
-    else if (Edge.EdgeType == EGridFlowTilemapEdgeType::Fence) {
+    else if (Edge.EdgeType == EFlowTilemapEdgeType::Fence) {
         EmitMarkerAt(Location, FGridFlowBuilderMarkers::MARKER_CAVE_FENCE, Edge.MarkerAngle);
         EmitMarkerAt(Location, FGridFlowBuilderMarkers::MARKER_FENCE, Edge.MarkerAngle);
     }
@@ -428,16 +429,16 @@ void UGridFlowBuilder::DrawDebugData(UWorld* InWorld, bool bPersistant /*= false
     TileExtent.Z = 0;
     for (int32 y = 0; y < Height; y++) {
         for (int32 x = 0; x < Width; x++) {
-            FGridFlowTilemapCell& Cell = Tilemap->Get(x, y);
-            if (Cell.CellType != EGridFlowTilemapCellType::Empty) {
+            FFlowTilemapCell& Cell = Tilemap->Get(x, y);
+            if (Cell.CellType != EFlowTilemapCellType::Empty) {
                 FColor TileColor = FColor(0, 0, 0);
-                if (Cell.CellType == EGridFlowTilemapCellType::Floor) {
+                if (Cell.CellType == EFlowTilemapCellType::Floor) {
                     TileColor = FColor(255, 0, 0);
                 }
-                else if (Cell.CellType == EGridFlowTilemapCellType::Wall) {
+                else if (Cell.CellType == EFlowTilemapCellType::Wall) {
                     TileColor = FColor(0, 255, 0);
                 }
-                else if (Cell.CellType == EGridFlowTilemapCellType::Door) {
+                else if (Cell.CellType == EFlowTilemapCellType::Door) {
                     TileColor = FColor(0, 0, 255);
                 }
                 TileColor.A = 64;
@@ -484,7 +485,7 @@ void UGridFlowBuilder::GetDefaultMarkerNames(TArray<FString>& OutMarkerNames) {
 }
 
 bool UGridFlowBuilder::PerformSelectionLogic(const TArray<UDungeonSelectorLogic*>& SelectionLogics,
-                                             const FPropSocket& socket) {
+                                             const FDAMarkerInfo& socket) {
     for (UDungeonSelectorLogic* SelectionLogic : SelectionLogics) {
         UGridFlowSelectorLogic* GridFlowSelectionLogic = Cast<UGridFlowSelectorLogic>(SelectionLogic);
         if (!GridFlowSelectionLogic) {
@@ -500,7 +501,7 @@ bool UGridFlowBuilder::PerformSelectionLogic(const TArray<UDungeonSelectorLogic*
         int32 TileX = FMath::FloorToInt(Location.X / GridSize.X) + TileOffset.X;
         int32 TileY = FMath::FloorToInt(Location.Y / GridSize.Y) + TileOffset.Y;
 
-        bool bSelected = GridFlowSelectionLogic->SelectNode(GridFlowModel, GridFlowConfig, this, GridFlowQuery, random,
+        bool bSelected = GridFlowSelectionLogic->SelectNode(GridFlowModel, GridFlowConfig, this, GridFlowQuery, Random,
                                                             TileX, TileY, socket.Transform);
         if (!bSelected) {
             return false;
@@ -510,7 +511,7 @@ bool UGridFlowBuilder::PerformSelectionLogic(const TArray<UDungeonSelectorLogic*
 }
 
 FTransform UGridFlowBuilder::PerformTransformLogic(const TArray<UDungeonTransformLogic*>& TransformLogics,
-                                                   const FPropSocket& socket) {
+                                                   const FDAMarkerInfo& socket) {
     FTransform result = FTransform::Identity;
 
     for (UDungeonTransformLogic* TransformLogic : TransformLogics) {
@@ -527,7 +528,7 @@ FTransform UGridFlowBuilder::PerformTransformLogic(const TArray<UDungeonTransfor
         int32 GridY = FMath::FloorToInt(Location.Y / GridSize.Y);
         FTransform LogicOffset;
         if (TransformLogic) {
-            GridFlowTransformLogic->GetNodeOffset(GridFlowModel, GridFlowConfig, GridFlowQuery, random, GridX, GridY,
+            GridFlowTransformLogic->GetNodeOffset(GridFlowModel, GridFlowConfig, GridFlowQuery, Random, GridX, GridY,
                                                   LogicOffset);
         }
         else {
@@ -560,7 +561,7 @@ void FGridFlowProcessDomainExtender::ExtendDomains(FFlowProcessor& InProcessor) 
     const TSharedPtr<FGridFlowAbstractGraphDomain> AbstractGraphDomain = MakeShareable(new FGridFlowAbstractGraphDomain);
     InProcessor.RegisterDomain(AbstractGraphDomain);
 
-    const TSharedPtr<FFlowTilemapDomain> TilemapDomain = MakeShareable(new FFlowTilemapDomain);
+    const TSharedPtr<FGridFlowTilemapDomain> TilemapDomain = MakeShareable(new FGridFlowTilemapDomain);
     InProcessor.RegisterDomain(TilemapDomain);
 }
 

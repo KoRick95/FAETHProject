@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
@@ -62,6 +62,18 @@ private:
     void OnRuleGraphChanged(TWeakObjectPtr<UGraphGrammarProduction> Rule, TWeakObjectPtr<UEdGraph_Grammar> Graph);
     void NotifyGrammarStateChanged();
 
+    template <typename ItemType>
+    void PerformReordering(ItemType Source, ItemType Dest, TArray<ItemType>& List) {
+        int32 SourceIndex = -1;
+        int32 DestIndex = -1;
+
+        if (!List.Find(Dest, DestIndex)) {
+            DestIndex = 0;
+        }
+        List.Remove(Source);
+        List.Insert(Source, DestIndex);
+    }
+
 private:
     TWeakObjectPtr<UGraphGrammar> Grammar;
 
@@ -71,7 +83,7 @@ private:
     TSharedPtr<SEditableListView<UGraphGrammarProduction*>> RuleListView;
     TSharedPtr<SEditableListView<UGrammarNodeType*>> NodeTypeListView;
 
-    bool bRequestGrammarStateChanged;
+    bool bRequestGrammarStateChanged = false;
     FOnGrammarStateChanged OnGrammarStateChanged;
 };
 

@@ -1,13 +1,14 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Core/Editors/FlowEditor/DomainEditors/FlowDomainEdAbstractGraph3D.h"
 
 #include "Core/Editors/FlowEditor/DomainEditors/Widgets/SFlowDomainEdViewport.h"
 #include "Frameworks/Flow/Domains/AbstractGraph/Core/FlowAbstractGraph.h"
-#include "Frameworks/Flow/Domains/AbstractGraph/Implementations/GridFlowAbstractGraph.h"
-#include "Frameworks/Flow/Domains/AbstractGraph/Implementations/GridFlowAbstractGraph3D.h"
 #include "Frameworks/Flow/Domains/AbstractGraph/Utils/GridFlowAbstractGraphVisualization.h"
 #include "Frameworks/Flow/ExecGraph/FlowExecTask.h"
+#include "Frameworks/FlowImpl/GridFlow/LayoutGraph/GridFlowAbstractGraph.h"
+#include "Frameworks/FlowImpl/SnapGridFlow/LayoutGraph/SnapGridFlowAbstractGraph.h"
+#include "Frameworks/FlowImpl/SnapGridFlow/LayoutGraph/SnapGridFlowAbstractGraphDomain.h"
 
 #include "Engine/StaticMeshActor.h"
 #include "Engine/World.h"
@@ -91,7 +92,7 @@ void FFlowDomainEdAbstractGraph3D::Build(FFlowExecNodeStatePtr State) {
         return;
     }
 
-    UGridFlowAbstractGraph3D* Graph = State->GetState<UGridFlowAbstractGraph3D>(UFlowAbstractGraphBase::StateTypeID);
+    USnapGridFlowAbstractGraph* Graph = State->GetState<USnapGridFlowAbstractGraph>(UFlowAbstractGraphBase::StateTypeID);
     if (!Graph) {
         return;
     }
@@ -103,7 +104,7 @@ void FFlowDomainEdAbstractGraph3D::RecenterView(FFlowExecNodeStatePtr State) {
     if (!State.IsValid()) {
         return;
     }
-    UGridFlowAbstractGraph3D* ScriptGraph = State->GetState<UGridFlowAbstractGraph3D>(UFlowAbstractGraphBase::StateTypeID);
+    USnapGridFlowAbstractGraph* ScriptGraph = State->GetState<USnapGridFlowAbstractGraph>(UFlowAbstractGraphBase::StateTypeID);
     if (ScriptGraph) {
         FBox TotalGridBounds(EForceInit::ForceInit);
         FBox ActiveGridBounds(EForceInit::ForceInit);
@@ -150,7 +151,7 @@ void FFlowDomainEdAbstractGraph3D::AddReferencedObjects(FReferenceCollector& Col
 }
 
 IFlowDomainPtr FFlowDomainEdAbstractGraph3D::CreateDomain() const {
-    return MakeShareable(new FGridFlowAbstractGraph3DDomain);
+    return MakeShareable(new FSnapGridFlowAbstractGraphDomain);
 }
 
 void FFlowDomainEdAbstractGraph3D::OnActorSelectionChanged(AActor* InActor) {

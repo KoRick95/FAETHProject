@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
@@ -41,29 +41,6 @@ private:
     FVector BaseOffset;
 };
 
-//////////////////////////////////////// Lattice Graph Generator //////////////////////////////////////////////
-
-struct FSnapGridFlowGraphLatticeGenSettings {
-    int32 Seed = 0;
-    FVector ChunkSize = FVector::ZeroVector;
-    FTransform BaseTransform = FTransform::Identity;
-    float ModulesWithMinimumDoorsProbability = 1.0f;
-};
-
-class DUNGEONARCHITECTRUNTIME_API FSnapGridFlowGraphLatticeGenerator {
-public:
-    FSnapGridFlowGraphLatticeGenerator(const SnapLib::IModuleDatabasePtr& InModuleDatabase, const FSnapGridFlowGraphLatticeGenSettings& InSettings)
-        : ModuleDatabase(InModuleDatabase)
-        , Settings(InSettings)
-    {}
-
-    bool Generate(UFlowAbstractGraphBase* InGraph, TArray<SnapLib::FModuleNodePtr>& OutModuleNodes) const;
-
-private:
-    SnapLib::IModuleDatabasePtr ModuleDatabase;
-    FSnapGridFlowGraphLatticeGenSettings Settings;
-};
-
 //////////////////////////////////////// Module Database Adapter //////////////////////////////////////////////
 class DUNGEONARCHITECTRUNTIME_API FSnapGridFlowGraphModDBItemImpl
     : public SnapLib::IModuleDatabaseItem
@@ -84,5 +61,11 @@ private:
 class DUNGEONARCHITECTRUNTIME_API FSnapGridFlowModuleDatabaseImpl final : public SnapLib::IModuleDatabase {
 public:
     explicit FSnapGridFlowModuleDatabaseImpl(USnapGridFlowModuleDatabase* ModuleDB);
+
+    FORCEINLINE FVector GetChunkSize() const { return ChunkSize; }
+    
+private:
+    FVector ChunkSize;
 };
+typedef TSharedPtr<FSnapGridFlowModuleDatabaseImpl> FSnapGridFlowModuleDatabaseImplPtr;
 

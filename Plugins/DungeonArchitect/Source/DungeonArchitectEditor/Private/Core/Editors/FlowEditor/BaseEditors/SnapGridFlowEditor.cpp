@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Core/Editors/FlowEditor/BaseEditors/SnapGridFlowEditor.h"
 
@@ -6,12 +6,11 @@
 #include "Builders/SnapGridFlow/SnapGridFlowDungeon.h"
 #include "Core/Dungeon.h"
 #include "Core/Editors/FlowEditor/DomainEditors/FlowDomainEdAbstractGraph3D.h"
-#include "Core/Editors/FlowEditor/DomainEditors/FlowDomainEdSnap.h"
 #include "Core/Editors/FlowEditor/FlowEditorSettings.h"
 #include "Core/Editors/FlowEditor/FlowTestRunner.h"
-#include "Frameworks/Flow/Domains/AbstractGraph/Implementations/GridFlowAbstractGraph3D.h"
 #include "Frameworks/Flow/Domains/FlowDomain.h"
-#include "Frameworks/Flow/Domains/Snap/SnapFlowAbstractGraphSupport.h"
+#include "Frameworks/Flow/ExecGraph/Nodes/GridFlowExecEdGraphNodes.h"
+#include "Frameworks/FlowImpl/SnapGridFlow/LayoutGraph/SnapGridFlowAbstractGraphDomain.h"
 #include "Frameworks/Snap/SnapGridFlow/SnapGridFlowLibrary.h"
 
 #define LOCTEXT_NAMESPACE "SnapGridFlowEditor"
@@ -35,7 +34,6 @@ void FSnapGridFlowEditor::CreateDomainEditors() {
 
     // Register the domain editors
     DomainEditors.Add(MakeShareable(new FFlowDomainEdAbstractGraph3D));
-    DomainEditors.Add(MakeShareable(new FFlowDomainEdSnap));
 
     // Initialize the domain editors
     for (IFlowDomainEditorPtr DomainEditor : DomainEditors) {
@@ -88,6 +86,9 @@ void FSnapGridFlowEditor::OnTestRunnerServiceStarted() {
         if (SGEditorSettings) {
             USnapGridFlowModuleDatabase* ModuleDatabase = SGEditorSettings ? SGEditorSettings->ModuleDatabase.LoadSynchronous() : nullptr;
             PerfRunner->SetModuleDatabase(ModuleDatabase);
+
+            const bool bSupportsDoorCategory = SGEditorSettings ? SGEditorSettings->bSupportDoorCategories : false;
+            PerfRunner->SetSupportsDoorCategory(bSupportsDoorCategory);
         }
     }
 }
@@ -96,6 +97,33 @@ bool FSnapGridFlowEditor::ShouldBuildPreviewDungeon() const {
     // Disable dungeon rebuilds till the snap editor stream-out issue is resolved
     // TODO: Fix me and enable this
     return false;
+}
+
+void FSnapGridFlowEditor::UpgradeAsset() const {
+    FFlowEditorBase::UpgradeAsset();
+
+    USnapGridFlowAsset* SGFAsset = Cast<USnapGridFlowAsset>(AssetBeingEdited);
+    if (!SGFAsset || !SGFAsset->ExecEdGraph) {
+        return;
+    }
+    
+    if (SGFAsset->Version == static_cast<int>(ESnapGridFlowAssetVersion::LatestVersion)) {
+        return;
+    }
+
+    if (SGFAsset->Version + 1 == static_cast<int>(ESnapGridFlowAssetVersion::DeprecateTaskExtensions)) {
+        for (UEdGraphNode* EdNode : SGFAsset->ExecEdGraph->Nodes) {
+            if (const UGridFlowExecEdGraphNode_Task* TaskNode = Cast<UGridFlowExecEdGraphNode_Task>(EdNode)) {
+                FSnapGridFlowAssetUpgradeLib::DeprecateTaskExtensions(TaskNode->TaskTemplate);
+            }
+        }
+		
+        // Bring this to the next version
+        SGFAsset->Version++;
+    }
+    check(SGFAsset->Version == static_cast<int>(ESnapGridFlowAssetVersion::DeprecateTaskExtensions));
+
+    CompileExecGraph();
 }
 
 FName FSnapGridFlowEditor::GetToolkitFName() const {
@@ -112,60 +140,48 @@ FString FSnapGridFlowEditor::GetWorldCentricTabPrefix() const {
 }
 
 TSharedPtr<FTabManager::FLayout> FSnapGridFlowEditor::CreateFrameLayout() const {
-    TSharedPtr<FTabManager::FLayout> Layout = FTabManager::NewLayout(ConstructLayoutName("0.3.2"))
+    TSharedPtr<FTabManager::FLayout> Layout = FTabManager::NewLayout(ConstructLayoutName("0.3.3"))
         ->AddArea
         (
             FTabManager::NewPrimaryArea()
             ->SetOrientation(Orient_Vertical)
             ->Split
             (
-                FTabManager::NewStack()
-                ->SetSizeCoefficient(0.1f)
-                ->SetHideTabWell(true)
-                ->AddTab(GetToolbarTabId(), ETabState::OpenedTab)
+
+                FTabManager::NewSplitter()
+                ->SetSizeCoefficient(0.35f)
+                ->SetOrientation(Orient_Horizontal)
+                ->Split // Exec Graph
+                (
+                    FTabManager::NewStack()
+                    ->SetSizeCoefficient(0.85f)
+                    ->AddTab(FFlowEditorTabs::ExecGraphID, ETabState::OpenedTab)
+                    ->SetHideTabWell(true)
+                )
+                ->Split // Details Tab
+                (
+                    FTabManager::NewStack()
+                    ->SetSizeCoefficient(0.15f)
+                    ->AddTab(FFlowEditorTabs::DetailsID, ETabState::OpenedTab)
+                )
             )
             ->Split
             (
                 FTabManager::NewSplitter()
-                ->SetOrientation(Orient_Vertical)
-                ->Split
+                ->SetSizeCoefficient(0.65f)
+                ->SetOrientation(Orient_Horizontal)
+                ->Split // Domain Editors
                 (
-
-                    FTabManager::NewSplitter()
-                    ->SetSizeCoefficient(0.35f)
-                    ->SetOrientation(Orient_Horizontal)
-                    ->Split // Exec Graph
-                    (
-                        FTabManager::NewStack()
-                        ->SetSizeCoefficient(0.85f)
-                        ->AddTab(FFlowEditorTabs::ExecGraphID, ETabState::OpenedTab)
-                        ->SetHideTabWell(true)
-                    )
-                    ->Split // Details Tab
-                    (
-                        FTabManager::NewStack()
-                        ->SetSizeCoefficient(0.15f)
-                        ->AddTab(FFlowEditorTabs::DetailsID, ETabState::OpenedTab)
-                    )
+                CreateDomainEditorLayout()
+                    ->SetSizeCoefficient(0.6f)
                 )
-                ->Split
+                ->Split // Preview Viewport 3D / Performance
                 (
-                    FTabManager::NewSplitter()
-                    ->SetSizeCoefficient(0.65f)
-                    ->SetOrientation(Orient_Horizontal)
-                    ->Split // Domain Editors
-                    (
-                    CreateDomainEditorLayout()
-                        ->SetSizeCoefficient(0.6f)
-                    )
-                    ->Split // Preview Viewport 3D / Performance
-                    (
-                        FTabManager::NewStack()
-                        // ->AddTab(FFlowEditorTabs::ViewportID, ETabState::OpenedTab)
-                        ->AddTab(FFlowEditorTabs::PerformanceID, ETabState::OpenedTab)
-                        ->SetForegroundTab(FFlowEditorTabs::PerformanceID)
-                        ->SetSizeCoefficient(0.4f)
-                    )
+                    FTabManager::NewStack()
+                    // ->AddTab(FFlowEditorTabs::ViewportID, ETabState::OpenedTab)
+                    ->AddTab(FFlowEditorTabs::PerformanceID, ETabState::OpenedTab)
+                    ->SetForegroundTab(FFlowEditorTabs::PerformanceID)
+                    ->SetSizeCoefficient(0.4f)
                 )
             )
         );
@@ -175,22 +191,16 @@ TSharedPtr<FTabManager::FLayout> FSnapGridFlowEditor::CreateFrameLayout() const 
 
 void FSnapGridFlowEditor::ConfigureDomainObject(IFlowDomainPtr Domain) {
     if (!Domain.IsValid()) return;
-    if (Domain->GetDomainID() == FGridFlowAbstractGraph3DDomain::DomainID) {
+    if (Domain->GetDomainID() == FSnapGridFlowAbstractGraphDomain::DomainID) {
         // Configure the abstract 3d domain object from the editor settings
         USnapGridFlowEditorSettings* SGEditorSettings = Cast<USnapGridFlowEditorSettings>(EditorSettings);
         if (SGEditorSettings) {
-            TSharedPtr<FGridFlowAbstractGraph3DDomain> GridAbstract3DDomain = StaticCastSharedPtr<FGridFlowAbstractGraph3DDomain>(Domain);
+            TSharedPtr<FSnapGridFlowAbstractGraphDomain> SGFLayoutGraphDomain = StaticCastSharedPtr<FSnapGridFlowAbstractGraphDomain>(Domain);
 
             // Setup the graph constraints
             USnapGridFlowModuleDatabase* ModuleDatabase = SGEditorSettings->ModuleDatabase.LoadSynchronous();
-            if (ModuleDatabase) {
-                GridAbstract3DDomain->SetGraphConstraints(MakeShareable(new FSnapGridFlowAbstractGraphConstraints(ModuleDatabase)));
-                GridAbstract3DDomain->SetGroupGenerator(MakeShareable(new FSnapFlowAGNodeGroupGenerator(ModuleDatabase)));
-            }
-            else {
-                GridAbstract3DDomain->SetGraphConstraints(MakeShareable(new FNullFlowAbstractGraphConstraints));
-                GridAbstract3DDomain->SetGroupGenerator(MakeShareable(new FNullFlowAGNodeGroupGenerator));
-            }
+            SGFLayoutGraphDomain->SetModuleDatabase(ModuleDatabase);
+            SGFLayoutGraphDomain->SetSupportsDoorCategory(SGEditorSettings->bSupportDoorCategories);
         }
         UE_LOG(LogSnapGridFlowEditor, Log, TEXT("Configuring abstract layout graph 3d domain object"));
     }
@@ -213,11 +223,12 @@ void SSnapGridFlowTestRunner::SetupSettingsObject(FSnapGridFlowTestRunnerSetting
     Super::SetupSettingsObject(OutSettings);
     
     OutSettings.ModuleDatabase = ModuleDatabase;
+    OutSettings.bSupportDoorCategory = bSupportDoorCategory;
 }
 
 
 TSharedPtr<IFlowProcessDomainExtender> FSnapGridFlowTestRunnerTask::CreateDomainExtender(const FSnapGridFlowTestRunnerSettings& InSettings) {
-    return MakeShareable(new FSnapGridFlowProcessDomainExtender(InSettings.ModuleDatabase));
+    return MakeShareable(new FSnapGridFlowProcessDomainExtender(InSettings.ModuleDatabase, InSettings.bSupportDoorCategory));
 }
 
 void SSnapGridFlowTestRunner::SetModuleDatabase(TWeakObjectPtr<USnapGridFlowModuleDatabase> InModuleDatabase) {

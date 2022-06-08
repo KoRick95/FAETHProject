@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
@@ -42,7 +42,7 @@ struct FLaunchPadPageHeader {
     FString Title;
 
     UPROPERTY()
-    ELaunchPagePageLayout Layout;
+    ELaunchPagePageLayout Layout = ELaunchPagePageLayout::CardGrid;
 };
 
 /////////////////// Page Layout: CardGrid /////////////////// 
@@ -132,7 +132,7 @@ struct FLaunchPadPageActionData {
     GENERATED_BODY()
 
     UPROPERTY()
-    ELaunchPadActionType Type;
+    ELaunchPadActionType Type = ELaunchPadActionType::None;
 
     UPROPERTY()
     FString Path;
