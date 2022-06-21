@@ -141,24 +141,12 @@ void AFaethCharacter::OnHealthChanged_Implementation(float Health, float MaxHeal
 	}
 }
 
-void AFaethCharacter::OnManaChanged_Implementation(float Mana, float MaxMana)
-{
-}
-
-void AFaethCharacter::OnStaminaChanged_Implementation(float Stamina, float MaxStamina)
-{
-}
-
-void AFaethCharacter::OnStaggerChanged_Implementation(float Stagger, float MaxStagger)
-{
-}
-
 void AFaethCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	CharacterAttributeSet->OnHealthChange.AddDynamic(this, &AFaethCharacter::OnHealthChanged);
-	CharacterAttributeSet->OnManaChange.AddDynamic(this, &AFaethCharacter::OnManaChanged);
-	CharacterAttributeSet->OnStaminaChange.AddDynamic(this, &AFaethCharacter::OnStaminaChanged);
+	CharacterAttributeSet->OnHealthChange.AddDynamic(this, &AFaethCharacter::BP_OnHealthChange);
+	CharacterAttributeSet->OnManaChange.AddDynamic(this, &AFaethCharacter::BP_OnManaChange);
+	CharacterAttributeSet->OnStaminaChange.AddDynamic(this, &AFaethCharacter::BP_OnStaminaChange);
 
 	if (AbilitySystemComponent)
 	{
