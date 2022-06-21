@@ -85,3 +85,23 @@ void UGridFlowLayoutTaskCreateMainPath::FinalizePath(const FFlowAGStaticGrowthSt
     }
 }
 
+TSubclassOf<UFlowGraphItem> UGridFlowLayoutTaskCreateMainPath::GetEntranceItemClass() const {
+    return UGridFlowGraphItem::StaticClass();
+}
+
+TSubclassOf<UFlowGraphItem> UGridFlowLayoutTaskCreateMainPath::GetExitItemClass() const {
+    return UGridFlowGraphItem::StaticClass();
+}
+
+void UGridFlowLayoutTaskCreateMainPath::ExtendEntranceItem(UFlowGraphItem* InItem) {
+    if (UGridFlowGraphItem* GraphItem = Cast<UGridFlowGraphItem>(InItem)) {
+        GraphItem->PlacementSettings = StartNodePlacement;
+    }
+}
+
+void UGridFlowLayoutTaskCreateMainPath::ExtendExitItem(UFlowGraphItem* InItem) {
+    if (UGridFlowGraphItem* GraphItem = Cast<UGridFlowGraphItem>(InItem)) {
+        GraphItem->PlacementSettings = EndNodePlacement;
+    }
+}
+

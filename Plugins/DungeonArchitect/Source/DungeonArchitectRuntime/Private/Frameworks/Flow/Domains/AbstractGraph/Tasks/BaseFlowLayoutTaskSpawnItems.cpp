@@ -92,12 +92,11 @@ void UBaseFlowLayoutTaskSpawnItems::Execute(const FFlowExecutionInput& Input, co
             for (int i = 0; i < SpawnCount; i++) {
                 UFlowAbstractNode* PathNode = GraphQuery.GetNode(PathNodeInfo.NodeId);
                 if (PathNode) {
-                    UFlowGraphItem* Item = PathNode->CreateNewItem<UFlowGraphItem>();
+                    UFlowGraphItem* Item = PathNode->CreateNewItem(GetItemClass());
                     Item->ItemType = ItemType;
                     Item->MarkerName = MarkerName;
                     Item->CustomInfo = CustomItemInfo;
-
-                    // TODO: Handle placement configuration / validation
+                    ExtendItem(Item);
                 }
             }
         }
@@ -111,7 +110,7 @@ void UBaseFlowLayoutTaskSpawnItems::Execute(const FFlowExecutionInput& Input, co
             for (const FNodeInfo& PathNodeInfo : PathNodes) {
                 UFlowAbstractNode* PathNode = GraphQuery.GetNode(PathNodeInfo.NodeId);
                 if (PathNode) {
-                    UFlowGraphItem* DebugItem = PathNode->CreateNewItem<UFlowGraphItem>();
+                    UFlowGraphItem* DebugItem = PathNode->CreateNewItem(UFlowGraphItem::StaticClass());
                     DebugItem->ItemType = EFlowGraphItemType::Custom;
                     DebugItem->CustomInfo.PreviewText = FString::Printf(TEXT("%0.1f"), PathNodeInfo.Weight);
                     DebugItem->CustomInfo.PreviewBackgroundColor = FLinearColor::Black;
@@ -180,5 +179,9 @@ bool UBaseFlowLayoutTaskSpawnItems::SetParameterSerialized(const FString& InPara
     FLOWTASKATTR_SET_PARSE_FLOAT(SpawnProbability);
 
     return false;
+}
+
+TSubclassOf<UFlowGraphItem> UBaseFlowLayoutTaskSpawnItems::GetItemClass() const {
+    return UFlowGraphItem::StaticClass();
 }
 

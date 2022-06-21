@@ -7,6 +7,7 @@
 
 class UGridFlowAbstractGraph;
 class UFlowAbstractGraphBase;
+class UFlowGraphItem;
 
 UCLASS(Abstract)
 class DUNGEONARCHITECTRUNTIME_API UBaseFlowLayoutTaskCreateMainPath : public UBaseFlowLayoutTaskPathBuilderBase {
@@ -87,5 +88,9 @@ public:
 
 protected:
     virtual TArray<int32> GetPossibleEntranceIndices(UFlowAbstractGraphBase* InGraph, const FRandomStream& InRandom) const;
+    virtual TSubclassOf<UFlowGraphItem> GetEntranceItemClass() const;
+    virtual TSubclassOf<UFlowGraphItem> GetExitItemClass() const;
+    virtual void ExtendEntranceItem(UFlowGraphItem* InItem) {}
+    virtual void ExtendExitItem(UFlowGraphItem* InItem) {}
 };
 

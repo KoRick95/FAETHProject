@@ -97,9 +97,10 @@ void UBaseFlowLayoutTaskCreateMainPath::Execute(const FFlowExecutionInput& Input
             EntranceNode->PathName = StartNodePathName;
 
             // Add a spawn point item
-            UFlowGraphItem* Item = EntranceNode->CreateNewItem<UFlowGraphItem>();
+            UFlowGraphItem* Item = EntranceNode->CreateNewItem(GetEntranceItemClass());
             Item->ItemType = EFlowGraphItemType::Entrance;
             Item->MarkerName = StartMarkerName;
+            ExtendEntranceItem(Item);
         }
 
         // Add a goal item to the last node
@@ -109,9 +110,10 @@ void UBaseFlowLayoutTaskCreateMainPath::Execute(const FFlowExecutionInput& Input
             GoalNode->PathName = GoalNodePathName;
 
             // Add a goal item
-            UFlowGraphItem* Item = GoalNode->CreateNewItem<UFlowGraphItem>();
+            UFlowGraphItem* Item = GoalNode->CreateNewItem(GetExitItemClass());
             Item->ItemType = EFlowGraphItemType::Exit;
             Item->MarkerName = GoalMarkerName;
+            ExtendExitItem(Item);
         }
 
         Output.ExecutionResult = EFlowTaskExecutionResult::Success;
@@ -128,6 +130,14 @@ TArray<int32> UBaseFlowLayoutTaskCreateMainPath::GetPossibleEntranceIndices(UFlo
     return AllNodeIndices.FilterByPredicate([InGraph](int32 NodeIdx) -> bool {
         return !InGraph->GraphNodes[NodeIdx]->bActive;
     });
+}
+
+TSubclassOf<UFlowGraphItem> UBaseFlowLayoutTaskCreateMainPath::GetEntranceItemClass() const {
+    return UFlowGraphItem::StaticClass();
+}
+
+TSubclassOf<UFlowGraphItem> UBaseFlowLayoutTaskCreateMainPath::GetExitItemClass() const {
+    return UFlowGraphItem::StaticClass();
 }
 
 bool UBaseFlowLayoutTaskCreateMainPath::GetParameter(const FString& InParameterName, FDAAttribute& OutValue) {

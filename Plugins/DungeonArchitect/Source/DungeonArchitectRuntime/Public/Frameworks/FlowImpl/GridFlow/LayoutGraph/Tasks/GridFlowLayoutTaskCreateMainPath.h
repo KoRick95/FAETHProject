@@ -3,6 +3,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "Frameworks/Flow/Domains/AbstractGraph/Tasks/BaseFlowLayoutTaskCreateMainPath.h"
+#include "Frameworks/FlowImpl/GridFlow/Common/GridFlowItem.h"
 #include "GridFlowLayoutTaskCreateMainPath.generated.h"
 
 UCLASS(Meta = (AbstractTask, Title = "Create Main Path", Tooltip = "Create a main path with spawn and goal", MenuPriority = 1100))
@@ -46,6 +47,12 @@ public:
     UPROPERTY(EditAnywhere, Category = "Start Node")
     bool bFullSizeGoalRoom = false;
 
+    UPROPERTY(EditAnywhere, Category = "Item Placement")
+    FGridFlowTilemapItemPlacementSettings StartNodePlacement;
+    
+    UPROPERTY(EditAnywhere, Category = "Item Placement")
+    FGridFlowTilemapItemPlacementSettings EndNodePlacement;
+
 public:
     virtual bool GetParameter(const FString& InParameterName, FDAAttribute& OutValue) override;
     virtual bool SetParameter(const FString& InParameterName, const FDAAttribute& InValue) override;
@@ -54,5 +61,10 @@ public:
 protected:
     virtual TArray<int32> GetPossibleEntranceIndices(UFlowAbstractGraphBase* InGraph, const FRandomStream& InRandom) const override;
     virtual void FinalizePath(const FFlowAGStaticGrowthState& StaticState, FFlowAGGrowthState& State) const override;
+    
+    virtual TSubclassOf<UFlowGraphItem> GetEntranceItemClass() const override;
+    virtual TSubclassOf<UFlowGraphItem> GetExitItemClass() const override;
+    virtual void ExtendEntranceItem(UFlowGraphItem* InItem) override;
+    virtual void ExtendExitItem(UFlowGraphItem* InItem) override;
 };
 

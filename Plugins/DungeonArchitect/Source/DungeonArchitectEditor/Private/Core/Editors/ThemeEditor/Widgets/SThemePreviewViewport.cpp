@@ -99,6 +99,11 @@ void SThemePreviewViewport::AddReferencedObjects(FReferenceCollector& Collector)
     Collector.AddReferencedObject(Visualizer);
 }
 
+FString SThemePreviewViewport::GetReferencerName() const {
+    static const FString NameString = TEXT("SThemePreviewViewport");
+    return NameString;
+}
+
 void SThemePreviewViewport::SetParentTab(const FName& InAppMode, TSharedRef<SDockTab> InParentTab) {
     if (!ParentTabs.Contains(InAppMode)) {
         ParentTabs.Add(InAppMode, nullptr);

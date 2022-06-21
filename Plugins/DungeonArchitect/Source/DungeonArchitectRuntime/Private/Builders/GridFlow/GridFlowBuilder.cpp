@@ -33,12 +33,12 @@ void UGridFlowBuilder::BuildDungeonImpl(UWorld* World) {
     GridFlowQuery = Cast<UGridFlowQuery>(query);
     WorldMarkers.Reset();
 
-    if (!GridFlowModel) {
+    if (!GridFlowModel.IsValid()) {
         UE_LOG(GridFlowBuilderLog, Error, TEXT("Invalid dungeon model provided to the grid flow builder"));
         return;
     }
 
-    if (!GridFlowConfig) {
+    if (!GridFlowConfig.IsValid()) {
         UE_LOG(GridFlowBuilderLog, Error, TEXT("Invalid dungeon config provided to the grid flow builder"));
         return;
     }
@@ -113,11 +113,12 @@ bool UGridFlowBuilder::ExecuteGraph() {
     }
 
     // Save a copy in the model
-    {
+    if (GridFlowModel.IsValid()) {
+        UGridFlowModel* GridFlowModelPtr = GridFlowModel.Get();
         UGridFlowAbstractGraph* TemplateGraph = ResultNodeState.State->GetState<UGridFlowAbstractGraph>(UFlowAbstractGraphBase::StateTypeID);
         UGridFlowTilemap* TemplateTilemap = ResultNodeState.State->GetState<UGridFlowTilemap>(UGridFlowTilemap::StateTypeID);
-        GridFlowModel->AbstractGraph = NewObject<UGridFlowAbstractGraph>(GridFlowModel, "AbstractGraph", RF_NoFlags, TemplateGraph);
-        GridFlowModel->Tilemap = NewObject<UGridFlowTilemap>(GridFlowModel, "Tilemap", RF_NoFlags, TemplateTilemap);
+        GridFlowModel->AbstractGraph = NewObject<UGridFlowAbstractGraph>(GridFlowModelPtr, "AbstractGraph", RF_NoFlags, TemplateGraph);
+        GridFlowModel->Tilemap = NewObject<UGridFlowTilemap>(GridFlowModelPtr, "Tilemap", RF_NoFlags, TemplateTilemap);
 
         UGridFlowTilemapUserData* TilemapUserData = ResultNodeState.State->GetState<UGridFlowTilemapUserData>(UGridFlowTilemapUserData::StateTypeID);
         if (TilemapUserData) {
@@ -394,7 +395,7 @@ void UGridFlowBuilder::EmitEdgeMarker(const FFlowTilemapEdge& Edge, const FVecto
 }
 
 bool UGridFlowBuilder::IdentifyBuildSucceeded() const {
-    return GridFlowModel && GridFlowModel->AbstractGraph && GridFlowModel->Tilemap;
+    return GridFlowModel.IsValid() && GridFlowModel->AbstractGraph && GridFlowModel->Tilemap;
 }
 
 void UGridFlowBuilder::EmitMarkerAt(const FVector& WorldLocation, const FString& MarkerName, const FQuat& Rotation,
@@ -412,7 +413,7 @@ void UGridFlowBuilder::EmitMarkerAt(const FVector& WorldLocation, const FString&
 }
 
 void UGridFlowBuilder::DrawDebugData(UWorld* InWorld, bool bPersistant /*= false*/, float lifeTime /*= 0*/) {
-    if (!GridFlowModel || !GridFlowConfig) {
+    if (!GridFlowModel.IsValid() || !GridFlowConfig.IsValid()) {
         return;
     }
     
@@ -486,27 +487,30 @@ void UGridFlowBuilder::GetDefaultMarkerNames(TArray<FString>& OutMarkerNames) {
 
 bool UGridFlowBuilder::PerformSelectionLogic(const TArray<UDungeonSelectorLogic*>& SelectionLogics,
                                              const FDAMarkerInfo& socket) {
-    for (UDungeonSelectorLogic* SelectionLogic : SelectionLogics) {
-        UGridFlowSelectorLogic* GridFlowSelectionLogic = Cast<UGridFlowSelectorLogic>(SelectionLogic);
-        if (!GridFlowSelectionLogic) {
-            UE_LOG(GridFlowBuilderLog, Warning,
-                   TEXT("Invalid selection logic specified.  GridFlowSelectorLogic expected"));
-            return false;
-        }
+    if (GridFlowModel.IsValid() && GridFlowConfig.IsValid() && GridFlowQuery.IsValid()) {
+        for (UDungeonSelectorLogic* SelectionLogic : SelectionLogics) {
+            UGridFlowSelectorLogic* GridFlowSelectionLogic = Cast<UGridFlowSelectorLogic>(SelectionLogic);
+            if (!GridFlowSelectionLogic) {
+                UE_LOG(GridFlowBuilderLog, Warning,
+                       TEXT("Invalid selection logic specified.  GridFlowSelectorLogic expected"));
+                return false;
+            }
 
-        // Perform blueprint based selection logic
-        FIntPoint TileOffset = GridFlowModel ? GridFlowModel->BuildTileOffset : FIntPoint::ZeroValue;
-        FVector Location = socket.Transform.GetLocation();
-        FVector GridSize = GridFlowConfig->GridSize;
-        int32 TileX = FMath::FloorToInt(Location.X / GridSize.X) + TileOffset.X;
-        int32 TileY = FMath::FloorToInt(Location.Y / GridSize.Y) + TileOffset.Y;
+            // Perform blueprint based selection logic
+            const FIntPoint TileOffset = GridFlowModel.IsValid() ? GridFlowModel->BuildTileOffset : FIntPoint::ZeroValue;
+            const FVector Location = socket.Transform.GetLocation();
+            const FVector GridSize = GridFlowConfig->GridSize;
+            const int32 TileX = FMath::FloorToInt(Location.X / GridSize.X) + TileOffset.X;
+            const int32 TileY = FMath::FloorToInt(Location.Y / GridSize.Y) + TileOffset.Y;
 
-        bool bSelected = GridFlowSelectionLogic->SelectNode(GridFlowModel, GridFlowConfig, this, GridFlowQuery, Random,
-                                                            TileX, TileY, socket.Transform);
-        if (!bSelected) {
-            return false;
+            const bool bSelected = GridFlowSelectionLogic->SelectNode(GridFlowModel.Get(), GridFlowConfig.Get(), this, GridFlowQuery.Get(), Random,
+                                                                      TileX, TileY, socket.Transform);
+            if (!bSelected) {
+                return false;
+            }
         }
     }
+    
     return true;
 }
 
@@ -514,31 +518,34 @@ FTransform UGridFlowBuilder::PerformTransformLogic(const TArray<UDungeonTransfor
                                                    const FDAMarkerInfo& socket) {
     FTransform result = FTransform::Identity;
 
-    for (UDungeonTransformLogic* TransformLogic : TransformLogics) {
-        UGridFlowTransformLogic* GridFlowTransformLogic = Cast<UGridFlowTransformLogic>(TransformLogic);
-        if (!GridFlowTransformLogic) {
-            UE_LOG(GridFlowBuilderLog, Warning,
-                   TEXT("Invalid transform logic specified.  GridFlowTransformLogic expected"));
-            continue;
-        }
+    if (GridFlowModel.IsValid() && GridFlowConfig.IsValid() && GridFlowQuery.IsValid()) {
+        for (UDungeonTransformLogic* TransformLogic : TransformLogics) {
+            UGridFlowTransformLogic* GridFlowTransformLogic = Cast<UGridFlowTransformLogic>(TransformLogic);
+            if (!GridFlowTransformLogic) {
+                UE_LOG(GridFlowBuilderLog, Warning,
+                       TEXT("Invalid transform logic specified.  GridFlowTransformLogic expected"));
+                continue;
+            }
 
-        FVector Location = socket.Transform.GetLocation();
-        FVector GridSize = GridFlowConfig->GridSize;
-        int32 GridX = FMath::FloorToInt(Location.X / GridSize.X);
-        int32 GridY = FMath::FloorToInt(Location.Y / GridSize.Y);
-        FTransform LogicOffset;
-        if (TransformLogic) {
-            GridFlowTransformLogic->GetNodeOffset(GridFlowModel, GridFlowConfig, GridFlowQuery, Random, GridX, GridY,
-                                                  LogicOffset);
-        }
-        else {
-            LogicOffset = FTransform::Identity;
-        }
+            const FVector Location = socket.Transform.GetLocation();
+            const FVector GridSize = GridFlowConfig->GridSize;
+            const int32 GridX = FMath::FloorToInt(Location.X / GridSize.X);
+            const int32 GridY = FMath::FloorToInt(Location.Y / GridSize.Y);
+            FTransform LogicOffset;
+            if (TransformLogic) {
+                GridFlowTransformLogic->GetNodeOffset(GridFlowModel.Get(), GridFlowConfig.Get(), GridFlowQuery.Get(), Random, GridX, GridY,
+                                                      LogicOffset);
+            }
+            else {
+                LogicOffset = FTransform::Identity;
+            }
 
-        FTransform out;
-        FTransform::Multiply(&out, &LogicOffset, &result);
-        result = out;
+            FTransform out;
+            FTransform::Multiply(&out, &LogicOffset, &result);
+            result = out;
+        }
     }
+    
     return result;
 
 }

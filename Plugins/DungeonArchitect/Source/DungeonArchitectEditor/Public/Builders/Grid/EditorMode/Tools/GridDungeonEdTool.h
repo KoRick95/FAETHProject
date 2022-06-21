@@ -29,7 +29,9 @@ public:
     virtual void OnUndo() override;
     virtual void OnRedo() override;
     virtual UObject* GetToolModel() const override;
+    
     virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+    virtual FString GetReferencerName() const override;
 
     FIntVector GetGridCursorPosition() const { return GridCursorPosition; }
 

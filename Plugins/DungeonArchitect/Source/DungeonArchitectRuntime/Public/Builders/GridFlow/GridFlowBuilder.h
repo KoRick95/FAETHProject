@@ -56,9 +56,9 @@ protected:
     virtual bool IdentifyBuildSucceeded() const override;
     
 private:
-    UGridFlowModel* GridFlowModel = nullptr;
-    UGridFlowConfig* GridFlowConfig = nullptr;
-    UGridFlowQuery* GridFlowQuery = nullptr;
+    TWeakObjectPtr<UGridFlowModel> GridFlowModel;
+    TWeakObjectPtr<UGridFlowConfig> GridFlowConfig;
+    TWeakObjectPtr<UGridFlowQuery> GridFlowQuery;
     FDAAttributeList AttributeList;
 };
 

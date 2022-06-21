@@ -24,6 +24,7 @@ public:
 	virtual void RegisterTabFactories(TSharedPtr<class FTabManager> InTabManager) override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void ShowObjectDetails(UObject* ObjectProperties, bool bForceRefresh = false) const override;
+	virtual void SetBuilderClass(TSubclassOf<class UDungeonBuilder> InBuilderClass) override;
 
 	TSharedPtr<SGraphEditor> GetGraphEditor() const { return GraphEditor; }
 	void RecreateDefaultMarkerNodes() const;

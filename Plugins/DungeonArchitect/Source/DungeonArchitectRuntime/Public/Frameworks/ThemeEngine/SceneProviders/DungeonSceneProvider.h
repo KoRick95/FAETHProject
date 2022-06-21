@@ -34,7 +34,8 @@ public:
     virtual void ExecuteCustomCommand(TSharedPtr<FSceneProviderCommand> SceneCommand);
 
     virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
-    
+    virtual FString GetReferencerName() const override;
+
     virtual UWorld* GetDungeonWorld() = 0;
 
     // Run all the queued commands. This will be called from the game thread. The commands might have been inserted from the background thread

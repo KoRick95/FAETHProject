@@ -52,6 +52,11 @@ void FSceneProviderCommand::AddReferencedObjects(FReferenceCollector& Collector)
     Collector.AddReferencedObjects(Context.SpawnLogics);
 }
 
+FString FSceneProviderCommand::GetReferencerName() const {
+    static const FString NameString = TEXT("FSceneProviderCommand");
+    return NameString;
+}
+
 void FSceneProviderCommand::AddNodeTag(AActor* Actor, const FName& NodeId, bool bApplyPrefix /* = true */) {
     if (Actor) {
         const FName NodeTag = bApplyPrefix ? FDungeonThemeEngineUtils::CreateNodeTagFromId(NodeId) : NodeId;
@@ -135,6 +140,11 @@ void SceneProviderCommand_CreateMesh::AddReferencedObjects(FReferenceCollector& 
     if (Mesh) Collector.AddReferencedObject(Mesh);
 }
 
+FString SceneProviderCommand_CreateMesh::GetReferencerName() const {
+    static const FString NameString = TEXT("SceneProviderCommand_CreateMesh");
+    return NameString;
+}
+
 void SceneProviderCommand_AddLight::ExecuteImpl(UWorld* World) {
     ALight* Light = nullptr;
     UPointLightComponent* PointLightComponent = nullptr;
@@ -194,9 +204,19 @@ void SceneProviderCommand_AddLight::AddReferencedObjects(FReferenceCollector& Co
     if (LightTemplate) Collector.AddReferencedObject(LightTemplate);
 }
 
+FString SceneProviderCommand_AddLight::GetReferencerName() const {
+    static const FString NameString = TEXT("SceneProviderCommand_AddLight");
+    return NameString;
+}
+
 void SceneProviderCommand_AddParticleSystem::AddReferencedObjects(FReferenceCollector& Collector) {
     FSceneProviderCommand::AddReferencedObjects(Collector);
     if (ParticleTemplate) Collector.AddReferencedObject(ParticleTemplate);
+}
+
+FString SceneProviderCommand_AddParticleSystem::GetReferencerName() const {
+    static const FString NameString = TEXT("SceneProviderCommand_AddParticleSystem");
+    return NameString;
 }
 
 void SceneProviderCommand_AddParticleSystem::ExecuteImpl(UWorld* World) {
@@ -227,6 +247,11 @@ void SceneProviderCommand_AddActor::AddReferencedObjects(FReferenceCollector& Co
     if (ClassTemplate) Collector.AddReferencedObject(ClassTemplate);
 }
 
+FString SceneProviderCommand_AddActor::GetReferencerName() const {
+    static const FString NameString = TEXT("SceneProviderCommand_AddActor");
+    return NameString;
+}
+
 void SceneProviderCommand_AddActor::ExecuteImpl(UWorld* World) {
     FActorSpawnParameters SpawnParams;
     SpawnParams.OverrideLevel = LevelOverride;
@@ -248,6 +273,11 @@ void SceneProviderCommand_AddActor::ExecuteImpl(UWorld* World) {
 void SceneProviderCommand_CloneActor::AddReferencedObjects(FReferenceCollector& Collector) {
     FSceneProviderCommand::AddReferencedObjects(Collector);
     if (ActorTemplate) Collector.AddReferencedObject(ActorTemplate);
+}
+
+FString SceneProviderCommand_CloneActor::GetReferencerName() const {
+    static const FString NameString = TEXT("SceneProviderCommand_CloneActor");
+    return NameString;
 }
 
 void SceneProviderCommand_CloneActor::ExecuteImpl(UWorld* World) {
@@ -295,6 +325,11 @@ void SceneProviderCommand_CloneActor::ExecuteImpl(UWorld* World) {
 void SceneProviderCommand_SetActorTransform::AddReferencedObjects(FReferenceCollector& Collector) {
     FSceneProviderCommand::AddReferencedObjects(Collector);
     if (Actor) Collector.AddReferencedObject(Actor);
+}
+
+FString SceneProviderCommand_SetActorTransform::GetReferencerName() const {
+    static const FString NameString = TEXT("SceneProviderCommand_SetActorTransform");
+    return NameString;
 }
 
 void SceneProviderCommand_SetActorTransform::ExecuteImpl(UWorld* World) {
@@ -347,6 +382,11 @@ void SceneProviderCommand_ReuseActor::AddReferencedObjects(FReferenceCollector& 
     if (ActorToReuse) Collector.AddReferencedObject(ActorToReuse);
 }
 
+FString SceneProviderCommand_ReuseActor::GetReferencerName() const {
+    static const FString NameString = TEXT("SceneProviderCommand_ReuseActor");
+    return NameString;
+}
+
 void SceneProviderCommand_ReuseActor::ExecuteImpl(UWorld* World) {
     if (ActorToReuse) {
         if (bRerunConstructionScripts && World && World->WorldType == EWorldType::Editor) {
@@ -363,6 +403,11 @@ void SceneProviderCommand_ReuseActor::ExecuteImpl(UWorld* World) {
 void SceneProviderCommand_ReuseStaticMesh::AddReferencedObjects(FReferenceCollector& Collector) {
     SceneProviderCommand_ReuseActor::AddReferencedObjects(Collector);
     if (Mesh) Collector.AddReferencedObject(Mesh);
+}
+
+FString SceneProviderCommand_ReuseStaticMesh::GetReferencerName() const {
+    static const FString NameString = TEXT("SceneProviderCommand_ReuseStaticMesh");
+    return NameString;
 }
 
 void SceneProviderCommand_ReuseStaticMesh::ExecuteImpl(UWorld* World) {
@@ -387,6 +432,11 @@ void SceneProviderCommand_ReuseLight::AddReferencedObjects(FReferenceCollector& 
     if (LightTemplate) Collector.AddReferencedObject(LightTemplate);
 }
 
+FString SceneProviderCommand_ReuseLight::GetReferencerName() const {
+    static const FString NameString = TEXT("SceneProviderCommand_ReuseLight");
+    return NameString;
+}
+
 void SceneProviderCommand_ReuseLight::ExecuteImpl(UWorld* World) {
     if (USpotLightComponent* SpotLightTemplate = Cast<USpotLightComponent>(LightTemplate)) {
         if (ASpotLight* SpotLightActor = Cast<ASpotLight>(ActorToReuse)) {
@@ -409,6 +459,11 @@ void SceneProviderCommand_ReuseParticleSystem::AddReferencedObjects(FReferenceCo
     if (ParticleTemplate) Collector.AddReferencedObject(ParticleTemplate);
 }
 
+FString SceneProviderCommand_ReuseParticleSystem::GetReferencerName() const {
+    static const FString NameString = TEXT("SceneProviderCommand_ReuseParticleSystem");
+    return NameString;
+}
+
 void SceneProviderCommand_ReuseParticleSystem::ExecuteImpl(UWorld* World) {
     AEmitter* EmitterActor = Cast<AEmitter>(ActorToReuse);
     if (EmitterActor) {
@@ -422,6 +477,11 @@ void SceneProviderCommand_ReuseParticleSystem::ExecuteImpl(UWorld* World) {
 void SceneProviderCommand_ReuseActorTemplate::AddReferencedObjects(FReferenceCollector& Collector) {
     SceneProviderCommand_ReuseActor::AddReferencedObjects(Collector);
     if (ClassTemplate) Collector.AddReferencedObject(ClassTemplate);
+}
+
+FString SceneProviderCommand_ReuseActorTemplate::GetReferencerName() const {
+    static const FString NameString = TEXT("SceneProviderCommand_ReuseActorTemplate");
+    return NameString;
 }
 
 void SceneProviderCommand_ReuseActorTemplate::ExecuteImpl(UWorld* World) {
@@ -443,6 +503,11 @@ void SceneProviderCommand_ReuseClonedActor::AddReferencedObjects(FReferenceColle
     if (ActorTemplate) Collector.AddReferencedObject(ActorTemplate);
 }
 
+FString SceneProviderCommand_ReuseClonedActor::GetReferencerName() const {
+    static const FString NameString = TEXT("SceneProviderCommand_ReuseClonedActor");
+    return NameString;
+}
+
 void SceneProviderCommand_ReuseClonedActor::ExecuteImpl(UWorld* World) {
     if (ActorTemplate && !ActorToReuse->IsA(ActorTemplate->GetClass())) {
         ActorToReuse->Destroy();
@@ -460,5 +525,10 @@ void SceneProviderCommand_ReuseClonedActor::ExecuteImpl(UWorld* World) {
 void SceneProviderCommand_DestroyActor::AddReferencedObjects(FReferenceCollector& Collector) {
     FSceneProviderCommand::AddReferencedObjects(Collector);
     if (Actor) Collector.AddReferencedObject(Actor);
+}
+
+FString SceneProviderCommand_DestroyActor::GetReferencerName() const {
+    static const FString NameString = TEXT("SceneProviderCommand_DestroyActor");
+    return NameString;
 }
 

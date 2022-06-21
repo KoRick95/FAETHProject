@@ -29,6 +29,11 @@ void FSnapMapEdTool::OnRedo() {
 void FSnapMapEdTool::AddReferencedObjects(FReferenceCollector& Collector) {
 }
 
+FString FSnapMapEdTool::GetReferencerName() const {
+    static const FString NameString = TEXT("FSnapMapEdTool");
+    return NameString;
+}
+
 UObject* FSnapMapEdTool::GetToolModel() const {
     return nullptr;
 }

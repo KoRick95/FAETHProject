@@ -170,6 +170,11 @@ void SSnapMapTestRunner::AddReferencedObjects(FReferenceCollector& Collector) {
     }
 }
 
+FString SSnapMapTestRunner::GetReferencerName() const {
+    static const FString NameString = TEXT("SSnapMapTestRunner");
+    return NameString;
+}
+
 bool SSnapMapTestRunner::ValidateConfiguration(FText& OutErrorMessage) {
     if (!Settings->ModuleDatabase) {
         OutErrorMessage = LOCTEXT("ErrorNoModule", "Missing Module Database reference in settings");

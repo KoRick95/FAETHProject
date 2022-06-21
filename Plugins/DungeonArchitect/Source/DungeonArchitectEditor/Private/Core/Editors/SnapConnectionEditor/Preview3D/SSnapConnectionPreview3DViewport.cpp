@@ -59,6 +59,11 @@ void SSnapConnectionPreview3DViewport::AddReferencedObjects(FReferenceCollector&
     Collector.AddReferencedObject(PreviewActor);
 }
 
+FString SSnapConnectionPreview3DViewport::GetReferencerName() const {
+    static const FString NameString = TEXT("SSnapConnectionPreview3DViewport");
+    return NameString;
+}
+
 
 void SSnapConnectionPreview3DViewport::OnToggleDebugData() {
 

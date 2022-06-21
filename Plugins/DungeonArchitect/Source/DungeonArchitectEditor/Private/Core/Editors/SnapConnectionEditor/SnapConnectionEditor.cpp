@@ -320,6 +320,11 @@ void FSnapConnectionEditor::AddReferencedObjects(FReferenceCollector& Collector)
     Collector.AddReferencedObject(AssetBeingEdited);
 }
 
+FString FSnapConnectionEditor::GetReferencerName() const {
+    static const FString NameString = TEXT("FSnapConnectionEditor");
+    return NameString;
+}
+
 void FSnapConnectionEditor::NotifyPreChange(FProperty* PropertyAboutToChange) {
 
 }

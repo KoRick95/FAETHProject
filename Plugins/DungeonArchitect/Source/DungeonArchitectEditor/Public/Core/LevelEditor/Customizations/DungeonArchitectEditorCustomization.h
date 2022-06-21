@@ -50,6 +50,7 @@ public:
     virtual void CustomizeDetails(IDetailLayoutBuilder& DetailBuilder) override;
     // End of IDetailCustomization interface
     virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+    virtual FString GetReferencerName() const override;
 
     static TSharedRef<IDetailCustomization> MakeInstance();
     static FReply BuildDatabaseCache(IDetailLayoutBuilder* DetailBuilder);

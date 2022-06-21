@@ -186,8 +186,7 @@ bool UGridFlowQuery::GetChunkAtWorldCoord(const FVector& InWorldCoord, FGridFlow
     FVector TileCoord = ConvertWorldToTileCoord(InWorldCoord);
     const FFlowTilemapCell* CellPtr = Model->Tilemap->GetSafe(TileCoord.X, TileCoord.Y);
     if (CellPtr) {
-        if (CellPtr->CellType != EFlowTilemapCellType::Empty && CellPtr->CellType !=
-            EFlowTilemapCellType::Custom) {
+        if (CellPtr->CellType != EFlowTilemapCellType::Empty && CellPtr->CellType != EFlowTilemapCellType::Custom) {
             return GetChunkAtLayoutNodeCoord(CellPtr->ChunkCoord, Result);
         }
     }

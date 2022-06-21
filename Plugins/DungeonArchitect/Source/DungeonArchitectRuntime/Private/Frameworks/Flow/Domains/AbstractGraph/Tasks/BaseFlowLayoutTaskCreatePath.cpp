@@ -148,14 +148,16 @@ void UBaseFlowLayoutTaskCreatePath::Execute(const FFlowExecutionInput& Input, co
 				UFlowAbstractNode* Node1 = GraphQuery.GetNode(NodeId1);
 				UFlowAbstractNode* Node2 = GraphQuery.GetNode(NodeId2);
 				if (Node1 && Node2) {
-					UFlowGraphItem* FirstItem = Node1->CreateNewItem<UFlowGraphItem>();
+					UFlowGraphItem* FirstItem = Node1->CreateNewItem(GetTeleporterItemClass());
 					FirstItem->ItemType = EFlowGraphItemType::Teleporter;
 					FirstItem->MarkerName = TeleporterMarkerName;
+					ExtendTeleporterItem(FirstItem);
 
 					// Create the second item
-					UFlowGraphItem* SecondItem = Node2->CreateNewItem<UFlowGraphItem>();
+					UFlowGraphItem* SecondItem = Node2->CreateNewItem(GetTeleporterItemClass());
 					SecondItem->ItemType = EFlowGraphItemType::Teleporter;
 					SecondItem->MarkerName = TeleporterMarkerName;
+					ExtendTeleporterItem(SecondItem);
 
 					// Link the items together
 					FirstItem->ReferencedItemIds.Add(SecondItem->ItemId);
@@ -170,6 +172,10 @@ void UBaseFlowLayoutTaskCreatePath::Execute(const FFlowExecutionInput& Input, co
 
 	Output.ErrorMessage = "Cannot find path";
 	Output.ExecutionResult = EFlowTaskExecutionResult::FailRetry;
+}
+
+TSubclassOf<UFlowGraphItem> UBaseFlowLayoutTaskCreatePath::GetTeleporterItemClass() const {
+	return UFlowGraphItem::StaticClass();
 }
 
 bool UBaseFlowLayoutTaskCreatePath::GetParameter(const FString& InParameterName, FDAAttribute& OutValue) {
@@ -207,4 +213,3 @@ bool UBaseFlowLayoutTaskCreatePath::SetParameterSerialized(const FString& InPara
 
 	return false;
 }
-

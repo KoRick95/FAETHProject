@@ -126,6 +126,19 @@ private:
 };
 
 
+void InstanceMeshContext::AddReferencedObjects(FReferenceCollector& Collector) {
+    Collector.AddReferencedObject(Dungeon);
+    Collector.AddReferencedObject(InstancedActor);
+    if (LevelOverride) {
+        Collector.AddReferencedObject(LevelOverride);
+    }
+}
+
+FString InstanceMeshContext::GetReferencerName() const {
+    static const FString NameString = TEXT("InstanceMeshContext");
+    return NameString;
+}
+
 void FInstancedDungeonSceneProvider::OnDungeonBuildStart() {
     FPooledDungeonSceneProvider::OnDungeonBuildStart();
     Context = MakeShareable(new InstanceMeshContext());

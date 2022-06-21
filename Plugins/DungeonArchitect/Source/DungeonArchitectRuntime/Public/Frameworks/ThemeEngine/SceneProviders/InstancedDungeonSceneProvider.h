@@ -14,13 +14,8 @@ struct InstanceMeshContext : public FGCObject {
     ADungeon* Dungeon = nullptr;
     ULevel* LevelOverride = nullptr;
 
-    virtual void AddReferencedObjects(FReferenceCollector& Collector) override {
-        Collector.AddReferencedObject(Dungeon);
-        Collector.AddReferencedObject(InstancedActor);
-        if (LevelOverride) {
-            Collector.AddReferencedObject(LevelOverride);
-        }
-    }
+    virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+    virtual FString GetReferencerName() const override;
 };
 
 

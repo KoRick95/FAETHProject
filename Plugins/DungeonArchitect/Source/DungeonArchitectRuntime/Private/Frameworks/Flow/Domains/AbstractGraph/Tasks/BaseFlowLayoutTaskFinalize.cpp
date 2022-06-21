@@ -78,7 +78,7 @@ void UBaseFlowLayoutTaskFinalize::Execute(const FFlowExecutionInput& Input, cons
             float* WeightPtr = Weights.Find(Node->NodeId);
             if (!WeightPtr) continue;
             
-            UFlowGraphItem* DebugItem = Node->CreateNewItem<UFlowGraphItem>();
+            UFlowGraphItem* DebugItem = Node->CreateNewItem(UFlowGraphItem::StaticClass());
             DebugItem->ItemType = EFlowGraphItemType::Custom;
             DebugItem->CustomInfo.PreviewText = FString::Printf(TEXT("%d"), FMath::RoundToInt(*WeightPtr));
             DebugItem->CustomInfo.PreviewBackgroundColor = FLinearColor::Black;

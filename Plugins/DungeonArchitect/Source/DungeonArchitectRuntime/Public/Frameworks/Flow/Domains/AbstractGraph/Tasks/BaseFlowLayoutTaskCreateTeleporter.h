@@ -5,6 +5,8 @@
 #include "Frameworks/Flow/Domains/AbstractGraph/Tasks/BaseFlowLayoutTask.h"
 #include "BaseFlowLayoutTaskCreateTeleporter.generated.h"
 
+class UFlowGraphItem;
+
 UCLASS(Abstract)
 class DUNGEONARCHITECTRUNTIME_API UBaseFlowLayoutTaskCreateTeleporter : public UBaseFlowLayoutTask {
     GENERATED_BODY()
@@ -38,5 +40,11 @@ public:
     virtual bool GetParameter(const FString& InParameterName, FDAAttribute& OutValue) override;
     virtual bool SetParameter(const FString& InParameterName, const FDAAttribute& InValue) override;
     virtual bool SetParameterSerialized(const FString& InParameterName, const FString& InSerializedText) override;
+
+protected:
+    virtual TSubclassOf<UFlowGraphItem> GetEntranceItemClass() const;
+    virtual TSubclassOf<UFlowGraphItem> GetExitItemClass() const;
+    virtual void ExtendEntranceItem(UFlowGraphItem* InItem) {}
+    virtual void ExtendExitItem(UFlowGraphItem* InItem) {}
 };
 

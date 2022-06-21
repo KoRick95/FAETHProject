@@ -27,6 +27,8 @@ public:
     virtual void ExecuteCustomCommand(TSharedPtr<FSceneProviderCommand> SceneCommand) override;
 
     virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+    virtual FString GetReferencerName() const override;
+
     virtual UWorld* GetDungeonWorld() override;
 
 protected:

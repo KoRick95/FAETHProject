@@ -48,6 +48,10 @@ public:
     virtual bool SetParameter(const FString& InParameterName, const FDAAttribute& InValue) override;
     virtual bool SetParameterSerialized(const FString& InParameterName, const FString& InSerializedText) override;
 
+protected:
+    virtual TSubclassOf<UFlowGraphItem> GetKeyItemClass() const;
+    virtual void ExtendKeyItem(UFlowGraphItem* InItem) {}
+    
 private:
     bool FindKeyLockSetup(const FFlowAbstractGraphQuery& GraphQuery, const FRandomStream& Random,
                           FGuid& OutKeyNodeId, FGuid& OutLockLinkId, FString& OutErrorMessage) const;

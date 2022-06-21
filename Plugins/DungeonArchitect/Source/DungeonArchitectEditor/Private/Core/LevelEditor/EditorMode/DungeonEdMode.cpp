@@ -50,6 +50,11 @@ void FEdModeDungeon::AddReferencedObjects(FReferenceCollector& Collector) {
     Collector.AddReferencedObject(ModeHandler);
 }
 
+FString FEdModeDungeon::GetReferencerName() const {
+    static const FString NameString = TEXT("FEdModeDungeon");
+    return NameString;
+}
+
 /** FEdMode: Called when the mode is entered */
 void FEdModeDungeon::Enter() {
     FEdMode::Enter();

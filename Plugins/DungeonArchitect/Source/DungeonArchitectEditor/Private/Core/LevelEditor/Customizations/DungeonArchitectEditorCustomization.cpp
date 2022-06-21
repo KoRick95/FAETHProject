@@ -582,6 +582,11 @@ void FSnapGridFlowModuleDatabaseCustomization::AddReferencedObjects(FReferenceCo
     }
 }
 
+FString FSnapGridFlowModuleDatabaseCustomization::GetReferencerName() const {
+    static const FString NameString = TEXT("FSnapGridFlowModuleDatabaseCustomization");
+    return NameString;
+}
+
 TSharedRef<IDetailCustomization> FSnapGridFlowModuleDatabaseCustomization::MakeInstance() {
     return MakeShareable(new FSnapGridFlowModuleDatabaseCustomization);
 }

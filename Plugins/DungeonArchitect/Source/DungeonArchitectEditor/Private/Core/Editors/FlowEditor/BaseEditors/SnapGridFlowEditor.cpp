@@ -139,6 +139,11 @@ FString FSnapGridFlowEditor::GetWorldCentricTabPrefix() const {
     return TEXT("SnapGridFlowEditor");
 }
 
+FString FSnapGridFlowEditor::GetReferencerName() const {
+    static const FString NameString = TEXT("FSnapGridFlowEditor");
+    return NameString;
+}
+
 TSharedPtr<FTabManager::FLayout> FSnapGridFlowEditor::CreateFrameLayout() const {
     TSharedPtr<FTabManager::FLayout> Layout = FTabManager::NewLayout(ConstructLayoutName("0.3.3"))
         ->AddArea
@@ -233,6 +238,11 @@ TSharedPtr<IFlowProcessDomainExtender> FSnapGridFlowTestRunnerTask::CreateDomain
 
 void SSnapGridFlowTestRunner::SetModuleDatabase(TWeakObjectPtr<USnapGridFlowModuleDatabase> InModuleDatabase) {
     ModuleDatabase = InModuleDatabase;
+}
+
+FString SSnapGridFlowTestRunner::GetReferencerName() const {
+    static const FString NameString = TEXT("SSnapGridFlowTestRunner");
+    return NameString;
 }
 
 #undef LOCTEXT_NAMESPACE

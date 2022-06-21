@@ -150,6 +150,11 @@ void FFlowDomainEdAbstractGraph3D::AddReferencedObjects(FReferenceCollector& Col
     }
 }
 
+FString FFlowDomainEdAbstractGraph3D::GetReferencerName() const {
+    static const FString NameString = TEXT("FFlowDomainEdAbstractGraph3D");
+    return NameString;
+}
+
 IFlowDomainPtr FFlowDomainEdAbstractGraph3D::CreateDomain() const {
     return MakeShareable(new FSnapGridFlowAbstractGraphDomain);
 }

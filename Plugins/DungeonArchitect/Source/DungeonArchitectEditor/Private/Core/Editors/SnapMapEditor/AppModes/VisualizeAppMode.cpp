@@ -181,6 +181,11 @@ void FSnapMapEditor_VisualizeAppMode::AddReferencedObjects(FReferenceCollector& 
     Collector.AddReferencedObject(Dungeon);
 }
 
+FString FSnapMapEditor_VisualizeAppMode::GetReferencerName() const {
+    static const FString NameString = TEXT("FSnapMapEditor_VisualizeAppMode");
+    return NameString;
+}
+
 void FSnapMapEditor_VisualizeAppMode::OnAssetSave() {
     SaveDungeonConfig();
 }

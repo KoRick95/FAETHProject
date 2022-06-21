@@ -192,6 +192,11 @@ void FFlowDomainEdTilemap::AddReferencedObjects(FReferenceCollector& Collector) 
     }
 }
 
+FString FFlowDomainEdTilemap::GetReferencerName() const {
+    static const FString NameString = TEXT("FFlowDomainEdTilemap");
+    return NameString;
+}
+
 void FFlowDomainEdTilemap::Tick(float DeltaTime) {
 }
 

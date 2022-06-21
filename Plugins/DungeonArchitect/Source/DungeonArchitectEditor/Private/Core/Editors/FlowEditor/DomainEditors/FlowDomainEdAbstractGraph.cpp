@@ -181,6 +181,11 @@ void FFlowDomainEdAbstractGraph::AddReferencedObjects(FReferenceCollector& Colle
     }
 }
 
+FString FFlowDomainEdAbstractGraph::GetReferencerName() const {
+    static const FString NameString = TEXT("FFlowDomainEdAbstractGraph");
+    return NameString;
+}
+
 
 #undef LOCTEXT_NAMESPACE
 

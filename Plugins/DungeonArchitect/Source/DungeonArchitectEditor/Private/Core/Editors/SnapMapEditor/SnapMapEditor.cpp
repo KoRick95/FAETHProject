@@ -116,6 +116,11 @@ void FSnapMapEditor::AddReferencedObjects(FReferenceCollector& Collector) {
     Collector.AddReferencedObject(DebugModeSettings);
 }
 
+FString FSnapMapEditor::GetReferencerName() const {
+    static const FString NameString = TEXT("FSnapMapEditor");
+    return NameString;
+}
+
 void FSnapMapEditor::NotifyPreChange(FProperty* PropertyAboutToChange) {
 
 }

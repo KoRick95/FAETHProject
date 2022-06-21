@@ -8,6 +8,7 @@
 class UFlowAbstractNode;
 struct FFlowAGGrowthState;
 struct FFlowAGStaticGrowthState;
+class UFlowGraphItem;
 
 UCLASS(Abstract)
 class DUNGEONARCHITECTRUNTIME_API UBaseFlowLayoutTaskCreatePath : public UBaseFlowLayoutTaskPathBuilderBase {
@@ -111,5 +112,9 @@ public:
     virtual bool SetParameter(const FString& InParameterName, const FDAAttribute& InValue) override;
     virtual bool SetParameterSerialized(const FString& InParameterName, const FString& InSerializedText) override;
 
+protected:
+    virtual TSubclassOf<UFlowGraphItem> GetTeleporterItemClass() const;
+    virtual void ExtendTeleporterItem(UFlowGraphItem* InItem) {}
+    
 };
 

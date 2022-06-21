@@ -28,7 +28,9 @@ public:
     virtual void OnUndo() override;
     virtual void OnRedo() override;
     virtual UObject* GetToolModel() const override;
+	
     virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+	virtual FString GetReferencerName() const override;
 
     TSharedPtr<FSnapMapEdModeRenderer> GetSnapMapRenderer();
     virtual FName GetToolFamily() const override;

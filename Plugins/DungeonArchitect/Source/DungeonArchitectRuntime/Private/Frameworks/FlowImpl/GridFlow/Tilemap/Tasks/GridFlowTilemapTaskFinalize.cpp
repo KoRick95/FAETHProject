@@ -10,6 +10,7 @@
 #include "Frameworks/FlowImpl/GridFlow/Tilemap/GridFlowTilemapDomain.h"
 
 #include "Containers/Queue.h"
+#include "Frameworks/FlowImpl/GridFlow/Common/GridFlowItem.h"
 
 void UGridFlowTilemapTaskFinalize::Execute(const FFlowExecutionInput& Input, const FFlowTaskExecutionSettings& InExecSettings, FFlowExecutionOutput& Output) {
     if (Input.IncomingNodeOutputs.Num() == 0) {
@@ -52,7 +53,7 @@ void UGridFlowTilemapTaskFinalize::Execute(const FFlowExecutionInput& Input, con
         }
     }
 
-    // Filter walkable paths on the free tiles (some free tile patches may be blocked by overlays like tree lines)
+    // Filter walkable paths on the free tiles (some free tile patches may be blocked by overlays like trees/rocks, making them unreachable)
     TArray<FVector> NodeKeys;
     FreeTilesByNode.GenerateKeyArray(NodeKeys);
 
@@ -60,10 +61,15 @@ void UGridFlowTilemapTaskFinalize::Execute(const FFlowExecutionInput& Input, con
         TArray<FFlowTilemapCell*>& FreeTiles = FreeTilesByNode.FindOrAdd(NodeCoord);
         FreeTiles = FilterWalkablePath(FreeTiles);
     }
+    
+    const FRandomStream& Random = *Input.Random;
+    for (const FVector& NodeCoord : NodeKeys) {
+        TArray<FFlowTilemapCell*>& FreeTiles = FreeTilesByNode.FindOrAdd(NodeCoord);
+        FMathUtils::Shuffle(FreeTiles, Random);
+    }
 
     FFlowTilemapDistanceField DistanceField(Tilemap);
 
-    const FRandomStream& Random = *Input.Random;
     // Add node items
     for (UFlowAbstractNode* Node : Graph->GraphNodes) {
         if (!Node) continue;
@@ -80,8 +86,113 @@ void UGridFlowTilemapTaskFinalize::Execute(const FFlowExecutionInput& Input, con
                 return;
             }
 
-            const int32 FreeTileIndex = Random.RandRange(0, FreeTiles.Num() - 1);
-            FFlowTilemapCell* FreeTile = FreeTiles[FreeTileIndex];
+            EGridFlowTilemapItemPlacementMode PlacementMode = EGridFlowTilemapItemPlacementMode::Random;
+            bool bAvoidPlacingNearDoors = true;
+            
+            if (const UGridFlowGraphItem* GridFlowItem = Cast<UGridFlowGraphItem>(Item)) {
+                PlacementMode = GridFlowItem->PlacementSettings.PlacementMode;
+                bAvoidPlacingNearDoors = GridFlowItem->PlacementSettings.bAvoidPlacingNearDoors;
+            }
+
+            static constexpr int NeighborDeltas[] = {
+                -1, 0,
+                1, 0,
+                0, -1,
+                0, 1
+            };
+
+            auto QueryNeighborTiles = [Tilemap](const FFlowTilemapCell* Tile, bool& OutNearDoor, bool& OutNearEdge) {
+                OutNearDoor = false;
+                OutNearEdge = false;
+                for (int i = 0; i < 4; i++) {
+                    const int DX = NeighborDeltas[i * 2];
+                    const int DY = NeighborDeltas[i * 2 + 1];
+                    const FIntPoint NCoord = Tile->TileCoord + FIntPoint(DX, DY);
+                    const FFlowTilemapCell* NCell = Tilemap->GetSafe(NCoord.X, NCoord.Y);
+                    if (NCell) {
+                        if (NCell->CellType == EFlowTilemapCellType::Door) {
+                            OutNearEdge = true;
+                            OutNearDoor = true;
+                        }
+                        else if (NCell->CellType != EFlowTilemapCellType::Floor) {
+                            OutNearEdge = true;
+                        }
+                    }
+                    else {
+                        OutNearEdge = true;
+                    }
+                }
+                    
+            };
+            
+            FFlowTilemapCell* FreeTile = nullptr;
+            if (PlacementMode == EGridFlowTilemapItemPlacementMode::NearEdges) {
+                // Find the first tile that is not adjacent to a floor tile
+                FFlowTilemapCell* BestEdgeTile = nullptr;
+                for (FFlowTilemapCell* Tile : FreeTiles) {
+                    if (!Tile) continue;
+
+                    bool bNearEdge = false;
+                    bool bNearDoor = false;
+                    QueryNeighborTiles(Tile, bNearDoor, bNearEdge);
+
+                    if (bNearEdge) {
+                        BestEdgeTile = Tile;
+                        if (bAvoidPlacingNearDoors && !bNearDoor) {
+                            break;
+                        }
+                    }
+                }
+                
+                FreeTile = BestEdgeTile ? BestEdgeTile : FreeTiles[0];
+            }
+            else if (PlacementMode == EGridFlowTilemapItemPlacementMode::Center) {
+                FVector2D CenterCoord = FVector2D::ZeroVector;
+                for (const FFlowTilemapCell* Tile : FreeTiles) {
+                    CenterCoord += FVector2D(Tile->TileCoord);
+                }
+                CenterCoord /= FreeTiles.Num();
+                
+                FFlowTilemapCell* BestCenterTile = nullptr;
+                float BestDistance = MAX_flt;
+                for (FFlowTilemapCell* Tile : FreeTiles) {
+                    const float Distance = (FVector2D(Tile->TileCoord) - CenterCoord).Size();
+                    if (Distance < BestDistance) {
+                        
+                        bool bNearEdge = false;
+                        bool bNearDoor = false;
+                        QueryNeighborTiles(Tile, bNearDoor, bNearEdge);
+                        
+                        if (!bAvoidPlacingNearDoors || !bNearDoor) {
+                            BestDistance = Distance;
+                            BestCenterTile = Tile;
+                        }
+                    }
+                }
+                
+                FreeTile = BestCenterTile ? BestCenterTile : FreeTiles[0];
+            }
+            else {
+                // Fallback to Random placement
+                // Since the list is shuffled, taking the first item from the list would pick a random tile
+                FFlowTilemapCell* BestTile = FreeTiles[0];
+                if (bAvoidPlacingNearDoors) {
+                    for (FFlowTilemapCell* Tile : FreeTiles) {
+                        bool bNearEdge = false;
+                        bool bNearDoor = false;
+                        QueryNeighborTiles(Tile, bNearDoor, bNearEdge);
+                        
+                        if (!bAvoidPlacingNearDoors || !bNearDoor) {
+                            BestTile = Tile;
+                            break;
+                        }
+                    }
+                }
+                
+                FreeTile = BestTile ? BestTile : FreeTiles[0];
+            }
+            check(FreeTile);
+            
             FreeTile->bHasItem = true;
             FreeTile->ItemId = Item->ItemId;
             FreeTiles.Remove(FreeTile);

@@ -307,6 +307,11 @@ void FSnapMapEditor_GraphDesignAppMode::AddReferencedObjects(FReferenceCollector
     }
 }
 
+FString FSnapMapEditor_GraphDesignAppMode::GetReferencerName() const {
+    static const FString NameString = TEXT("FSnapMapEditor_GraphDesignAppMode");
+    return NameString;
+}
+
 void FSnapMapEditor_GraphDesignAppMode::Tick(float DeltaTime) {
     if (bRequestValidation) {
         bRequestValidation = false;

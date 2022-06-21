@@ -114,6 +114,8 @@ public:
     virtual TSharedRef<SWidget> GetHistogramWidget() const override;
 
     virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+    virtual FString GetReferencerName() const override;
+
     virtual bool ValidateConfiguration(FText& OutErrorMessage) override;
 
     //~ Begin IDATestRunnerHistogramDataSource Interface

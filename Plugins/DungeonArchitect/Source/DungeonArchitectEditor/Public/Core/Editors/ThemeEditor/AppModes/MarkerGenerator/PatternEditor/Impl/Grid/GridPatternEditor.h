@@ -18,7 +18,8 @@ class AGridPatternEdGroundActor;
 class FMGGridPatternEditor : public IMGPatternEditor, public FGCObject {
 public:
 	virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
-	
+	virtual FString GetReferencerName() const override;
+
 	virtual void Tick(FPatternEditorViewportClient* InViewportClient, float DeltaSeconds) override;
 	virtual bool InputKey(FPatternEditorViewportClient* InViewportClient, FViewport* InViewport, int32 InControllerId, FKey InKey, EInputEvent InEvent, float InAmountDepressed, bool bInGamepad) override;
 	virtual void CapturedMouseMove(FPatternEditorViewportClient* InViewportClient, FViewport* InViewport, int32 InMouseX, int32 InMouseY) override;

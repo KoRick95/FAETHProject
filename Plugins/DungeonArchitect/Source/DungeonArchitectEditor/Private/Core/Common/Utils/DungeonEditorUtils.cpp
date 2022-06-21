@@ -105,6 +105,16 @@ void FDungeonEditorUtils::BuildDungeon(ADungeon* Dungeon) {
     CollapseDungeonItemFolder(Dungeon);
 }
 
+void FAssetPackageInfo::AddReferencedObjects(FReferenceCollector& Collector) {
+    Collector.AddReferencedObject(Asset);
+    Collector.AddReferencedObject(Package);
+}
+
+FString FAssetPackageInfo::GetReferencerName() const {
+    static const FString NameString = TEXT("FAssetPackageInfo");
+    return NameString;
+}
+
 FAssetPackageInfo FDungeonAssetUtils::DuplicateAsset(UObject* SourceAsset, const FString& TargetPackageName,
                                                      const FString& TargetObjectName) {
     FAssetPackageInfo Duplicate;

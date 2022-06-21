@@ -185,6 +185,11 @@ void FPooledDungeonSceneProvider::AddReferencedObjects(FReferenceCollector& Coll
     Collector.AddReferencedObject(World);
 }
 
+FString FPooledDungeonSceneProvider::GetReferencerName() const {
+    static const FString NameString = TEXT("FPooledDungeonSceneProvider");
+    return NameString;
+}
+
 UWorld* FPooledDungeonSceneProvider::GetDungeonWorld() {
     return World;
 }

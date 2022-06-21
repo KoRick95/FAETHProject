@@ -48,6 +48,10 @@ public:
     virtual FString GetWorldCentricTabPrefix() const override;
     // End of FAssetEditorToolkit
 
+    // FGCObject Interface
+    virtual FString GetReferencerName() const override;
+    // End of FGCObject Interface
+    
 protected:
     virtual bool RequiresCustomFrameLayout() const override { return true; }
     virtual TSharedPtr<FTabManager::FLayout> CreateFrameLayout() const override;
@@ -90,6 +94,7 @@ public:
     void SetModuleDatabase(TWeakObjectPtr<USnapGridFlowModuleDatabase> InModuleDatabase);
     void SetSupportsDoorCategory(bool bInSupportDoorCategory) { bSupportDoorCategory = bInSupportDoorCategory; }
     
+    virtual FString GetReferencerName() const override;
 private:
     TWeakObjectPtr<USnapGridFlowModuleDatabase> ModuleDatabase;
     bool bSupportDoorCategory = false;

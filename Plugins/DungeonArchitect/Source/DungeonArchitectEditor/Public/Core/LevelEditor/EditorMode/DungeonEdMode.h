@@ -26,6 +26,7 @@ public:
 
     /** FGCObject interface */
     virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+	virtual FString GetReferencerName() const override;
 
     /** FEdMode: Called when the mode is entered */
     virtual void Enter() override;

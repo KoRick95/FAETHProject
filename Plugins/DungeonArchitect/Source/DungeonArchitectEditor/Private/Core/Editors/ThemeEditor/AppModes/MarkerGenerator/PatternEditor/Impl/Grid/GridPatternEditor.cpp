@@ -92,6 +92,11 @@ void FMGGridPatternEditor::AddReferencedObjects(FReferenceCollector& Collector) 
     Collector.AddReferencedObject(BuildSettings);
 }
 
+FString FMGGridPatternEditor::GetReferencerName() const {
+    static const FString NameString = TEXT("FMGGridPatternEditor");
+    return NameString;
+}
+
 void FMGGridPatternEditor::Tick(FPatternEditorViewportClient* InViewportClient, float DeltaSeconds) {
     const int32 MouseX = InViewportClient->Viewport->GetMouseX();
     const int32 MouseY = InViewportClient->Viewport->GetMouseY();
@@ -407,8 +412,8 @@ AGridPatternEdRuleActor* FMGGridPatternEditor::CreateRuleActor(UWorld* InWorld, 
 }
 
 void FMGGridPatternEditor::CheckHoveredHitProxy(FPatternEditorViewportClient* InViewportClient, HHitProxy* HoveredHitProxy) {
-    const HActor* HoveredActorHitProxy = static_cast<HActor*>(HoveredHitProxy);
-    if (HoveredHitProxy) {
+    if (HoveredHitProxy && HoveredHitProxy->IsA(HActor::StaticGetType())) {
+        const HActor* HoveredActorHitProxy = static_cast<HActor*>(HoveredHitProxy);
         LastHoveredActor = HoveredActorHitProxy->Actor;
         LastHoveredComponent = HoveredActorHitProxy->PrimComponent;
     }

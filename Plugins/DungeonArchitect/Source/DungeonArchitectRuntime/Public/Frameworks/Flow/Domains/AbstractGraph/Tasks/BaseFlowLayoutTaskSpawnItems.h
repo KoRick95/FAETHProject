@@ -121,6 +121,10 @@ public:
     virtual bool SetParameter(const FString& InParameterName, const FDAAttribute& InValue) override;
     virtual bool SetParameterSerialized(const FString& InParameterName, const FString& InSerializedText) override;
 
+protected:
+    virtual TSubclassOf<UFlowGraphItem> GetItemClass() const;
+    virtual void ExtendItem(UFlowGraphItem* InItem) {}
+    
 private:
     int32 GetSpawnCount(float Weight, const FRandomStream& Random);
 };

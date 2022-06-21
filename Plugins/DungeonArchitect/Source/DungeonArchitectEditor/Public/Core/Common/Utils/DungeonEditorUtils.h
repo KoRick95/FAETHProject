@@ -40,10 +40,8 @@ struct DUNGEONARCHITECTEDITOR_API FAssetPackageInfo : public FGCObject {
     //The package that contains the asset
     UPackage* Package;
 
-    virtual void AddReferencedObjects(FReferenceCollector& Collector) override {
-        Collector.AddReferencedObject(Asset);
-        Collector.AddReferencedObject(Package);
-    }
+    virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+    virtual FString GetReferencerName() const override;
 };
 
 class DUNGEONARCHITECTEDITOR_API FDungeonAssetUtils {

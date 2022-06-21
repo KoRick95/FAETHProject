@@ -42,10 +42,10 @@ void UBaseFlowLayoutTaskCreateKeyLock::Execute(const FFlowExecutionInput& Input,
         UFlowAbstractNode* KeyNode = GraphQuery.GetNode(KeyNodeId);
         UFlowAbstractLink* LockLink = GraphQuery.GetLink(LockLinkId);
         if (KeyNode && LockLink) {
-            UFlowGraphItem* KeyItem = KeyNode->CreateNewItem<UFlowGraphItem>();
+            UFlowGraphItem* KeyItem = KeyNode->CreateNewItem(GetKeyItemClass());
             KeyItem->ItemType = EFlowGraphItemType::Key;
             KeyItem->MarkerName = KeyMarkerName;
-            // TODO: Handle key placement data
+            ExtendKeyItem(KeyItem);
 
             UFlowGraphItem* LockItem = LockLink->CreateNewItem<UFlowGraphItem>();
             LockItem->ItemType = EFlowGraphItemType::Lock;
@@ -62,6 +62,10 @@ void UBaseFlowLayoutTaskCreateKeyLock::Execute(const FFlowExecutionInput& Input,
 
     Output.ErrorMessage = ErrorMessage;
     Output.ExecutionResult = EFlowTaskExecutionResult::FailRetry;
+}
+
+TSubclassOf<UFlowGraphItem> UBaseFlowLayoutTaskCreateKeyLock::GetKeyItemClass() const {
+    return UFlowGraphItem::StaticClass();
 }
 
 bool UBaseFlowLayoutTaskCreateKeyLock::FindKeyLockSetup(const FFlowAbstractGraphQuery& GraphQuery, const FRandomStream& Random,

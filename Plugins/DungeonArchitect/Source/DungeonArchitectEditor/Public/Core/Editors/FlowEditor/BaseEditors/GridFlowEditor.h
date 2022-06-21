@@ -23,6 +23,10 @@ public:
     virtual FText GetBaseToolkitName() const override;
     virtual FString GetWorldCentricTabPrefix() const override;
     // End of FAssetEditorToolkit
+    
+    // FGCObject Interface
+    virtual FString GetReferencerName() const override;
+    // End of FGCObject Interface
 };
 
 //////////////////// Grid Flow Perf Editor ////////////////////
@@ -50,5 +54,7 @@ public:
 
     void Construct(const FArguments& InArgs, const TSharedRef<SDockTab>& ConstructUnderMajorTab,
                const TSharedPtr<SWindow>& ConstructUnderWindow, TWeakObjectPtr<UFlowAssetBase> InFlowAsset);
+
+    virtual FString GetReferencerName() const override;
 };
 

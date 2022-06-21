@@ -135,6 +135,11 @@ void FSnapMapEditor_DebugAppMode::AddReferencedObjects(FReferenceCollector& Coll
     Collector.AddReferencedObject(VisualizationActor);
 }
 
+FString FSnapMapEditor_DebugAppMode::GetReferencerName() const {
+    static const FString NameString = TEXT("FSnapMapEditor_DebugAppMode");
+    return NameString;
+}
+
 void FSnapMapEditor_DebugAppMode::OnResultNodeDoubleClicked(UEdGraphNode* InNode) {
     if (UEdGraphNode_DebugGrammarNode* DebugNode = Cast<UEdGraphNode_DebugGrammarNode>(InNode)) {
         if (DebugNode->bModuleAssigned) {

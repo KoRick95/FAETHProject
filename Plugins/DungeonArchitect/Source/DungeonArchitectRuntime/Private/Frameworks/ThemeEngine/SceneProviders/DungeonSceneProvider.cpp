@@ -69,6 +69,11 @@ void FDungeonSceneProvider::AddReferencedObjects(FReferenceCollector& Collector)
     }
 }
 
+FString FDungeonSceneProvider::GetReferencerName() const {
+    static const FString NameString = TEXT("FDungeonSceneProvider");
+    return NameString;
+}
+
 void FDungeonSceneProvider::RunGameThreadCommands(float MaxBuildTimePerFrameMs) {
     const double MAX_FRAME_TIME = MaxBuildTimePerFrameMs;
 

@@ -47,23 +47,33 @@ void UBaseFlowLayoutTaskCreateTeleporter::Execute(const FFlowExecutionInput& Inp
     check(FirstNode);
 
     // Create the first item
-    UFlowGraphItem* FirstItem = FirstNode->CreateNewItem<UFlowGraphItem>();
+    UFlowGraphItem* FirstItem = FirstNode->CreateNewItem(GetEntranceItemClass());
     FirstItem->ItemType = EFlowGraphItemType::Teleporter;
     FirstItem->MarkerName = TeleporterMarkerName;
+    ExtendEntranceItem(FirstItem);
     
     UFlowAbstractNode* SecondNode = GraphQuery.GetNode(SecondPathNodes[SecondPathIdx]);
     check(SecondNode);
     
     // Create the second item
-    UFlowGraphItem* SecondItem = SecondNode->CreateNewItem<UFlowGraphItem>();
+    UFlowGraphItem* SecondItem = SecondNode->CreateNewItem(GetExitItemClass());
     SecondItem->ItemType = EFlowGraphItemType::Teleporter;
     SecondItem->MarkerName = TeleporterMarkerName;
+    ExtendExitItem(SecondItem);
 
     // Link the items together
     FirstItem->ReferencedItemIds.Add(SecondItem->ItemId);
     SecondItem->ReferencedItemIds.Add(FirstItem->ItemId);
     
     Output.ExecutionResult = EFlowTaskExecutionResult::Success;
+}
+
+TSubclassOf<UFlowGraphItem> UBaseFlowLayoutTaskCreateTeleporter::GetEntranceItemClass() const {
+    return UFlowGraphItem::StaticClass();
+}
+
+TSubclassOf<UFlowGraphItem> UBaseFlowLayoutTaskCreateTeleporter::GetExitItemClass() const {
+    return UFlowGraphItem::StaticClass();
 }
 
 bool UBaseFlowLayoutTaskCreateTeleporter::GetParameter(const FString& InParameterName, FDAAttribute& OutValue) {
@@ -89,4 +99,3 @@ bool UBaseFlowLayoutTaskCreateTeleporter::SetParameterSerialized(const FString& 
 
     return false;
 }
-

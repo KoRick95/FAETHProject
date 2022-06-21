@@ -2,7 +2,7 @@
 
 #pragma once
 #include "CoreMinimal.h"
-#include "Stats/Stats.h"
+#include "Core/Utils/Stats.h"
 
 DECLARE_STATS_GROUP(TEXT("SGF"), STATGROUP_SGF, STATCAT_Advanced);
 

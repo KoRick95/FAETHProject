@@ -18,6 +18,7 @@ public:
     UObject* GetStateObject(const FName& InObjectID) const;
     void SetStateObject(const FName& InObjectID, UObject* InObject);
     virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+    virtual FString GetReferencerName() const override;
 
     template<typename T>
     T* GetState(const FName& InDomainID) {

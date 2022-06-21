@@ -41,6 +41,11 @@ void FGridDungeonEdTool::AddReferencedObjects(FReferenceCollector& Collector) {
     }
 }
 
+FString FGridDungeonEdTool::GetReferencerName() const {
+    static const FString NameString = TEXT("FGridDungeonEdTool");
+    return NameString;
+}
+
 UObject* FGridDungeonEdTool::GetToolModel() const {
     return ToolModel;
 }

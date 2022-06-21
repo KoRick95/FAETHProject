@@ -26,6 +26,11 @@ SFlowDomainEdViewport::~SFlowDomainEdViewport() {
 void SFlowDomainEdViewport::AddReferencedObjects(FReferenceCollector& Collector) {
 }
 
+FString SFlowDomainEdViewport::GetReferencerName() const {
+    static const FString NameString = TEXT("SFlowDomainEdViewport");
+    return NameString;
+}
+
 UWorld* SFlowDomainEdViewport::GetWorld() const {
     return PreviewScene->GetWorld();
 }

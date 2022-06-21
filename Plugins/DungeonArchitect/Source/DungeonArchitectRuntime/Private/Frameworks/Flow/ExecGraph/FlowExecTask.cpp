@@ -51,6 +51,11 @@ void FFlowExecNodeState::AddReferencedObjects(FReferenceCollector& Collector) {
     Collector.AddReferencedObjects(StateObjects);
 }
 
+FString FFlowExecNodeState::GetReferencerName() const {
+    static const FString NameString = TEXT("FFlowExecNodeState");
+    return NameString;
+}
+
 
 ////////////////////////////// UFlowExecStateCloneable //////////////////////////////
 

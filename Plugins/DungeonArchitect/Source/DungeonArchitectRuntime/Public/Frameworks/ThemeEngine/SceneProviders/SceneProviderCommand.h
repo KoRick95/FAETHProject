@@ -45,6 +45,7 @@ public:
     void SetShouldWaitTillEndOfFrame(bool InWaitTillEndOfFrame) { bWaitForFrameUpdate = InWaitTillEndOfFrame; }
 
     virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+    virtual FString GetReferencerName() const override;
 
     static FName TagComplexActor; // If this tag is preset, we do not reuse this object, instead destroy and recreate it
 
@@ -108,6 +109,7 @@ public:
     }
 
     virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+    virtual FString GetReferencerName() const override;
 
 protected:
     virtual void ExecuteImpl(UWorld* World) override;
@@ -131,6 +133,7 @@ public:
     }
 
     virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+    virtual FString GetReferencerName() const override;
 
 protected:
     virtual void ExecuteImpl(UWorld* World) override;
@@ -151,6 +154,7 @@ public:
     }
 
     virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+    virtual FString GetReferencerName() const override;
 
 protected:
     virtual void ExecuteImpl(UWorld* World) override;
@@ -171,6 +175,7 @@ public:
     }
 
     virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+    virtual FString GetReferencerName() const override;
 
 protected:
     virtual void ExecuteImpl(UWorld* World) override;
@@ -212,6 +217,7 @@ public:
     }
 
     virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+    virtual FString GetReferencerName() const override;
 
 protected:
     virtual void ExecuteImpl(UWorld* World) override;
@@ -232,6 +238,7 @@ public:
     }
 
     virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+    virtual FString GetReferencerName() const override;
 
 protected:
     virtual void ExecuteImpl(UWorld* World) override;
@@ -247,6 +254,7 @@ public:
     }
 
     virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+    virtual FString GetReferencerName() const override;
 
 protected:
     virtual void ExecuteImpl(UWorld* World) override;
@@ -287,6 +295,7 @@ public:
     }
 
     virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+    virtual FString GetReferencerName() const override;
 
 protected:
     virtual void ExecuteImpl(UWorld* World) override;
@@ -306,6 +315,7 @@ public:
     }
 
     virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+    virtual FString GetReferencerName() const override;
 
 protected:
     virtual void ExecuteImpl(UWorld* World) override;
@@ -323,6 +333,7 @@ public:
     }
 
     virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+    virtual FString GetReferencerName() const override;
 
 protected:
     virtual void ExecuteImpl(UWorld* World) override;
@@ -341,6 +352,7 @@ public:
     }
 
     virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+    virtual FString GetReferencerName() const override;
 
 protected:
     virtual void ExecuteImpl(UWorld* World) override;
@@ -358,6 +370,7 @@ public:
     }
 
     virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+    virtual FString GetReferencerName() const override;
 
 protected:
     virtual void ExecuteImpl(UWorld* World) override;
@@ -375,6 +388,7 @@ public:
     }
 
     virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+    virtual FString GetReferencerName() const override;
 
 protected:
     virtual void ExecuteImpl(UWorld* World) override;

@@ -558,6 +558,15 @@ void FThemeGraphAppMode::ShowObjectDetails(UObject* ObjectProperties, bool bForc
 	}
 }
 
+void FThemeGraphAppMode::SetBuilderClass(TSubclassOf<UDungeonBuilder> InBuilderClass) {
+	UDungeonThemeAsset* ThemeAsset = GetThemeAsset();
+	if (ThemeAsset && ThemeAsset->UpdateGraph && InBuilderClass) {
+		if (UEdGraph_DungeonProp* DungeonGraph = Cast<UEdGraph_DungeonProp>(ThemeAsset->UpdateGraph)) {
+			DungeonGraph->RecreateDefaultMarkerNodes(InBuilderClass);
+		}
+	}
+}
+
 void FThemeGraphAppMode::RecreateDefaultMarkerNodes() const {
 	UDungeonThemeAsset* ThemeAsset = GetThemeAsset();
 	if (ThemeAsset && ThemeAsset->UpdateGraph && ThemeAsset->PreviewViewportProperties) {
