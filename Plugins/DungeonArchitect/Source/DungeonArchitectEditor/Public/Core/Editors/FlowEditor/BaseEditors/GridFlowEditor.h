@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
@@ -23,6 +23,10 @@ public:
     virtual FText GetBaseToolkitName() const override;
     virtual FString GetWorldCentricTabPrefix() const override;
     // End of FAssetEditorToolkit
+    
+    // FGCObject Interface
+    virtual FString GetReferencerName() const override;
+    // End of FGCObject Interface
 };
 
 //////////////////// Grid Flow Perf Editor ////////////////////
@@ -50,5 +54,7 @@ public:
 
     void Construct(const FArguments& InArgs, const TSharedRef<SDockTab>& ConstructUnderMajorTab,
                const TSharedPtr<SWindow>& ConstructUnderWindow, TWeakObjectPtr<UFlowAssetBase> InFlowAsset);
+
+    virtual FString GetReferencerName() const override;
 };
 

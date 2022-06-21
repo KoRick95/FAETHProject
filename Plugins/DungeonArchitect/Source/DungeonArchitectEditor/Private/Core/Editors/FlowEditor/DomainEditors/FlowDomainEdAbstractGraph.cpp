@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Core/Editors/FlowEditor/DomainEditors/FlowDomainEdAbstractGraph.h"
 
@@ -6,9 +6,10 @@
 #include "Frameworks/Flow/Domains/AbstractGraph/Core/FlowAbstractLink.h"
 #include "Frameworks/Flow/Domains/AbstractGraph/GridFlowAbstractEdGraph.h"
 #include "Frameworks/Flow/Domains/AbstractGraph/GridFlowAbstractGraphHandler.h"
-#include "Frameworks/Flow/Domains/AbstractGraph/Implementations/GridFlowAbstractGraph.h"
 #include "Frameworks/Flow/Domains/AbstractGraph/Nodes/GridFlowAbstractEdGraphNodes.h"
 #include "Frameworks/Flow/ExecGraph/FlowExecTask.h"
+#include "Frameworks/FlowImpl/GridFlow/LayoutGraph/GridFlowAbstractGraph.h"
+#include "Frameworks/FlowImpl/GridFlow/LayoutGraph/GridFlowAbstractGraphDomain.h"
 
 #include "GraphEditor.h"
 
@@ -178,6 +179,11 @@ void FFlowDomainEdAbstractGraph::AddReferencedObjects(FReferenceCollector& Colle
     if (AbstractGraph) {
         Collector.AddReferencedObject(AbstractGraph);
     }
+}
+
+FString FFlowDomainEdAbstractGraph::GetReferencerName() const {
+    static const FString NameString = TEXT("FFlowDomainEdAbstractGraph");
+    return NameString;
 }
 
 

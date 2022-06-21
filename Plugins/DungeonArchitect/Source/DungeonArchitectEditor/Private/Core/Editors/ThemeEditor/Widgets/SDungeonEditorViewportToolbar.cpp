@@ -1,8 +1,8 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Core/Editors/ThemeEditor/Widgets/SDungeonEditorViewportToolbar.h"
 
-#include "Core/Editors/ThemeEditor/Widgets/SDungeonEditorViewport.h"
+#include "Core/Editors/ThemeEditor/Widgets/SThemePreviewViewport.h"
 
 #include "EditorViewportCommands.h"
 #include "LevelEditor.h"
@@ -17,7 +17,7 @@
 void SDungeonEditorViewportToolBar::Construct(const FArguments& InArgs) {
     Viewport = InArgs._Viewport;
 
-    TSharedRef<SDungeonEditorViewport> ViewportRef = Viewport.Pin().ToSharedRef();
+    TSharedRef<SThemePreviewViewport> ViewportRef = Viewport.Pin().ToSharedRef();
 
     FLevelEditorModule& LevelEditorModule = FModuleManager::GetModuleChecked<FLevelEditorModule>("LevelEditor");
 
@@ -31,7 +31,7 @@ void SDungeonEditorViewportToolBar::Construct(const FArguments& InArgs) {
         SNew(SBorder)
 		.BorderImage(FEditorStyle::GetBrush("NoBorder"))
 		// Color and opacity is changed based on whether or not the mouse cursor is hovering over the toolbar area
-		.ColorAndOpacity(this, &SViewportToolBar::OnGetColorAndOpacity)
+		//.ColorAndOpacity(this, &SViewportToolBar::OnGetColorAndOpacity)
 		.ForegroundColor(FEditorStyle::GetSlateColor(DefaultForegroundName))
         [
             SNew(SVerticalBox)

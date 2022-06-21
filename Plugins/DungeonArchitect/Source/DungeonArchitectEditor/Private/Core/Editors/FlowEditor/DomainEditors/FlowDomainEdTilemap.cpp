@@ -1,13 +1,13 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Core/Editors/FlowEditor/DomainEditors/FlowDomainEdTilemap.h"
 
 #include "Builders/GridFlow/GridFlowQuery.h"
 #include "Core/Editors/FlowEditor/FlowEditorUtils.h"
+#include "Frameworks/Flow/Domains/Tilemap/FlowTilemapRenderer.h"
 #include "Frameworks/Flow/Domains/Tilemap/Graph/TilemapGraphInfrastructure.h"
-#include "Frameworks/Flow/Domains/Tilemap/GridFlowTilemapDomain.h"
-#include "Frameworks/Flow/Domains/Tilemap/GridFlowTilemapRenderer.h"
 #include "Frameworks/Flow/ExecGraph/FlowExecTask.h"
+#include "Frameworks/FlowImpl/GridFlow/Tilemap/GridFlowTilemapDomain.h"
 
 #include "Engine/TextureRenderTarget2D.h"
 #include "IDetailsView.h"
@@ -48,9 +48,9 @@ void FFlowDomainEdTilemap::OnPreviewTilemapCellClicked(const FIntPoint& InTileCo
     TSharedPtr<IMediator> MediatorPtr = Mediator.Pin();
     
     if (Tilemap) {
-        const FGridFlowTilemapCell* CellPtr = Tilemap->GetSafe(InTileCoords.X, InTileCoords.Y);
+        const FFlowTilemapCell* CellPtr = Tilemap->GetSafe(InTileCoords.X, InTileCoords.Y);
         if (CellPtr) {
-            const FGridFlowTilemapCell& Cell = *CellPtr;
+            const FFlowTilemapCell& Cell = *CellPtr;
             if (Cell.bLayoutCell) {
                 RequestedChunkCoord = Cell.ChunkCoord;
                 bRequestSelection = true;
@@ -104,7 +104,7 @@ void FFlowDomainEdTilemap::FocusOnTileCoord(const FIntPoint& InTileCoords) {
     
     if (Tilemap) {
         float HeightCoord = 0;
-        const FGridFlowTilemapCell* CellPtr = Tilemap->GetSafe(InTileCoords.X, InTileCoords.Y);
+        const FFlowTilemapCell* CellPtr = Tilemap->GetSafe(InTileCoords.X, InTileCoords.Y);
         if (CellPtr) {
             HeightCoord = CellPtr->Height;
             const FVector Coord(InTileCoords.X, InTileCoords.Y, HeightCoord);
@@ -126,7 +126,7 @@ void FFlowDomainEdTilemap::Build(FFlowExecNodeStatePtr State) {
             MediatorPtr->GetAllTilemapItems(State, Items);
         }
 
-        FGridFlowTilemapRendererSettings RenderSettings;
+        FFlowTilemapRendererSettings RenderSettings;
         RenderSettings.bUseTextureTileSize = false;
         RenderSettings.TileSize = 10;
         RenderSettings.BackgroundColor = FLinearColor::Black;
@@ -140,7 +140,7 @@ void FFlowDomainEdTilemap::Build(FFlowExecNodeStatePtr State) {
 }
 
 IFlowDomainPtr FFlowDomainEdTilemap::CreateDomain() const {
-    return MakeShareable(new FFlowTilemapDomain);
+    return MakeShareable(new FGridFlowTilemapDomain);
 }
 
 bool FFlowDomainEdTilemap::IsTileCellSelected(const FVector& InChunkCoord) const {
@@ -190,6 +190,11 @@ void FFlowDomainEdTilemap::AddReferencedObjects(FReferenceCollector& Collector) 
     if (TilemapGraph) {
         Collector.AddReferencedObject(TilemapGraph);
     }
+}
+
+FString FFlowDomainEdTilemap::GetReferencerName() const {
+    static const FString NameString = TEXT("FFlowDomainEdTilemap");
+    return NameString;
 }
 
 void FFlowDomainEdTilemap::Tick(float DeltaTime) {

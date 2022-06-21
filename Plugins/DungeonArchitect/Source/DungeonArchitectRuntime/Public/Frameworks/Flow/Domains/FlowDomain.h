@@ -1,10 +1,9 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
 
 class UFlowExecTask;
-class UFlowExecTaskExtender;
 
 class DUNGEONARCHITECTRUNTIME_API IFlowDomain {
 public:
@@ -15,7 +14,6 @@ public:
 
 #if WITH_EDITOR
     virtual UFlowExecTask* TryCreateCompatibleTask(UFlowExecTask* InTaskObject) { return nullptr; }
-    virtual TArray<TSubclassOf<UFlowExecTaskExtender>> GetSupportedTaskExtensions(TSubclassOf<UFlowExecTask> InTaskClass) { return {}; }
 #endif // WITH_EDITOR
     
 };

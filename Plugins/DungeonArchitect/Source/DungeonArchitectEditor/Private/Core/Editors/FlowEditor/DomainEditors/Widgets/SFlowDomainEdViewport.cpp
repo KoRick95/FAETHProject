@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Core/Editors/FlowEditor/DomainEditors/Widgets/SFlowDomainEdViewport.h"
 
@@ -24,6 +24,11 @@ SFlowDomainEdViewport::~SFlowDomainEdViewport() {
 }
 
 void SFlowDomainEdViewport::AddReferencedObjects(FReferenceCollector& Collector) {
+}
+
+FString SFlowDomainEdViewport::GetReferencerName() const {
+    static const FString NameString = TEXT("SFlowDomainEdViewport");
+    return NameString;
 }
 
 UWorld* SFlowDomainEdViewport::GetWorld() const {

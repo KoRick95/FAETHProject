@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Builders/Grid/EditorMode/Tools/GridDungeonEdTool.h"
 
@@ -39,6 +39,11 @@ void FGridDungeonEdTool::AddReferencedObjects(FReferenceCollector& Collector) {
     if (ToolModel) {
         Collector.AddReferencedObject(ToolModel);
     }
+}
+
+FString FGridDungeonEdTool::GetReferencerName() const {
+    static const FString NameString = TEXT("FGridDungeonEdTool");
+    return NameString;
 }
 
 UObject* FGridDungeonEdTool::GetToolModel() const {

@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Core/Editors/SnapMapEditor/SnapMapTestRunner.h"
 
@@ -168,6 +168,11 @@ void SSnapMapTestRunner::AddReferencedObjects(FReferenceCollector& Collector) {
     if (Settings) {
         Collector.AddReferencedObject(Settings);
     }
+}
+
+FString SSnapMapTestRunner::GetReferencerName() const {
+    static const FString NameString = TEXT("SSnapMapTestRunner");
+    return NameString;
 }
 
 bool SSnapMapTestRunner::ValidateConfiguration(FText& OutErrorMessage) {

@@ -1,4 +1,5 @@
 #include "FaethCharacter.h"
+#include "FaethGameplayAbility.h"
 #include "FaethObjectTypes.h"
 
 // Sets default values
@@ -17,9 +18,9 @@ UAbilitySystemComponent* AFaethCharacter::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
-void AFaethCharacter::InitCharacterAbilities()
+void AFaethCharacter::InitAbilities()
 {
-	for (TSubclassOf<UGameplayAbility>& ability : InitialAbilityClasses)
+	for (TSubclassOf<UFaethGameplayAbility> ability : InitialAbilityClasses)
 	{
 		GainAbility(ability);
 	}
@@ -32,42 +33,34 @@ void AFaethCharacter::InitAttributes()
 		UE_LOG(LogTemp, Error, TEXT("ASC does not exist for %s."), *GetClass()->GetName());
 		return;
 	}
-
-	if (!InitAttributesEffectClass)
+	else if (InitAttributesEffectClasses.Num() == 0)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s does not have base attributes to initialise."), *GetClass()->GetName());
+		return;
 	}
-	else
+	else if (bHasInitialisedAttributes)
 	{
-		// Create a GE context and set the character as the source object
-		FGameplayEffectContextHandle GEContext = AbilitySystemComponent->MakeEffectContext();
-		GEContext.AddSourceObject(this);
+		UE_LOG(LogTemp, Display, TEXT("Attributes has already been initialised for %s."), *GetClass()->GetName());
+		return;
+	}
+
+	// Create a GE context and set the character as the source object
+	FGameplayEffectContextHandle GEContext = AbilitySystemComponent->MakeEffectContext();
+	GEContext.AddSourceObject(this);
+
+	for (int i = 0; i < InitAttributesEffectClasses.Num(); ++i)
+	{
+		if (!InitAttributesEffectClasses[i])
+			continue;
 
 		// Create a new GE object from the class
-		UGameplayEffect* GEInitAttributes = NewObject<UGameplayEffect>(GetTransientPackage(), InitAttributesEffectClass);
+		UGameplayEffect* GEInitAttributes = NewObject<UGameplayEffect>(GetTransientPackage(), InitAttributesEffectClasses[i]);
 
 		// Apply gameplay effect to initialise attributes
 		AbilitySystemComponent->ApplyGameplayEffectToSelf(GEInitAttributes, CharacterAttributeSet->GetLevel(), GEContext);
 
-		return;
+		bHasInitialisedAttributes = true;
 	}
-
-	CharacterAttributeSet->InitHealth(BaseHealth);
-	CharacterAttributeSet->InitMana(BaseMana);
-	CharacterAttributeSet->InitStamina(BaseStamina);
-	CharacterAttributeSet->InitStrength(BaseStrength);
-	CharacterAttributeSet->InitDexterity(BaseDexterity);
-	CharacterAttributeSet->InitIntelligence(BaseIntelligence);
-	CharacterAttributeSet->InitAgility(BaseAgility);
-	CharacterAttributeSet->InitDefence(BaseDefence);
-	CharacterAttributeSet->InitResistance(BaseResistance);
-	CharacterAttributeSet->InitPhysicalAttack(BasePhysicalAttack);
-	CharacterAttributeSet->InitMagicAttack(BaseMagicAttack);
-	CharacterAttributeSet->InitAttackSpeed(BaseAttackSpeed);
-	CharacterAttributeSet->InitHealthRegen(BaseHealthRegen);
-	CharacterAttributeSet->InitManaRegen(BaseManaRegen);
-	CharacterAttributeSet->InitStaminaRegen(BaseStaminaRegen);
-	CharacterAttributeSet->InitStaggerPower(BaseStaggerPower);
 }
 
 void AFaethCharacter::SetHealth(float Value)
@@ -128,48 +121,32 @@ bool AFaethCharacter::GetIsHostile(AFaethCharacter* other)
 		return false;
 }
 
-void AFaethCharacter::GainAbility(TSubclassOf<UGameplayAbility>& Ability)
+void AFaethCharacter::GainAbility(TSubclassOf<UFaethGameplayAbility> Ability)
 {
 	if (AbilitySystemComponent)
 	{
 		if (HasAuthority() && Ability)
 		{
-			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability, 1, 0));
+			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability, 1, static_cast<int32>(Ability.GetDefaultObject()->AbilityInputID), this));
 		}
-
-		AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	}
-}
-
-void AFaethCharacter::OnHealthChanged_Implementation(float Health, float MaxHealth)
-{
-	if (Health <= 0.0f && !bIsDead)
-	{
-		bIsDead = true;
-		BP_Death();
-	}
-}
-
-void AFaethCharacter::OnManaChanged_Implementation(float Mana, float MaxMana)
-{
-}
-
-void AFaethCharacter::OnStaminaChanged_Implementation(float Stamina, float MaxStamina)
-{
-}
-
-void AFaethCharacter::OnStaggerChanged_Implementation(float Stagger, float MaxStagger)
-{
 }
 
 void AFaethCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	CharacterAttributeSet->OnHealthChange.AddDynamic(this, &AFaethCharacter::OnHealthChanged);
-	CharacterAttributeSet->OnManaChange.AddDynamic(this, &AFaethCharacter::OnManaChanged);
-	CharacterAttributeSet->OnStaminaChange.AddDynamic(this, &AFaethCharacter::OnStaminaChanged);
 
-	InitAttributes();
+	CharacterAttributeSet->OnHealthChange.AddDynamic(this, &AFaethCharacter::NativeOnHealthChange);
+	CharacterAttributeSet->OnHealthChange.AddDynamic(this, &AFaethCharacter::BP_OnHealthChange);
+	CharacterAttributeSet->OnManaChange.AddDynamic(this, &AFaethCharacter::BP_OnManaChange);
+	CharacterAttributeSet->OnStaminaChange.AddDynamic(this, &AFaethCharacter::BP_OnStaminaChange);
+
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+		InitAttributes();
+		InitAbilities();
+	}
 }
 
 void AFaethCharacter::Tick(float DeltaTime)
@@ -180,15 +157,14 @@ void AFaethCharacter::Tick(float DeltaTime)
 void AFaethCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-
-	if (AbilitySystemComponent)
-		AbilitySystemComponent->InitAbilityActorInfo(this, this);
 }
 
-void AFaethCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AFaethCharacter::NativeOnHealthChange(float Health, float MaxHealth)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	//AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent,
-	//	FGameplayAbilityInputBinds(FString("ConfirmTarget"), FString("CancelTarget"), FString("AbilityInputID"), static_cast<int32>(EAbilityInputID::Confirm), static_cast<int32>(EAbilityInputID::Cancel)));
+	UE_LOG(LogTemp, Display, TEXT("Native on health change called."));
+	if (bHasInitialisedAttributes && !bIsDead && FMath::IsNearlyZero(Health, 0.1f))
+	{
+		bIsDead = true;
+		BP_OnDeath();
+	}
 }

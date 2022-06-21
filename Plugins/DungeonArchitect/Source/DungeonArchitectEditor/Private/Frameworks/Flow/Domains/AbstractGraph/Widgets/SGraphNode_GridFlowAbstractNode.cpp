@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Frameworks/Flow/Domains/AbstractGraph/Widgets/SGraphNode_GridFlowAbstractNode.h"
 
@@ -6,8 +6,8 @@
 #include "Frameworks/Flow/Common/Widgets/SGridFlowItemOverlay.h"
 #include "Frameworks/Flow/Domains/AbstractGraph/Core/FlowAbstractGraph.h"
 #include "Frameworks/Flow/Domains/AbstractGraph/GridFlowAbstractEdGraph.h"
-#include "Frameworks/Flow/Domains/AbstractGraph/Implementations/GridFlowAbstractGraph.h"
 #include "Frameworks/Flow/Domains/AbstractGraph/Nodes/GridFlowAbstractEdGraphNodes.h"
+#include "Frameworks/FlowImpl/GridFlow/LayoutGraph/GridFlowAbstractGraph.h"
 
 #include "SGraphPin.h"
 #include "Widgets/Layout/SBox.h"
@@ -102,8 +102,6 @@ public:
     void Construct(const FArguments& InArgs, UEdGraphPin* InPin) {
         this->SetCursor(EMouseCursor::Default);
 
-        typedef SGridFlowAbstractResultNodeOutputPin ThisClass;
-
         bShowLabel = true;
 
         GraphPinObj = InPin;
@@ -114,10 +112,10 @@ public:
 
         // Set up a hover for pins that is tinted the color of the pin.
         SBorder::Construct(SBorder::FArguments()
-                           .BorderImage(this, &ThisClass::GetPinBorder)
-                           .BorderBackgroundColor(this, &ThisClass::GetPinColor)
-                           .OnMouseButtonDown(this, &ThisClass::OnPinMouseDown)
-                           .Cursor(this, &ThisClass::GetPinCursor)
+                           .BorderImage(this, &SGridFlowAbstractResultNodeOutputPin::GetPinBorder)
+                           .BorderBackgroundColor(this, &SGridFlowAbstractResultNodeOutputPin::GetPinColor)
+                           .OnMouseButtonDown(this, &SGridFlowAbstractResultNodeOutputPin::OnPinMouseDown)
+                           .Cursor(this, &SGridFlowAbstractResultNodeOutputPin::GetPinCursor)
         );
     }
 

@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Core/LevelEditor/Assets/SnapGridFlow/SnapGridFlowActorFactories.h"
 
@@ -21,8 +21,7 @@ UObject* USnapGridFlowModuleBoundsActorFactory::GetAssetFromActorInstance(AActor
 
 AActor* USnapGridFlowModuleBoundsActorFactory::SpawnActor(UObject* InAsset, ULevel* InLevel, const FTransform& InTransform, const FActorSpawnParameters& InSpawnParams) {
     AActor* Actor = UActorFactory::SpawnActor(InAsset, InLevel, InTransform, InSpawnParams);
-    ASnapGridFlowModuleBoundsActor* ModuleBoundsActor = Cast<ASnapGridFlowModuleBoundsActor>(Actor);
-    if (ModuleBoundsActor) {
+    if (const ASnapGridFlowModuleBoundsActor* ModuleBoundsActor = Cast<ASnapGridFlowModuleBoundsActor>(Actor)) {
         ModuleBoundsActor->BoundsComponent->ModuleBounds = Cast<USnapGridFlowModuleBoundsAsset>(InAsset);
     }
     return Actor;

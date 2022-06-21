@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
@@ -16,6 +16,13 @@ class USnapGridFlowEditorSettings : public UFlowEditorSettings {
 public:
     UPROPERTY(EditAnywhere, Category = "Dungeon")
     TSoftObjectPtr<USnapGridFlowModuleDatabase> ModuleDatabase;
+
+    /**
+     * Supports door categories. When stitching the modules, only connections with the same door categories will be stitched together
+     * This will require more processing power, use it only when required
+     */
+    UPROPERTY(EditAnywhere, Category = "Dungeon")
+    bool bSupportDoorCategories = false;
 };
 
 class FSnapGridFlowEditor : public FFlowEditorBase {
@@ -32,6 +39,7 @@ public:
     virtual TSharedRef<SWidget> CreatePerfWidget(const TSharedRef<SDockTab> DockTab, TSharedPtr<SWindow> OwnerWindow) override;
     virtual void OnTestRunnerServiceStarted() override;
     virtual bool ShouldBuildPreviewDungeon() const override;
+    virtual void UpgradeAsset() const override;
     // End of FFlowEditorBase
 
     // FAssetEditorToolkit
@@ -40,6 +48,10 @@ public:
     virtual FString GetWorldCentricTabPrefix() const override;
     // End of FAssetEditorToolkit
 
+    // FGCObject Interface
+    virtual FString GetReferencerName() const override;
+    // End of FGCObject Interface
+    
 protected:
     virtual bool RequiresCustomFrameLayout() const override { return true; }
     virtual TSharedPtr<FTabManager::FLayout> CreateFrameLayout() const override;
@@ -53,6 +65,7 @@ private:
 /////////////////// Snap Grid Flow Perf Editor ///////////////////
 struct FSnapGridFlowTestRunnerSettings {
     int32 MaxTries = 0;
+    bool bSupportDoorCategory = false;
     TMap<FString, FString> ParameterOverrides;
     TWeakObjectPtr<UFlowAssetBase> FlowAsset;
     TWeakObjectPtr<class USnapGridFlowModuleDatabase> ModuleDatabase;
@@ -79,9 +92,12 @@ public:
     virtual void SetupSettingsObject(FSnapGridFlowTestRunnerSettings& OutSettings) override;
 
     void SetModuleDatabase(TWeakObjectPtr<USnapGridFlowModuleDatabase> InModuleDatabase);
-
+    void SetSupportsDoorCategory(bool bInSupportDoorCategory) { bSupportDoorCategory = bInSupportDoorCategory; }
+    
+    virtual FString GetReferencerName() const override;
 private:
     TWeakObjectPtr<USnapGridFlowModuleDatabase> ModuleDatabase;
+    bool bSupportDoorCategory = false;
 };
 
 

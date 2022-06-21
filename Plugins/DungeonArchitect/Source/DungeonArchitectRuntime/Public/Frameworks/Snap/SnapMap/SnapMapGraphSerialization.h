@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
@@ -20,10 +20,9 @@ struct DUNGEONARCHITECTRUNTIME_API FSnapMapModuleInstanceSerializedData {
 
     UPROPERTY()
     FName Category;
-    
 
     UPROPERTY()
-    FBox ModuleBounds;
+    FBox ModuleBounds = FBox(ForceInitToZero);
 };
 
 typedef TSnapGraphSerializer<FSnapMapModuleInstanceSerializedData> FSnapMapGraphSerializer;

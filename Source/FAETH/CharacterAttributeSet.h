@@ -22,6 +22,8 @@ class FAETH_API UCharacterAttributeSet : public UAttributeSet
 public:
 	UCharacterAttributeSet();
 
+	// May need to change the delegate params in the future.
+	// E.g. Single param showing delta instead of current attrib values.
 	FOnAttributeChangeDelegate OnHealthChange;
 	FOnAttributeChangeDelegate OnManaChange;
 	FOnAttributeChangeDelegate OnStaminaChange;
@@ -119,9 +121,9 @@ public:
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, Experience);
 
 public:
+	void AdjustAttributeForMaxChange(FGameplayAttributeData& Attribute, const FGameplayAttributeData& MaxAttribute, float NewMaxValue, const FGameplayAttribute& AttributeProperty);
+
+protected:
 	void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
-
-	UFUNCTION(BlueprintCallable)
-	void InitAttribute(ECharacterAttributeType AttributeType, float InitValue);
 };

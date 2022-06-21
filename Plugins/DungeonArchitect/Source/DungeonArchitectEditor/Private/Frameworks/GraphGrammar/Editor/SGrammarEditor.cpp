@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Frameworks/GraphGrammar/Editor/SGrammarEditor.h"
 
@@ -135,18 +135,6 @@ void SGrammarEditor::OnRuleAdd() {
 
         NotifyGrammarStateChanged();
     }
-}
-
-template <typename ItemType>
-void PerformReordering(ItemType Source, ItemType Dest, TArray<ItemType>& List) {
-    int32 SourceIndex = -1;
-    int32 DestIndex = -1;
-
-    if (!List.Find(Dest, DestIndex)) {
-        DestIndex = 0;
-    }
-    List.Remove(Source);
-    List.Insert(Source, DestIndex);
 }
 
 void SGrammarEditor::OnRuleReordered(UGraphGrammarProduction* Source, UGraphGrammarProduction* Dest) {

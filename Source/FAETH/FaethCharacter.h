@@ -6,6 +6,8 @@
 #include "CharacterAttributeSet.h"
 #include "FaethCharacter.generated.h"
 
+class UFaethGameplayAbility;
+
 UCLASS()
 class FAETH_API AFaethCharacter : public ACharacter, public IAbilitySystemInterface
 {
@@ -24,67 +26,23 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int TeamID = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "Init Attributes Effect")
-	TSubclassOf<UGameplayEffect> InitAttributesEffectClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "Initial Attributes")
+	TArray<TSubclassOf<UGameplayEffect>> InitAttributesEffectClasses;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "Initial Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> InitialAbilityClasses;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseHealth = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseMana = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseStamina = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseStrength = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseDexterity = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseIntelligence = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseAgility = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseDefence = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseResistance = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BasePhysicalAttack = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseMagicAttack = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseAttackSpeed = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseHealthRegen = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseManaRegen = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseStaminaRegen = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deprecated")
-	float BaseStaggerPower = 0;
-
 protected:
+	UPROPERTY(BlueprintReadOnly)
+	bool bHasInitialisedAttributes;
+
+	UPROPERTY(BlueprintReadOnly)
 	bool bIsDead;
 
 public:
 	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
-	void InitCharacterAbilities();
+	void InitAbilities();
 
 	UFUNCTION(BlueprintCallable)
 	void InitAttributes();
@@ -123,22 +81,22 @@ public:
 	bool GetIsHostile(AFaethCharacter* other);
 
 	UFUNCTION(BlueprintCallable)
-	void GainAbility(TSubclassOf<UGameplayAbility>& Ability);
+	void GainAbility(TSubclassOf<UFaethGameplayAbility> Ability);
 
-	UFUNCTION(BlueprintNativeEvent, Category = "Gameplay")
-	void OnHealthChanged(float Health, float MaxHealth);
+	UFUNCTION(BlueprintImplementableEvent, Category = "Gameplay", DisplayName = "OnHealthChanged")
+	void BP_OnHealthChange(float Health, float MaxHealth);
 
-	UFUNCTION(BlueprintNativeEvent, Category = "Gameplay")
-	void OnManaChanged(float Mana, float MaxMana);
+	UFUNCTION(BlueprintImplementableEvent, Category = "Gameplay", DisplayName = "OnManaChanged")
+	void BP_OnManaChange(float Mana, float MaxMana);
 
-	UFUNCTION(BlueprintNativeEvent, Category = "Gameplay")
-	void OnStaminaChanged(float Stamina, float MaxStamina);
+	UFUNCTION(BlueprintImplementableEvent, Category = "Gameplay", DisplayName = "OnStaminaChanged")
+	void BP_OnStaminaChange(float Stamina, float MaxStamina);
 
-	UFUNCTION(BlueprintNativeEvent, Category = "Gameplay")
-	void OnStaggerChanged(float Stagger, float MaxStagger);
+	UFUNCTION(BlueprintImplementableEvent, Category = "Gameplay", DisplayName = "OnStaggerChanged")
+	void BP_OnStaggerChange(float Stagger, float MaxStagger);
 
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnDeath"))
-	void BP_Death();
+	void BP_OnDeath();
 
 protected:
 	virtual void BeginPlay() override;
@@ -147,5 +105,6 @@ protected:
 
 	virtual void PossessedBy(AController* NewController) override;
 
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	UFUNCTION()
+	void NativeOnHealthChange(float Health, float MaxHealth);
 };

@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
@@ -114,6 +114,8 @@ public:
     virtual TSharedRef<SWidget> GetHistogramWidget() const override;
 
     virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+    virtual FString GetReferencerName() const override;
+
     virtual bool ValidateConfiguration(FText& OutErrorMessage) override;
 
     //~ Begin IDATestRunnerHistogramDataSource Interface

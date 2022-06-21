@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
@@ -51,13 +51,21 @@ public:
     bool ContainsItem(EFlowGraphItemType ItemType, int& Count);
     
 public:
+    /*
     template<typename TItem>
-    TItem* CreateNewItem() {
+    UFlowGraphItem* CreateNewItem() {
         TItem* NewItem = NewObject<TItem>(this, TItem::StaticClass());
         NodeItems.Add(NewItem);
         return NewItem;
     }
+    */
 
+    UFlowGraphItem* CreateNewItem(const TSubclassOf<UFlowGraphItem> InItemClass) {
+        UFlowGraphItem* NewItem = NewObject<UFlowGraphItem>(this, InItemClass);
+        NodeItems.Add(NewItem);
+        return NewItem;
+    }
+    
     /** Gets the domain data attached to this node. Adds a new one if not available */
     template<typename T>
     T* FindOrAddDomainData() {

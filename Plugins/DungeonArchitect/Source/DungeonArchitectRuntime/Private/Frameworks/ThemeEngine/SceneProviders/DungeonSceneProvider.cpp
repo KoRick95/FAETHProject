@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Frameworks/ThemeEngine/SceneProviders/DungeonSceneProvider.h"
 
@@ -67,6 +67,11 @@ void FDungeonSceneProvider::AddReferencedObjects(FReferenceCollector& Collector)
     if (LevelOverride) {
         Collector.AddReferencedObject(LevelOverride);
     }
+}
+
+FString FDungeonSceneProvider::GetReferencerName() const {
+    static const FString NameString = TEXT("FDungeonSceneProvider");
+    return NameString;
 }
 
 void FDungeonSceneProvider::RunGameThreadCommands(float MaxBuildTimePerFrameMs) {

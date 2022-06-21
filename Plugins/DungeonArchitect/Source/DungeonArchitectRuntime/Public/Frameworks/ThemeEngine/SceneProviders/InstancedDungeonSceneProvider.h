@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
@@ -14,13 +14,8 @@ struct InstanceMeshContext : public FGCObject {
     ADungeon* Dungeon = nullptr;
     ULevel* LevelOverride = nullptr;
 
-    virtual void AddReferencedObjects(FReferenceCollector& Collector) override {
-        Collector.AddReferencedObject(Dungeon);
-        Collector.AddReferencedObject(InstancedActor);
-        if (LevelOverride) {
-            Collector.AddReferencedObject(LevelOverride);
-        }
-    }
+    virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+    virtual FString GetReferencerName() const override;
 };
 
 

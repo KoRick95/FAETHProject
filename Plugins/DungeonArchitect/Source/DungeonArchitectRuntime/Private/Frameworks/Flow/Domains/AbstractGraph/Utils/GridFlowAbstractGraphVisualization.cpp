@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Frameworks/Flow/Domains/AbstractGraph/Utils/GridFlowAbstractGraphVisualization.h"
 
@@ -7,7 +7,7 @@
 #include "Frameworks/Flow/Domains/AbstractGraph/Core/FlowAbstractGraphQuery.h"
 #include "Frameworks/Flow/Domains/AbstractGraph/Core/FlowAbstractItem.h"
 #include "Frameworks/Flow/Domains/AbstractGraph/Core/FlowAbstractNode.h"
-#include "Frameworks/Flow/Domains/AbstractGraph/Implementations/GridFlowAbstractGraph3D.h"
+#include "Frameworks/FlowImpl/SnapGridFlow/LayoutGraph/SnapGridFlowAbstractGraph.h"
 
 #include "Components/TextRenderComponent.h"
 #include "Engine/StaticMesh.h"
@@ -19,67 +19,71 @@ DEFINE_LOG_CATEGORY_STATIC(LogFDAbstractGraphVis, Log, All);
 
 //////////////////////////////// FFDAbstractNodePreview ////////////////////////////////
 
+FDAbstractNodeVisualizerResources::FDAbstractNodeVisualizerResources()
+    : DefaultMaterial(FSoftObjectPath(TEXT("/DungeonArchitect/Core/Editors/FlowGraph/AbstractGraph3D/Materials/M_AbstractNode.M_AbstractNode")))
+    , SelectedMaterial(FSoftObjectPath(TEXT("/DungeonArchitect/Core/Editors/FlowGraph/AbstractGraph3D/Materials/M_AbstractNode_Selected.M_AbstractNode_Selected")))
+    , TextMaterial(FSoftObjectPath(TEXT("/DungeonArchitect/Core/Editors/FlowGraph/AbstractGraph3D/Materials/M_AbstractGraph_Text.M_AbstractGraph_Text")))
+    , BoundsMaterial(FSoftObjectPath(TEXT("/DungeonArchitect/Core/Editors/FlowGraph/AbstractGraph3D/Materials/M_AbstractGraphNodebounds_Inst.M_AbstractGraphNodebounds_Inst")))
+    , PlaneMesh(FSoftObjectPath(TEXT("/DungeonArchitect/Core/Editors/FlowGraph/AbstractGraph3D/Meshes/NodePlane.NodePlane")))
+    , BoundsMesh(FSoftObjectPath(TEXT("/DungeonArchitect/Core/Editors/FlowGraph/AbstractGraph3D/Meshes/NodeBounds.NodeBounds")))
+{    
+}
+
 UFDAbstractNodePreview::UFDAbstractNodePreview(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer)
 {
-    struct FConstructorStatics {
-        ConstructorHelpers::FObjectFinderOptional<UMaterialInterface> DefaultMaterial;
-        ConstructorHelpers::FObjectFinderOptional<UMaterialInterface> SelectedMaterial;
-        ConstructorHelpers::FObjectFinderOptional<UMaterialInterface> TextMaterial;
-        ConstructorHelpers::FObjectFinderOptional<UMaterialInterface> BoundsMaterial;
-        ConstructorHelpers::FObjectFinderOptional<UStaticMesh> PlaneMesh;
-        ConstructorHelpers::FObjectFinderOptional<UStaticMesh> BoundsMesh;
-        FConstructorStatics()
-            : DefaultMaterial(TEXT("/DungeonArchitect/Core/Editors/FlowGraph/AbstractGraph3D/Materials/M_AbstractNode"))
-            , SelectedMaterial(TEXT("/DungeonArchitect/Core/Editors/FlowGraph/AbstractGraph3D/Materials/M_AbstractNode_Selected"))
-            , TextMaterial(TEXT("/DungeonArchitect/Core/Editors/FlowGraph/AbstractGraph3D/Materials/M_AbstractGraph_Text"))
-            , BoundsMaterial(TEXT("/DungeonArchitect/Core/Editors/FlowGraph/AbstractGraph3D/Materials/M_AbstractGraphNodebounds_Inst"))
-            , PlaneMesh(TEXT("/DungeonArchitect/Core/Editors/FlowGraph/AbstractGraph3D/Meshes/NodePlane"))
-            , BoundsMesh(TEXT("/DungeonArchitect/Core/Editors/FlowGraph/AbstractGraph3D/Meshes/NodeBounds"))
-        {}
-    };
-    static FConstructorStatics ConstructorStatics;
+    NodeMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("BackgroundPlaneComponent");
+    NodeMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    NodeMeshComponent->SetupAttachment(this);
 
-    UMaterialInterface* MatDefaultTemplate = ConstructorStatics.DefaultMaterial.Get();
-    UMaterialInterface* MatSelectedTemplate = ConstructorStatics.SelectedMaterial.Get(); 
-    UMaterialInterface* MatBoundsTemplate = ConstructorStatics.BoundsMaterial.Get(); 
-    
-    DefaultMaterial = UMaterialInstanceDynamic::Create(MatDefaultTemplate, nullptr);
-    DefaultMaterial->SetFlags(RF_Transient);
-    
-    SelectedMaterial = UMaterialInstanceDynamic::Create(MatSelectedTemplate, nullptr);
-    SelectedMaterial->SetFlags(RF_Transient);
-
-    BoundsMaterial = UMaterialInstanceDynamic::Create(MatBoundsTemplate, nullptr);
-    BoundsMaterial->SetFlags(RF_Transient);
-
-    TextMaterial = ConstructorStatics.TextMaterial.Get();
-    
-    UStaticMesh* PlaneMesh = ConstructorStatics.PlaneMesh.Get();
-    NodeMesh = CreateDefaultSubobject<UStaticMeshComponent>("BackgroundPlane");
-    NodeMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    NodeMesh->SetStaticMesh(PlaneMesh);
-    NodeMesh->SetMaterial(0, DefaultMaterial);
-    NodeMesh->SetupAttachment(this);
-
-    TextRenderer = CreateDefaultSubobject<UTextRenderComponent>("Text");
-    TextRenderer->SetupAttachment(this);
-    TextRenderer->HorizontalAlignment = EHTA_Center;
-    TextRenderer->VerticalAlignment = EVRTA_TextCenter;
-    TextRenderer->SetTextRenderColor(FColor(20, 20, 20));
-    TextRenderer->SetWorldSize(50.0f);
-    TextRenderer->SetRelativeLocation(FVector(1, 0, 0));
-    TextRenderer->SetTextMaterial(TextMaterial);
-    TextRenderer->SetText(FText::FromString(""));
+    TextRendererComponent = CreateDefaultSubobject<UTextRenderComponent>("TextComponent");
+    TextRendererComponent->SetupAttachment(this);
+    TextRendererComponent->HorizontalAlignment = EHTA_Center;
+    TextRendererComponent->VerticalAlignment = EVRTA_TextCenter;
+    TextRendererComponent->SetTextRenderColor(FColor(20, 20, 20));
+    TextRendererComponent->SetWorldSize(50.0f);
+    TextRendererComponent->SetRelativeLocation(FVector(1, 0, 0));
+    TextRendererComponent->SetText(FText::FromString(""));
 
     // Create the bounds mesh to render a merged composite node
+    BoundsMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("BoundsMeshComponent");
+    BoundsMeshComponent->SetVisibility(false);
+    BoundsMeshComponent->SetupAttachment(this);
+
+    InitResources();
+}
+
+void UFDAbstractNodePreview::InitResources() {
+    static FDAbstractNodeVisualizerResources RenderResources;
     
-    UStaticMesh* BoundsStaticMesh = ConstructorStatics.BoundsMesh.Get();
-    BoundsMesh = CreateDefaultSubobject<UStaticMeshComponent>("BoundsMesh");
-    BoundsMesh->SetStaticMesh(BoundsStaticMesh);
-    BoundsMesh->SetMaterial(0, BoundsMaterial);
-    BoundsMesh->SetVisibility(false);
-    BoundsMesh->SetupAttachment(this);
+    if (UStaticMesh* PlaneMesh = RenderResources.PlaneMesh.LoadSynchronous()) {
+        NodeMeshComponent->SetStaticMesh(PlaneMesh);
+    }
+
+    if (UMaterialInterface* MatDefaultTemplate = RenderResources.DefaultMaterial.LoadSynchronous()) {
+        DefaultMaterialInstance = UMaterialInstanceDynamic::Create(MatDefaultTemplate, nullptr);
+        DefaultMaterialInstance->SetFlags(RF_Transient);
+        NodeMeshComponent->SetMaterial(0, DefaultMaterialInstance);
+    }
+
+    if (UMaterialInterface* MatSelectedTemplate = RenderResources.SelectedMaterial.LoadSynchronous()) {
+        SelectedMaterialInstance = UMaterialInstanceDynamic::Create(MatSelectedTemplate, nullptr);
+        SelectedMaterialInstance->SetFlags(RF_Transient);
+    }
+
+    if (UMaterialInterface* MatBoundsTemplate = RenderResources.BoundsMaterial.LoadSynchronous()) {
+        BoundsMaterialInstance = UMaterialInstanceDynamic::Create(MatBoundsTemplate, nullptr);
+        BoundsMaterialInstance->SetFlags(RF_Transient);
+        BoundsMeshComponent->SetMaterial(0, BoundsMaterialInstance);
+    }
+
+    if (UMaterialInterface* TextMaterial = RenderResources.TextMaterial.LoadSynchronous()) {
+        TextRendererComponent->SetTextMaterial(TextMaterial);
+    }
+
+    if (UStaticMesh* BoundsStaticMesh = RenderResources.BoundsMesh.LoadSynchronous()) {
+        BoundsMeshComponent->SetStaticMesh(BoundsStaticMesh);
+    }
 }
 
 void UFDAbstractNodePreview::AlignToCamera(const FVector& InCameraLocation) {
@@ -87,7 +91,7 @@ void UFDAbstractNodePreview::AlignToCamera(const FVector& InCameraLocation) {
         FVector ActorToCam = InCameraLocation - GetComponentLocation();
         ActorToCam.Normalize();
         SetWorldRotation(ActorToCam.Rotation());
-        BoundsMesh->SetWorldRotation(FRotator::ZeroRotator);
+        BoundsMeshComponent->SetWorldRotation(FRotator::ZeroRotator);
     }
 }
 
@@ -95,11 +99,11 @@ void UFDAbstractNodePreview::SetNodeState(const UFlowAbstractNode* InNode) {
     if (InNode->bActive) {
         SetNodeColor(InNode->Color);
         SetOpacity(1.0f);
-        NodeMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        NodeMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
         //TextRenderer->SetText(GetRoomTypeText(InNode->RoomType));
 
         if (InNode->MergedCompositeNodes.Num() > 1) {
-            BoundsMesh->SetVisibility(true);
+            BoundsMeshComponent->SetVisibility(true);
             AGridFlowAbstractGraphVisualizer* Visualizer = Cast<AGridFlowAbstractGraphVisualizer>(GetOwner());
             if (Visualizer) {
                 FBox DesiredBounds(ForceInit);
@@ -111,80 +115,107 @@ void UFDAbstractNodePreview::SetNodeState(const UFlowAbstractNode* InNode) {
                 FVector BoundsSize = DesiredBounds.GetExtent() * 2.0f;
                 BoundsSize += FVector(Settings.NodeRadius + Settings.LinkPadding) * 2.0f;
                 const FVector DesiredScale = BoundsSize / 100.0f;    // The mesh size is 100 units
-                BoundsMesh->SetWorldScale3D(DesiredScale);
-                BoundsMaterial->SetVectorParameterValue("Color", InNode->Color);
+                BoundsMeshComponent->SetWorldScale3D(DesiredScale);
+                if (BoundsMaterialInstance) {
+                    BoundsMaterialInstance->SetVectorParameterValue("Color", InNode->Color);
+                }
             }
         }
         
     }
     else {
         SetOpacity(0.3f);
-        NodeMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        NodeMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
         bActiveNode = false;
     }
 }
 
 void UFDAbstractNodePreview::SetItemState(const UFlowGraphItem* InItem) const {
     SetOpacity(1.0f);
-    SetNodeColor(FGridFlowItemVisuals::GetBackgroundColor(InItem));
+    SetNodeColor(FFlowItemVisuals::GetBackgroundColor(InItem));
     
-    TextRenderer->SetTextRenderColor(FGridFlowItemVisuals::GetTextColor(InItem).ToFColor(false));
-    TextRenderer->SetText(FText::FromString(FGridFlowItemVisuals::GetText(InItem)));
-    NodeMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    TextRendererComponent->SetTextRenderColor(FFlowItemVisuals::GetTextColor(InItem).ToFColor(false));
+    TextRendererComponent->SetText(FText::FromString(FFlowItemVisuals::GetText(InItem)));
+    NodeMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     SetBorderSize(0.195f);
 }
 
 auto UFDAbstractNodePreview::SetNodeColor(const FLinearColor& InColor) const -> void {
-    DefaultMaterial->SetVectorParameterValue("NodeColor", InColor);
-    SelectedMaterial->SetVectorParameterValue("NodeColor", InColor);
+    if (DefaultMaterialInstance) {
+        DefaultMaterialInstance->SetVectorParameterValue("NodeColor", InColor);
+    }
+    if (SelectedMaterialInstance) {
+        SelectedMaterialInstance->SetVectorParameterValue("NodeColor", InColor);
+    }
 }
 
 void UFDAbstractNodePreview::SetOpacity(float InOpacity) const {
-    DefaultMaterial->SetScalarParameterValue("MasterOpacity", InOpacity);
-    SelectedMaterial->SetScalarParameterValue("MasterOpacity", InOpacity);
+    if (DefaultMaterialInstance) {
+        DefaultMaterialInstance->SetScalarParameterValue("MasterOpacity", InOpacity);
+    }
+    if (SelectedMaterialInstance) {
+        SelectedMaterialInstance->SetScalarParameterValue("MasterOpacity", InOpacity);
+    }
 }
 
 void UFDAbstractNodePreview::SetBorderSize(float InSize) const {
-    DefaultMaterial->SetScalarParameterValue("BorderSize", InSize);
-    SelectedMaterial->SetScalarParameterValue("BorderSize", InSize);
+    if (DefaultMaterialInstance) {
+        DefaultMaterialInstance->SetScalarParameterValue("BorderSize", InSize);
+    }
+    if (SelectedMaterialInstance) {
+        SelectedMaterialInstance->SetScalarParameterValue("BorderSize", InSize);
+    }
 }
 
 void UFDAbstractNodePreview::SetSelected(bool bInSelected) {
     bSelected = bInSelected;
-    NodeMesh->SetMaterial(0, bSelected ? SelectedMaterial : DefaultMaterial);
+    UMaterialInterface* Material = bSelected ? SelectedMaterialInstance : DefaultMaterialInstance;
+    if (!Material) {
+        Material = UMaterial::GetDefaultMaterial(MD_Surface);
+    }
+    NodeMeshComponent->SetMaterial(0, Material);
 }
 
 /////////////////////////////////////// UFDAbstractLink ///////////////////////////////////////
 
 const float UFDAbstractLink::MeshSize = 100;
 
+FDAbstractLinkVisualizerResources::FDAbstractLinkVisualizerResources()
+    : LineMaterial(FSoftObjectPath(TEXT("/DungeonArchitect/Core/Editors/FlowGraph/AbstractGraph3D/Materials/M_AbstractGraphLink_Inst.M_AbstractGraphLink_Inst")))
+    , HeadMaterial(FSoftObjectPath(TEXT("/DungeonArchitect/Core/Editors/FlowGraph/AbstractGraph3D/Materials/M_AbstractLink_ArrowHead_Inst.M_AbstractLink_ArrowHead_Inst")))
+    , LinkMesh(FSoftObjectPath(TEXT("/DungeonArchitect/Core/Editors/FlowGraph/AbstractGraph3D/Meshes/NodeLink.NodeLink")))
+{    
+}
+
 UFDAbstractLink::UFDAbstractLink(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer)
 {
-    struct FConstructorStatics {
-        ConstructorHelpers::FObjectFinderOptional<UMaterialInterface> LineMaterial;
-        ConstructorHelpers::FObjectFinderOptional<UMaterialInterface> HeadMaterial;
-        ConstructorHelpers::FObjectFinderOptional<UStaticMesh> LinkMesh;
-        FConstructorStatics()
-            : LineMaterial(TEXT("/DungeonArchitect/Core/Editors/FlowGraph/AbstractGraph3D/Materials/M_AbstractGraphLink_Inst"))
-            , HeadMaterial(TEXT("/DungeonArchitect/Core/Editors/FlowGraph/AbstractGraph3D/Materials/M_AbstractLink_ArrowHead_Inst"))
-            , LinkMesh(TEXT("/DungeonArchitect/Core/Editors/FlowGraph/AbstractGraph3D/Meshes/NodeLink"))
-        {}
-    };
-    static FConstructorStatics ConstructorStatics;
-    
-    LineMaterial = UMaterialInstanceDynamic::Create(ConstructorStatics.LineMaterial.Get(), nullptr);
-    LineMaterial->SetFlags(RF_Transient);
-    
-    HeadMaterial = UMaterialInstanceDynamic::Create(ConstructorStatics.HeadMaterial.Get(), nullptr);
-    HeadMaterial->SetFlags(RF_Transient);
-    
-    UStaticMesh* LinkStaticMesh = ConstructorStatics.LinkMesh.Get();
     LineMesh = CreateDefaultSubobject<UStaticMeshComponent>("LineMesh");
-    LineMesh->SetStaticMesh(LinkStaticMesh);
-    LineMesh->SetMaterial(0, LineMaterial);
     LineMesh->SetupAttachment(this);
-};
+    
+    InitResources();
+}
+
+void UFDAbstractLink::InitResources() {
+    static FDAbstractLinkVisualizerResources RenderResources;
+    
+    if (UMaterialInterface* LineMat = RenderResources.LineMaterial.LoadSynchronous()) {
+        LineMaterialInstance = UMaterialInstanceDynamic::Create(LineMat, nullptr);
+        LineMaterialInstance->SetFlags(RF_Transient);
+    }
+    
+    if (UMaterialInterface* HeadMat = RenderResources.HeadMaterial.LoadSynchronous()) {
+        HeadMaterialInstance = UMaterialInstanceDynamic::Create(HeadMat, nullptr);
+        HeadMaterialInstance->SetFlags(RF_Transient);
+    }
+    
+    if (UStaticMesh* LinkMesh = RenderResources.LinkMesh.LoadSynchronous()) {
+        LineMesh->SetStaticMesh(LinkMesh);
+        if (LineMaterialInstance) {
+            LineMesh->SetMaterial(0, LineMaterialInstance);
+        }
+    }
+}
 
 void UFDAbstractLink::SetState(const FVector& InStart, const FVector& InEnd, float InThickness, const FLinearColor& InColor, int32 InNumHeads) {
     StartLocation = InStart;
@@ -241,8 +272,10 @@ void UFDAbstractLink::SetLinkVisibility(bool bInVisible) {
 }
 
 void UFDAbstractLink::UseHeadMaterial(int32 InNumHeads) const {
-    LineMesh->SetMaterial(0, HeadMaterial);
-    HeadMaterial->SetScalarParameterValue("NumHeads", InNumHeads);
+    LineMesh->SetMaterial(0, HeadMaterialInstance);
+    if (HeadMaterialInstance) {
+        HeadMaterialInstance->SetScalarParameterValue("NumHeads", InNumHeads);
+    }
 }
 
 void UFDAbstractLink::SetDynamicAlignment(USceneComponent* Start, USceneComponent* End) {
@@ -252,8 +285,12 @@ void UFDAbstractLink::SetDynamicAlignment(USceneComponent* Start, USceneComponen
 }
 
 void UFDAbstractLink::SetLinkColor(const FLinearColor& InColor) const {
-    LineMaterial->SetVectorParameterValue("Color", InColor);
-    HeadMaterial->SetVectorParameterValue("Color", InColor);
+    if (LineMaterialInstance) {
+        LineMaterialInstance->SetVectorParameterValue("Color", InColor);
+    }
+    if (HeadMaterialInstance) {
+        HeadMaterialInstance->SetVectorParameterValue("Color", InColor);
+    }
 }
 
 void UFDAbstractLink::AlignToCamera(const FVector& InCameraLocation, const FGFAbstractGraphVisualizerSettings& InSettings) {
@@ -333,7 +370,7 @@ FVector AGridFlowAbstractGraphVisualizer::GetNodeLocation(const UFlowAbstractNod
     return Coord * Settings.NodeSeparationDistance;
 }
 
-void AGridFlowAbstractGraphVisualizer::Generate(UGridFlowAbstractGraph3D* InGraph, const FGFAbstractGraphVisualizerSettings& InSettings) {
+void AGridFlowAbstractGraphVisualizer::Generate(USnapGridFlowAbstractGraph* InGraph, const FGFAbstractGraphVisualizerSettings& InSettings) {
     Settings = InSettings;
     
     // Clear out the existing scene
@@ -399,8 +436,8 @@ void AGridFlowAbstractGraphVisualizer::Generate(UGridFlowAbstractGraph3D* InGrap
                 //CompositeNodePreview->SetNodeColor(BaseCompositeNode->Color);
                 CompositeNodePreview->SetNodeColor(FLinearColor::Black);
                 CompositeNodePreview->SetOpacity(0.75f);
-                CompositeNodePreview->NodeMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-                CompositeNodePreview->TextRenderer->SetText(FText::FromString(""));
+                CompositeNodePreview->NodeMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+                CompositeNodePreview->TextRendererComponent->SetText(FText::FromString(""));
             }
         }
     }

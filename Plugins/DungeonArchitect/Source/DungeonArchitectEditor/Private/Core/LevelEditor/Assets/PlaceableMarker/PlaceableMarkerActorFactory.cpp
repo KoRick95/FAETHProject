@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Core/LevelEditor/Assets/PlaceableMarker/PlaceableMarkerActorFactory.h"
 
@@ -19,8 +19,7 @@ UObject* UPlaceableMarkerActorFactory::GetAssetFromActorInstance(AActor* ActorIn
 
 AActor* UPlaceableMarkerActorFactory::SpawnActor(UObject* InAsset, ULevel* InLevel, const FTransform& InTransform, const FActorSpawnParameters& InSpawnParams) {
     AActor* Actor = UActorFactory::SpawnActor(InAsset, InLevel, InTransform, InSpawnParams);
-    APlaceableMarkerActor* MarkerActor = Cast<APlaceableMarkerActor>(Actor);
-    if (MarkerActor) {
+    if (const APlaceableMarkerActor* MarkerActor = Cast<APlaceableMarkerActor>(Actor)) {
         MarkerActor->PlaceableMarkerComponent->MarkerAsset = Cast<UPlaceableMarkerAsset>(InAsset);
     }
     return Actor;

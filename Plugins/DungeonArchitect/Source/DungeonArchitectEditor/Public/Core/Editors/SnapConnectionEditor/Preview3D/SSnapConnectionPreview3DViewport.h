@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
@@ -14,7 +14,7 @@ class FAdvancedPreviewScene;
 /**
 * StaticMesh Editor Preview viewport widget
 */
-class DUNGEONARCHITECTEDITOR_API SSnapConnectionPreview3DViewport : public SEditorViewport, public FGCObject {
+class DUNGEONARCHITECTEDITOR_API SSnapConnectionPreview3DViewport : public SEditorViewport,  public FGCObject {
 public:
     SLATE_BEGIN_ARGS(SSnapConnectionPreview3DViewport) {}
     SLATE_END_ARGS()
@@ -24,6 +24,7 @@ public:
 
     // FGCObject interface
     virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+    virtual FString GetReferencerName() const override;
     // End of FGCObject interface
 
     /** Set the parent tab of the viewport for determining visibility */

@@ -1,11 +1,11 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Frameworks/Flow/Domains/Tilemap/Graph/TilemapGraphInfrastructure.h"
 
 #include "Frameworks/Flow/Common/Widgets/SGridFlowItemOverlay.h"
 #include "Frameworks/Flow/Domains/AbstractGraph/Core/FlowAbstractItem.h"
-#include "Frameworks/Flow/Domains/Tilemap/GridFlowTilemap.h"
-#include "Frameworks/Flow/Domains/Tilemap/GridFlowTilemapRenderer.h"
+#include "Frameworks/Flow/Domains/Tilemap/FlowTilemapRenderer.h"
+#include "Frameworks/FlowImpl/GridFlow/Tilemap/GridFlowTilemap.h"
 
 #include "EdGraph/EdGraph.h"
 #include "Engine/TextureRenderTarget2D.h"
@@ -21,7 +21,7 @@ struct FGFTilemapNodeItemInfo {
     FGuid ItemId;
     TWeakObjectPtr<UFlowGraphItem> Item;
     TSharedPtr<class SGridFlowItemOverlay> Widget;
-    FGridFlowTilemapCoord TileCoord;
+    FFlowTilemapCoord TileCoord;
     FVector2D RenderOffset;
 };
 
@@ -44,7 +44,7 @@ void UGridFlowTilemapEdGraph::Initialize() {
 }
 
 void UGridFlowTilemapEdGraph::GeneratePreviewTexture(UGridFlowTilemap* InTilemap,
-                                                     const FGridFlowTilemapRendererSettings& InRenderSettings,
+                                                     const FFlowTilemapRendererSettings& InRenderSettings,
                                                      const TArray<UFlowGraphItem*>& InItems) {
     if (!PreviewNode) return;
 
@@ -55,21 +55,21 @@ void UGridFlowTilemapEdGraph::GeneratePreviewTexture(UGridFlowTilemap* InTilemap
     }
 
     if (InTilemap) {
-        PreviewNode->PreviewTexture = FGridFlowTilemapRenderer::Create(InTilemap, InRenderSettings);
+        PreviewNode->PreviewTexture = FFlowTilemapRenderer::Create(InTilemap, InRenderSettings);
 
         // Update the items
-        TMap<FGuid, FGridFlowTilemapCoord> TileItems;
-        for (const FGridFlowTilemapCell& Cell : InTilemap->GetCells()) {
+        TMap<FGuid, FFlowTilemapCoord> TileItems;
+        for (const FFlowTilemapCell& Cell : InTilemap->GetCells()) {
             if (Cell.bHasItem) {
-                TileItems.Add(Cell.ItemId, FGridFlowTilemapCoord(Cell.TileCoord));
+                TileItems.Add(Cell.ItemId, FFlowTilemapCoord(Cell.TileCoord));
             }
         }
-        for (const FGridFlowTilemapEdge& Edge : InTilemap->GetEdgesH()) {
+        for (const FFlowTilemapEdge& Edge : InTilemap->GetEdgesH()) {
             if (Edge.bHasItem) {
                 TileItems.Add(Edge.ItemId, Edge.EdgeCoord);
             }
         }
-        for (const FGridFlowTilemapEdge& Edge : InTilemap->GetEdgesV()) {
+        for (const FFlowTilemapEdge& Edge : InTilemap->GetEdgesV()) {
             if (Edge.bHasItem) {
                 TileItems.Add(Edge.ItemId, Edge.EdgeCoord);
             }
@@ -152,8 +152,8 @@ void FGridFlowTilemapConnectionDrawingPolicy::Draw(TMap<TSharedRef<SWidget>, FAr
         for (const FGuid& RefItemId : ItemInfo.Item->ReferencedItemIds) {
             const SGridFlowTilemapGraphNode::FNodeItemInfo* RefItem = ItemInfoList.Find(RefItemId);
             if (RefItem) {
-                FVector2D Src = CurWidget.Geometry.AbsolutePosition + ItemInfo.RenderOffset * Scale;
-                FVector2D Dest = CurWidget.Geometry.AbsolutePosition + RefItem->RenderOffset * Scale;
+                FVector2D Src = FVector2D(CurWidget.Geometry.AbsolutePosition) + ItemInfo.RenderOffset * Scale;
+                FVector2D Dest = FVector2D(CurWidget.Geometry.AbsolutePosition) + RefItem->RenderOffset * Scale;
                 FVector2D Direction = Dest - Src;
                 Direction.Normalize();
                 Dest -= Direction * (RefItem->Widget->GetWidgetRadius() - 1) * Scale;
@@ -413,9 +413,9 @@ void SGridFlowTilemapGraphNode::UpdateGraphNode() {
                 .Selected(this, &SGridFlowTilemapGraphNode::IsItemSelected, Item->ItemId);
             ItemWidget->GetOnMousePressed().BindRaw(this, &SGridFlowTilemapGraphNode::OnItemWidgetClicked);
 
-            FGridFlowTilemapCoord* ItemCoordPtr = TilemapNode->TileItems.Find(Item->ItemId);
+            FFlowTilemapCoord* ItemCoordPtr = TilemapNode->TileItems.Find(Item->ItemId);
             if (ItemCoordPtr) {
-                FGridFlowTilemapCoord Coord = *ItemCoordPtr;
+                FFlowTilemapCoord Coord = *ItemCoordPtr;
                 FVector2D RenderOffset = NodePadding + FVector2D(Coord.Coord.X, Coord.Coord.Y) * DAGF_TileSize;
                 if (!Coord.bIsEdgeCoord) {
                     RenderOffset += FVector2D(0.5f, 0.5f) * DAGF_TileSize;
@@ -546,9 +546,9 @@ void SGridFlowTilemapGraphNode::OnItemWidgetClicked(const FGuid& InItemId, bool 
         //  Invoke a tile click event, for the tile under this item
         {
             UGridFlowTilemapEdGraphNode* EdNode = Cast<UGridFlowTilemapEdGraphNode>(GetNodeObj());
-            FGridFlowTilemapCoord* SearchResult = EdNode->TileItems.Find(InItemId);
+            FFlowTilemapCoord* SearchResult = EdNode->TileItems.Find(InItemId);
             if (SearchResult) {
-                FGridFlowTilemapCoord TileCoord = *SearchResult;
+                FFlowTilemapCoord TileCoord = *SearchResult;
 
                 Graph->OnCellClicked.Execute(TileCoord.Coord, bDoubleClicked);
             }
@@ -580,7 +580,7 @@ TSharedPtr<SGraphNode> FGridFlowTilemapGraphPanelNodeFactory::CreateNode(UEdGrap
     return nullptr;
 }
 
-void UGridFlowTilemapEdGraphNode::SetItemInfo(const TMap<FGuid, FGridFlowTilemapCoord>& InTileItems,
+void UGridFlowTilemapEdGraphNode::SetItemInfo(const TMap<FGuid, FFlowTilemapCoord>& InTileItems,
                                               const TMap<FGuid, TWeakObjectPtr<UFlowGraphItem>>& InItemList) {
     TileItems = InTileItems;
     ItemList = InItemList;

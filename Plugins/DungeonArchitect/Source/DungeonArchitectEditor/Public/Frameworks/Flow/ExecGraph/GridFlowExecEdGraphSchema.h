@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
@@ -62,14 +62,9 @@ struct DUNGEONARCHITECTEDITOR_API FGridFlowExecSchemaAction_NewNode : public FDu
     }
 
     FGridFlowExecSchemaAction_NewNode(const FText& InNodeCategory, const FText& InMenuDesc, const FText& InToolTip,
-                                      const int32 InGrouping, const TArray<IFlowDomainWeakPtr>& InDomains)
+                                      const int32 InGrouping)
         : FDungeonSchemaAction_NewNode(InNodeCategory, InMenuDesc, InToolTip, InGrouping)
-        , Domains(InDomains)
     {
     }
-
-    virtual UEdGraphNode* PerformAction(class UEdGraph* ParentGraph, UEdGraphPin* FromPin, FVector2D Location, bool bSelectNewNode = true) override;
-
-    TArray<IFlowDomainWeakPtr> Domains;
 };
 

@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Core/Editors/FlowEditor/DomainMediators/AbstractGraphTilemapDomainMediator.h"
 
@@ -6,10 +6,10 @@
 #include "Builders/GridFlow/GridFlowQuery.h"
 #include "Core/Dungeon.h"
 #include "Core/Editors/FlowEditor/Panels/Viewport/SFlowPreview3DViewport.h"
-#include "Frameworks/Flow/Domains/AbstractGraph/Implementations/GridFlowAbstractGraph.h"
 #include "Frameworks/Flow/Domains/AbstractGraph/Nodes/GridFlowAbstractEdGraphNodes.h"
+#include "Frameworks/FlowImpl/GridFlow/LayoutGraph/GridFlowAbstractGraph.h"
 
-struct FGridFlowTilemapCell;
+struct FFlowTilemapCell;
 
 void FAbstractGraphTilemapDomainMediator::Initialize(TSharedPtr<FFlowDomainEdAbstractGraph> InDomainAbstractGraph,
                                                      TSharedPtr<FFlowDomainEdTilemap> InDomainTilemap, TSharedPtr<SFlowPreview3DViewport> InPreviewViewport)

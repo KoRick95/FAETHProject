@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
@@ -78,7 +78,7 @@ struct DUNGEONARCHITECTRUNTIME_API FSGFModuleAssembly {
     GENERATED_BODY()
     
     UPROPERTY()
-    FIntVector NumChunks;
+    FIntVector NumChunks = FIntVector::ZeroValue;
     
     UPROPERTY()
     FSGFModuleAssemblySide Front;
@@ -122,10 +122,10 @@ struct DUNGEONARCHITECTRUNTIME_API FSnapGridFlowModuleDatabaseConnectionInfo {
     FTransform Transform;
 
     UPROPERTY(VisibleAnywhere, Category = Module)
-    class USnapConnectionInfo* ConnectionInfo;
+    class USnapConnectionInfo* ConnectionInfo = nullptr;
 
     UPROPERTY(VisibleAnywhere, Category = Module)
-    ESnapConnectionConstraint ConnectionConstraint;
+    ESnapConnectionConstraint ConnectionConstraint = ESnapConnectionConstraint::Magnet;
 };
 
 USTRUCT()
@@ -148,7 +148,7 @@ struct DUNGEONARCHITECTRUNTIME_API FSnapGridFlowModuleDatabaseItem {
     float SelectionWeight = 1.0f;
     
     UPROPERTY(VisibleAnywhere, Category = Module)
-    FBox ModuleBounds;
+    FBox ModuleBounds = FBox(ForceInitToZero);
 
     UPROPERTY(VisibleAnywhere, Category = Module)
     FIntVector NumChunks = FIntVector(1, 1, 1);
@@ -166,10 +166,10 @@ struct DUNGEONARCHITECTRUNTIME_API FSnapGridFlowModuleDatabaseItem {
 UCLASS(Blueprintable)
 class DUNGEONARCHITECTRUNTIME_API USnapGridFlowModuleDatabase : public UObject {
     GENERATED_BODY()
-    public:
+public:
     UPROPERTY(EditAnywhere, Category = Module)
     USnapGridFlowModuleBoundsAsset* ModuleBoundsAsset;
-    
+
     UPROPERTY(EditAnywhere, Category = Module)
     TArray<FSnapGridFlowModuleDatabaseItem> Modules;
 };

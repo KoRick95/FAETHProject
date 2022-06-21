@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Frameworks/Flow/ExecGraph/GridFlowExecEdGraph.h"
 
@@ -69,13 +69,6 @@ void FGridFlowExecScriptCompiler::Compile(UEdGraph* EdGraph, UGridFlowExecScript
                 TaskScriptNode->Task = NewObject<UFlowExecTask>(TaskScriptNode,
                                                                     TaskEdNode->TaskTemplate->GetClass(), NAME_None,
                                                                     RF_NoFlags, TaskEdNode->TaskTemplate);
-                // Clone the Task Extenders
-                TaskScriptNode->Task->Extenders.Reset();
-                for (UFlowExecTaskExtender* EdTaskExtender : TaskEdNode->TaskTemplate->Extenders) {
-                    UFlowExecTaskExtender* ScriptTaskExtender = NewObject<UFlowExecTaskExtender>(TaskScriptNode->Task,
-                                EdTaskExtender->GetClass(), NAME_None, RF_NoFlags, EdTaskExtender);
-                    TaskScriptNode->Task->Extenders.Add(ScriptTaskExtender);
-                } 
             }
             ScriptGraph->Nodes.Add(TaskScriptNode);
             EdToScriptNodes.Add(TaskEdNode, TaskScriptNode);

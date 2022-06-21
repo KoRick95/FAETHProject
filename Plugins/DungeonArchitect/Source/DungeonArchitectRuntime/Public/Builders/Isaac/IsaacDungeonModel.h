@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
@@ -27,7 +27,7 @@ struct DUNGEONARCHITECTRUNTIME_API FIsaacRoomTile {
     GENERATED_USTRUCT_BODY()
 
     UPROPERTY()
-    EIsaacRoomTileType tileType;
+    EIsaacRoomTileType tileType = EIsaacRoomTileType::Empty;
 };
 
 
@@ -39,10 +39,10 @@ struct DUNGEONARCHITECTRUNTIME_API FIsaacRoomLayout {
     TArray<FIsaacRoomTile> Tiles;
 
     UPROPERTY()
-    int32 Width;
+    int32 Width = 0;
 
     UPROPERTY()
-    int32 Height;
+    int32 Height = 0;
 
     void Initialize(int32 InWidth, int32 InHeight, EIsaacRoomTileType TileType) {
         this->Width = InWidth;

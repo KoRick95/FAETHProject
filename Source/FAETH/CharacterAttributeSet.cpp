@@ -4,29 +4,40 @@
 
 UCharacterAttributeSet::UCharacterAttributeSet()
 {
-	MaxHealth = 100;
-	Health = MaxHealth;
-	MaxMana = 100;
-	Mana = MaxMana;
-	MaxStamina = 100;
-	Stamina = MaxStamina;
+}
+
+void UCharacterAttributeSet::AdjustAttributeForMaxChange(FGameplayAttributeData& Attribute, const FGameplayAttributeData& MaxAttribute, float NewMaxValue, const FGameplayAttribute& AttributeProperty)
+{
+	UAbilitySystemComponent* asc = GetOwningAbilitySystemComponent();
+	float currentMaxValue = MaxAttribute.GetCurrentValue();
+
+	if (asc && !FMath::IsNearlyEqual(currentMaxValue, NewMaxValue))
+	{
+		float currentValue = Attribute.GetCurrentValue();
+		
+		// Calculate the percentage difference of the max value, then calculate a delta based off that percentage
+		float delta = (currentMaxValue > 0) ? (currentValue / currentMaxValue * NewMaxValue) - currentValue : NewMaxValue;
+
+		// Apply the delta additively to the attribute
+		asc->ApplyModToAttributeUnsafe(AttributeProperty, EGameplayModOp::Additive, delta);
+	}
 }
 
 void UCharacterAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
 
-	if (Attribute == GetHealthAttribute())
+	if (Attribute == GetMaxHealthAttribute())
 	{
-		NewValue = FMath::Clamp(NewValue, 0.0f, GetMaxHealth());
+		AdjustAttributeForMaxChange(Health, MaxHealth, NewValue, GetHealthAttribute());
 	}
-	else if (Attribute == GetManaAttribute())
+	else if (Attribute == GetMaxManaAttribute())
 	{
-		NewValue = FMath::Clamp(GetMana(), 0.0f, GetMaxMana());
+		AdjustAttributeForMaxChange(Mana, MaxMana, NewValue, GetManaAttribute());
 	}
-	else if (Attribute == GetStaminaAttribute())
+	else if (Attribute == GetMaxStaminaAttribute())
 	{
-		NewValue = FMath::Clamp(GetStamina(), 0.0f, GetMaxStamina());
+		AdjustAttributeForMaxChange(Stamina, MaxStamina, NewValue, GetStaminaAttribute());
 	}
 }
 
@@ -34,38 +45,21 @@ void UCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModC
 {
 	Super::PostGameplayEffectExecute(Data);
 
-	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
+	FGameplayAttribute attribute = Data.EvaluatedData.Attribute;
+
+	if (attribute == GetHealthAttribute())
 	{
+		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
 		OnHealthChange.Broadcast(GetHealth(), GetMaxHealth());
 	}
-	else if (Data.EvaluatedData.Attribute == GetManaAttribute())
+	else if (attribute == GetManaAttribute())
 	{
+		SetMana(FMath::Clamp(GetMana(), 0.f, GetMaxMana()));
 		OnManaChange.Broadcast(GetMana(), GetMaxMana());
 	}
-	else if (Data.EvaluatedData.Attribute == GetStaminaAttribute())
+	else if (attribute == GetStaminaAttribute())
 	{
+		SetStamina(FMath::Clamp(GetStamina(), 0.f, GetMaxStamina()));
 		OnStaminaChange.Broadcast(GetStamina(), GetMaxStamina());
-	}
-}
-
-void UCharacterAttributeSet::InitAttribute(ECharacterAttributeType AttributeType, float InitValue)
-{
-	switch (AttributeType)
-	{
-	case ECharacterAttributeType::Health:
-		InitHealth(InitValue);
-		break;
-
-	case ECharacterAttributeType::MaxHealth:
-		InitMaxHealth(InitValue);
-		break;
-
-	case ECharacterAttributeType::Mana:
-		InitMaxMana(InitValue);
-		break;
-
-	case ECharacterAttributeType::MaxMana:
-		InitMaxMana(InitValue);
-		break;
 	}
 }

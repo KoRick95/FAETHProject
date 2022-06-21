@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
@@ -50,6 +50,7 @@ public:
     virtual void CustomizeDetails(IDetailLayoutBuilder& DetailBuilder) override;
     // End of IDetailCustomization interface
     virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+    virtual FString GetReferencerName() const override;
 
     static TSharedRef<IDetailCustomization> MakeInstance();
     static FReply BuildDatabaseCache(IDetailLayoutBuilder* DetailBuilder);
@@ -126,5 +127,26 @@ public:
     static TSharedRef<IDetailCustomization> MakeInstance();
 
     static FReply ExecuteCommand(IDetailLayoutBuilder* DetailBuilder, int32 CommandID);
+};
+
+
+class FMGPatternRuleCustomization : public IDetailCustomization {
+public:
+    // IDetailCustomization interface
+    virtual void CustomizeDetails(IDetailLayoutBuilder& DetailBuilder) override;
+    // End of IDetailCustomization interface
+
+    static TSharedRef<IDetailCustomization> MakeInstance();
+
+    static FReply RandomizeColor(IDetailLayoutBuilder* DetailBuilder);
+};
+
+class FMGPatternGridLayerCustomization : public IDetailCustomization {
+public:
+    // IDetailCustomization interface
+    virtual void CustomizeDetails(IDetailLayoutBuilder& DetailBuilder) override;
+    // End of IDetailCustomization interface
+
+    static TSharedRef<IDetailCustomization> MakeInstance();
 };
 

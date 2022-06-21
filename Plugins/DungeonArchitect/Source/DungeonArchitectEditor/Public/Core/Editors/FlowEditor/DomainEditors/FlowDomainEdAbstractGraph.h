@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
@@ -27,6 +27,7 @@ public:
 
     //~ Begin FGCObject Interface
     virtual void AddReferencedObjects( FReferenceCollector& Collector ) override;
+    virtual FString GetReferencerName() const override;
     //~ End FGCObject Interface
     
     void SelectItem(const FGuid& InItemId) const;
