@@ -22,6 +22,8 @@ class FAETH_API UCharacterAttributeSet : public UAttributeSet
 public:
 	UCharacterAttributeSet();
 
+	// May need to change the delegate params in the future.
+	// E.g. Single param showing delta instead of current attrib values.
 	FOnAttributeChangeDelegate OnHealthChange;
 	FOnAttributeChangeDelegate OnManaChange;
 	FOnAttributeChangeDelegate OnStaminaChange;

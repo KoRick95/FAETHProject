@@ -83,20 +83,20 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void GainAbility(TSubclassOf<UFaethGameplayAbility> Ability);
 
-	UFUNCTION(BlueprintNativeEvent, Category = "Gameplay")
-	void OnHealthChanged(float Health, float MaxHealth);
+	UFUNCTION(BlueprintImplementableEvent, Category = "Gameplay", DisplayName = "OnHealthChanged")
+	void BP_OnHealthChange(float Health, float MaxHealth);
 
-	UFUNCTION(BlueprintNativeEvent, Category = "Gameplay")
-	void OnManaChanged(float Mana, float MaxMana);
+	UFUNCTION(BlueprintImplementableEvent, Category = "Gameplay", DisplayName = "OnManaChanged")
+	void BP_OnManaChange(float Mana, float MaxMana);
 
-	UFUNCTION(BlueprintNativeEvent, Category = "Gameplay")
-	void OnStaminaChanged(float Stamina, float MaxStamina);
+	UFUNCTION(BlueprintImplementableEvent, Category = "Gameplay", DisplayName = "OnStaminaChanged")
+	void BP_OnStaminaChange(float Stamina, float MaxStamina);
 
-	UFUNCTION(BlueprintNativeEvent, Category = "Gameplay")
-	void OnStaggerChanged(float Stagger, float MaxStagger);
+	UFUNCTION(BlueprintImplementableEvent, Category = "Gameplay", DisplayName = "OnStaggerChanged")
+	void BP_OnStaggerChange(float Stagger, float MaxStagger);
 
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnDeath"))
-	void BP_Death();
+	void BP_OnDeath();
 
 protected:
 	virtual void BeginPlay() override;
@@ -104,4 +104,6 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void PossessedBy(AController* NewController) override;
+
+	void NativeOnHealthChange(float Health, float MaxHealth);
 };
