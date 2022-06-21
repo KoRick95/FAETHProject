@@ -132,18 +132,11 @@ void AFaethCharacter::GainAbility(TSubclassOf<UFaethGameplayAbility> Ability)
 	}
 }
 
-void AFaethCharacter::OnHealthChanged_Implementation(float Health, float MaxHealth)
-{
-	if (bHasInitialisedAttributes && !bIsDead && Health <= 0.0f)
-	{
-		bIsDead = true;
-		BP_Death();
-	}
-}
-
 void AFaethCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	CharacterAttributeSet->OnHealthChange.AddDynamic(this, &AFaethCharacter::NativeOnHealthChange);
 	CharacterAttributeSet->OnHealthChange.AddDynamic(this, &AFaethCharacter::BP_OnHealthChange);
 	CharacterAttributeSet->OnManaChange.AddDynamic(this, &AFaethCharacter::BP_OnManaChange);
 	CharacterAttributeSet->OnStaminaChange.AddDynamic(this, &AFaethCharacter::BP_OnStaminaChange);
@@ -164,4 +157,13 @@ void AFaethCharacter::Tick(float DeltaTime)
 void AFaethCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
+}
+
+void AFaethCharacter::NativeOnHealthChange(float Health, float MaxHealth)
+{
+	if (bHasInitialisedAttributes && !bIsDead && Health <= 0)
+	{
+		bIsDead = true;
+		BP_OnDeath();
+	}
 }

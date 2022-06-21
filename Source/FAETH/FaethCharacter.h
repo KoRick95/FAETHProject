@@ -96,7 +96,7 @@ public:
 	void BP_OnStaggerChange(float Stagger, float MaxStagger);
 
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnDeath"))
-	void BP_Death();
+	void BP_OnDeath();
 
 protected:
 	virtual void BeginPlay() override;
@@ -104,4 +104,6 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void PossessedBy(AController* NewController) override;
+
+	void NativeOnHealthChange(float Health, float MaxHealth);
 };

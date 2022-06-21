@@ -49,18 +49,17 @@ void UCharacterAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModC
 
 	if (attribute == GetHealthAttribute())
 	{
-		SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth()));
+		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
 		OnHealthChange.Broadcast(GetHealth(), GetMaxHealth());
 	}
 	else if (attribute == GetManaAttribute())
 	{
-		SetMana(FMath::Clamp(GetMana(), 0.0f, GetMaxMana()));
+		SetMana(FMath::Clamp(GetMana(), 0.f, GetMaxMana()));
 		OnManaChange.Broadcast(GetMana(), GetMaxMana());
 	}
 	else if (attribute == GetStaminaAttribute())
 	{
-		SetStamina(FMath::Clamp(GetStamina(), 0.0f, GetMaxStamina()));
+		SetStamina(FMath::Clamp(GetStamina(), 0.f, GetMaxStamina()));
 		OnStaminaChange.Broadcast(GetStamina(), GetMaxStamina());
 	}
 }
-
