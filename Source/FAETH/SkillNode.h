@@ -14,22 +14,35 @@ class FAETH_API USkillNode : public UFaethObjectBase
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UGameplayAbility> AbilityClass;
-
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UGameplayEffect> EffectClass;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FText NodeDisplayName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FText NodeDescription;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int SkillPointsCost = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int JobPointsCost = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UGameplayAbility> AbilityClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UGameplayEffect> EffectClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	// Set to true once the cost of unlocking the node has been paid.
+	bool bIsUnlocked = false;
+
 	UPROPERTY(BlueprintReadWrite)
-	TArray<USkillNodeLink*> NodeLinks;//contain both start link and end link?
+	TArray<USkillNodeLink*> NodeLinks;
+
+protected:
+	// Set to true once the ability/effect has been given to the character.
+	bool bIsActivated = false;
 
 public:
-	// create link from node
 	USkillNodeLink* CreateNodeLinkTo(USkillNode* OtherNode);
 };

@@ -11,5 +11,5 @@ class FAETH_API UFaethObjectBase : public UObject
 	
 public:
 	UFUNCTION(BlueprintCallable)
-	virtual UWorld* GetWorld() const;
+	virtual UWorld* GetWorld() const override;
 };
