@@ -1,10 +1,10 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
 #include "Misc/NotifyHook.h"
 #include "Tickable.h"
-#include "Toolkits/AssetEditorManager.h"
+#include "Toolkits/AssetEditorToolkit.h"
 
 class USnapConnectionComponent;
 class UEdGraph_DungeonProp;
@@ -36,6 +36,7 @@ public:
     
     // FGCObject Interface
     virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+    virtual FString GetReferencerName() const override;
     // End of FGCObject
 
     // FNotifyHook interface
@@ -66,9 +67,9 @@ private:
     virtual void SaveAsset_Execute() override;
     void CompileAsset() const;
     void UpdateThumbnail() const;
-    void HandleAssetDropped(UObject* AssetObject);
+    void HandleAssetDropped(const FDragDropEvent&, TArrayView<FAssetData>) const;
     FVector2D GetAssetDropGridLocation() const;
-    bool IsAssetAcceptableForDrop(const UObject* AssetObject) const;
+    bool AreAssetsAcceptableForDrop(TArrayView<FAssetData> InAssetObjects) const;
     UEdGraph* CreateNewThemeGraph() const;
 
     void DestroyPreviewObjects();

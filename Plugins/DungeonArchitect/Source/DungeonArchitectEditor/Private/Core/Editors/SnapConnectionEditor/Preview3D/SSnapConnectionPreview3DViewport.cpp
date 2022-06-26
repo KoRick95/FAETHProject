@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Core/Editors/SnapConnectionEditor/Preview3D/SSnapConnectionPreview3DViewport.h"
 
@@ -57,6 +57,11 @@ SSnapConnectionPreview3DViewport::~SSnapConnectionPreview3DViewport() {
 void SSnapConnectionPreview3DViewport::AddReferencedObjects(FReferenceCollector& Collector) {
     Collector.AddReferencedObject(AtmosphericFog);
     Collector.AddReferencedObject(PreviewActor);
+}
+
+FString SSnapConnectionPreview3DViewport::GetReferencerName() const {
+    static const FString NameString = TEXT("SSnapConnectionPreview3DViewport");
+    return NameString;
 }
 
 

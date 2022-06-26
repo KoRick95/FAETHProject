@@ -105,5 +105,6 @@ protected:
 
 	virtual void PossessedBy(AController* NewController) override;
 
+	UFUNCTION()
 	void NativeOnHealthChange(float Health, float MaxHealth);
 };

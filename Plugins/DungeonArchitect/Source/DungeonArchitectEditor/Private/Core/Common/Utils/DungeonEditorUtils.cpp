@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Core/Common/Utils/DungeonEditorUtils.h"
 
@@ -14,6 +14,7 @@
 #include "EngineUtils.h"
 #include "Framework/Notifications/NotificationManager.h"
 #include "IAssetViewport.h"
+#include "UObject/SavePackage.h"
 
 #define LOCTEXT_NAMESPACE "DungeonEditorUtils"
 DEFINE_LOG_CATEGORY(LogDungeonEditorUtils);
@@ -50,14 +51,19 @@ void FDungeonEditorUtils::ShowNotification(
 }
 
 void FDungeonEditorUtils::SwitchToRealtimeMode() {
-    FEditorViewportClient* client = static_cast<FEditorViewportClient*>(GEditor->GetActiveViewport()->GetClient());
-    if (client) {
-        bool bRealtime = client->IsRealtime();
+    FEditorViewportClient* ViewportClient = nullptr;
+    if (GEditor) {
+        if (const FViewport* ActiveViewport = GEditor->GetActiveViewport()) {
+            ViewportClient = static_cast<FEditorViewportClient*>(ActiveViewport->GetClient());
+        }
+    }
+    if (ViewportClient) {
+        const bool bRealtime = ViewportClient->IsRealtime();
         if (!bRealtime) {
             ShowNotification(
                 NSLOCTEXT("DungeonRealtimeMode", "DungeonRealtimeMode", "Switched viewport to Realtime mode"),
                 SNotificationItem::CS_None);
-            client->SetRealtime(true);
+            ViewportClient->SetRealtime(true);
         }
     }
     else {
@@ -69,13 +75,12 @@ void FDungeonEditorUtils::CreateDungeonItemFolder(ADungeon* Dungeon) {
     if (Dungeon && FActorFolders::IsAvailable()) {
         UWorld& World = *Dungeon->GetWorld();
         const FScopedTransaction Transaction(LOCTEXT("UndoAction_CreateFolder", "Create Folder"));
-        const FName NewFolderName = FActorFolders::Get().GetDefaultFolderNameForSelection(World);
 
         auto& Folders = FActorFolders::Get();
         FString FullPath = Dungeon->GetName() + "_Items";
         FName Path(*FullPath);
 
-        Folders.CreateFolder(World, Path);
+        Folders.CreateFolder(World, FFolder(Path));
         Dungeon->ItemFolderPath = Path;
     }
     else {
@@ -87,9 +92,7 @@ void FDungeonEditorUtils::CreateDungeonItemFolder(ADungeon* Dungeon) {
 
 void FDungeonEditorUtils::CollapseDungeonItemFolder(ADungeon* Dungeon) {
     if (Dungeon && Dungeon->GetWorld() && FActorFolders::IsAvailable()) {
-        FActorFolderProps* FolderProperties = FActorFolders::Get().GetFolderProperties(
-            *Dungeon->GetWorld(), Dungeon->ItemFolderPath);
-        if (FolderProperties) {
+        if (FActorFolderProps* FolderProperties = FActorFolders::Get().GetFolderProperties(*Dungeon->GetWorld(), FFolder(Dungeon->ItemFolderPath))) {
             FolderProperties->bIsExpanded = false;
         }
     }
@@ -100,6 +103,16 @@ void FDungeonEditorUtils::BuildDungeon(ADungeon* Dungeon) {
     CreateDungeonItemFolder(Dungeon);
     Dungeon->BuildDungeon();
     CollapseDungeonItemFolder(Dungeon);
+}
+
+void FAssetPackageInfo::AddReferencedObjects(FReferenceCollector& Collector) {
+    Collector.AddReferencedObject(Asset);
+    Collector.AddReferencedObject(Package);
+}
+
+FString FAssetPackageInfo::GetReferencerName() const {
+    static const FString NameString = TEXT("FAssetPackageInfo");
+    return NameString;
 }
 
 FAssetPackageInfo FDungeonAssetUtils::DuplicateAsset(UObject* SourceAsset, const FString& TargetPackageName,
@@ -130,12 +143,16 @@ FAssetPackageInfo FDungeonAssetUtils::DuplicateAsset(UObject* SourceAsset, const
 void FDungeonAssetUtils::SaveAsset(const FAssetPackageInfo& Info) {
     if (Info.Asset && Info.Package) {
         Info.Package->SetDirtyFlag(true);
-        FString PackagePath = Info.Package->GetOutermost()->GetName();
-        //const FString PackagePath = FString::Printf(TEXT("%s/%s_Copy"), *GetGamePath(), *AssetName);
-        if (!UPackage::SavePackage(Info.Package, nullptr, RF_Standalone,
-                                   *FPackageName::LongPackageNameToFilename(
-                                       PackagePath, FPackageName::GetAssetPackageExtension()), GError, nullptr, false,
-                                   true, SAVE_NoError)) {
+        const FString PackagePath = Info.Package->GetOutermost()->GetName();
+        const TCHAR* Filename = *FPackageName::LongPackageNameToFilename(PackagePath, FPackageName::GetAssetPackageExtension());
+        FSavePackageArgs SaveArgs;
+        SaveArgs.TopLevelFlags = RF_Standalone;
+        SaveArgs.SaveFlags = SAVE_NoError;
+        SaveArgs.bForceByteSwapping = false;
+        SaveArgs.bWarnOfLongFilename = true;
+        SaveArgs.Error = GError;
+
+        if (!UPackage::SavePackage(Info.Package, nullptr, Filename, SaveArgs)) {
             UE_LOG(LogDungeonEditorUtils, Display, TEXT("Unable to save asset %s"), *Info.Asset->GetName());
         }
     }

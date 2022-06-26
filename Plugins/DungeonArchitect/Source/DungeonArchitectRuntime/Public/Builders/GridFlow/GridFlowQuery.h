@@ -1,10 +1,10 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
 #include "Core/DungeonQuery.h"
-#include "Frameworks/Flow/Domains/AbstractGraph/Implementations/GridFlowAbstractGraph.h"
-#include "Frameworks/Flow/Domains/Tilemap/GridFlowTilemap.h"
+#include "Frameworks/FlowImpl/GridFlow/LayoutGraph/GridFlowAbstractGraph.h"
+#include "Frameworks/FlowImpl/GridFlow/Tilemap/GridFlowTilemap.h"
 #include "GridFlowQuery.generated.h"
 
 class UDungeonBuilder;
@@ -16,19 +16,19 @@ struct DUNGEONARCHITECTRUNTIME_API FGridFlowChunkQueryResult {
     GENERATED_BODY()
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Dungeon)
-    FIntPoint LayoutNodeCoord;
+    FIntPoint LayoutNodeCoord = FIntPoint::ZeroValue;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Dungeon)
-    FVector TilemapCoordStart;
+    FVector TilemapCoordStart = FVector::ZeroVector;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Dungeon)
-    FVector TilemapCoordEnd;
+    FVector TilemapCoordEnd = FVector::ZeroVector;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Dungeon)
     TArray<FVector> TileCoords;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Dungeon)
-    EGridFlowAbstractNodeRoomType RoomType;
+    EGridFlowAbstractNodeRoomType RoomType = EGridFlowAbstractNodeRoomType::Unknown;
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Dungeon)
     FString PathName;
@@ -52,10 +52,10 @@ public:
     FVector ConvertWorldToTileCoord(const FVector& WorldCoords);
 
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Dungeon")
-    bool GetCellAtTileCoord(const FVector& TileCoord, FGridFlowTilemapCell& OutCell);
+    bool GetCellAtTileCoord(const FVector& TileCoord, FFlowTilemapCell& OutCell);
 
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Dungeon")
-    bool GetCellAtWorldCoord(const FVector& WorldCoord, FGridFlowTilemapCell& OutCell);
+    bool GetCellAtWorldCoord(const FVector& WorldCoord, FFlowTilemapCell& OutCell);
 
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Dungeon")
     bool GetCellRoomType(const FVector& WorldCoord, EGridFlowAbstractNodeRoomType& OutRoomType);

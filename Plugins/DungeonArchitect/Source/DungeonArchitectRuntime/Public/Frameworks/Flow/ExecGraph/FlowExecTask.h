@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
@@ -9,8 +9,6 @@
 #include "FlowExecTask.generated.h"
 
 struct FDAAttribute;
-class UGridFlowAbstractGraph;
-class UGridFlowTilemap;
 
 typedef TSharedPtr<class FFlowExecNodeState> FFlowExecNodeStatePtr;
 
@@ -20,6 +18,7 @@ public:
     UObject* GetStateObject(const FName& InObjectID) const;
     void SetStateObject(const FName& InObjectID, UObject* InObject);
     virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+    virtual FString GetReferencerName() const override;
 
     template<typename T>
     T* GetState(const FName& InDomainID) {
@@ -32,6 +31,17 @@ private:
 
 struct DUNGEONARCHITECTRUNTIME_API FFlowTaskExecutionSettings {
 };
+
+/////////////////////////////////////////////////////
+// DEPRECATED: UFlowExecTaskExtender
+UCLASS(Abstract)
+class DUNGEONARCHITECTRUNTIME_API UFlowExecTaskExtender : public UObject {
+    GENERATED_BODY()
+
+};
+/////////////////////////////////////////////////////
+
+
 
 UCLASS(Abstract)
 class DUNGEONARCHITECTRUNTIME_API UFlowExecTask : public UObject {
@@ -60,9 +70,10 @@ public:
     UPROPERTY(EditAnywhere, Category = "Advanced")
     FString NodeVariableName;
 
-    /** Extends the functionality of the tasks.  This is useful for cross domain extensions */
+    
+    /** DEPRECATED: Extends the functionality of the tasks.  This is useful for cross domain extensions */
     UPROPERTY()
-    TArray<class UFlowExecTaskExtender*> Extenders;
+    TArray<UFlowExecTaskExtender*> Extenders;
 };
 
 
@@ -78,16 +89,4 @@ public:
 };
 
 class UFlowAbstractNode;
-
-UCLASS(Abstract)
-class DUNGEONARCHITECTRUNTIME_API UFlowExecTaskExtender : public UObject {
-    GENERATED_BODY()
-public:
-    
-#if WITH_EDITOR
-    virtual FString GetDetailsPanelCategoryName() const PURE_VIRTUAL(UFlowExecTaskExtender::GetDetailsPanelCategoryName, return "Extra Properties";);
-#endif //WITH_EDITOR
-    
-};
-
 

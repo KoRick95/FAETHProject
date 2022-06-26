@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
@@ -23,15 +23,15 @@ class DUNGEONARCHITECTRUNTIME_API FFlowAbstractGraphConstraints {
 public:
     virtual ~FFlowAbstractGraphConstraints() {}
     
-    virtual bool IsValid(const FFlowAbstractGraphQuery& InGraphQuery, const UFlowAbstractNode* Node, const TArray<const UFlowAbstractNode*>& IncomingNodes, const TArray<TWeakObjectPtr<UObject>>& InTaskExtenders) = 0;
-    virtual bool IsValid(const FFlowAbstractGraphQuery& InGraphQuery, const FFlowAGPathNodeGroup& Group, int32 PathIndex, int32 PathLength, const TArray<FFAGConstraintsLink>& IncomingNodes, const TArray<TWeakObjectPtr<UObject>>& InTaskExtenders) = 0;
+    virtual bool IsValid(const FFlowAbstractGraphQuery& InGraphQuery, const UFlowAbstractNode* Node, const TArray<const UFlowAbstractNode*>& IncomingNodes) = 0;
+    virtual bool IsValid(const FFlowAbstractGraphQuery& InGraphQuery, const FFlowAGPathNodeGroup& Group, int32 PathIndex, int32 PathLength, const TArray<FFAGConstraintsLink>& IncomingNodes) = 0;
 };
 typedef TSharedPtr<FFlowAbstractGraphConstraints> FFlowAbstractGraphConstraintsPtr;
 
 class DUNGEONARCHITECTRUNTIME_API FNullFlowAbstractGraphConstraints : public FFlowAbstractGraphConstraints {
 public:
-    virtual bool IsValid(const FFlowAbstractGraphQuery& InGraphQuery, const UFlowAbstractNode* Node, const TArray<const UFlowAbstractNode*>& IncomingNodes, const TArray<TWeakObjectPtr<UObject>>& InTaskExtenders) override { return true; }
-    virtual bool IsValid(const FFlowAbstractGraphQuery& InGraphQuery, const FFlowAGPathNodeGroup& Group, int32 PathIndex, int32 PathLength, const TArray<FFAGConstraintsLink>& IncomingNodes, const TArray<TWeakObjectPtr<UObject>>& InTaskExtenders) override { return true; }
+    virtual bool IsValid(const FFlowAbstractGraphQuery& InGraphQuery, const UFlowAbstractNode* Node, const TArray<const UFlowAbstractNode*>& IncomingNodes) override { return true; }
+    virtual bool IsValid(const FFlowAbstractGraphQuery& InGraphQuery, const FFlowAGPathNodeGroup& Group, int32 PathIndex, int32 PathLength, const TArray<FFAGConstraintsLink>& IncomingNodes) override { return true; }
 };
 typedef TSharedPtr<FFlowAbstractGraphConstraints> FFlowAbstractGraphConstraintsPtr;
 

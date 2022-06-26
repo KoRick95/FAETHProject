@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
@@ -27,13 +27,13 @@ struct DUNGEONARCHITECTRUNTIME_API FDungeonMiniMapOverlayIcon {
     FName Name;
 
     UPROPERTY(EditAnywhere, Category = "MiniMap")
-    UTexture2D* Icon;
+    UTexture2D* Icon = nullptr;
 
     UPROPERTY(EditAnywhere, Category = "MiniMap")
     float ScreenSize = 32.0f;
 
     UPROPERTY(EditAnywhere, Category = "MiniMap")
-    EDungeonMiniMapIconCoordinateSystem ScreenSizeType;
+    EDungeonMiniMapIconCoordinateSystem ScreenSizeType = EDungeonMiniMapIconCoordinateSystem::Pixels;
 
     UPROPERTY(EditAnywhere, Category = "MiniMap")
     FLinearColor Tint = FLinearColor::White;

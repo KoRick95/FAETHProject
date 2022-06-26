@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
@@ -194,19 +194,19 @@ struct DUNGEONARCHITECTRUNTIME_API FStairInfo {
     GENERATED_USTRUCT_BODY()
 
     UPROPERTY(BlueprintReadOnly, Category = Dungeon)
-    int32 OwnerCell;
+    int32 OwnerCell = 0;
 
     UPROPERTY(BlueprintReadOnly, Category = Dungeon)
-    int32 ConnectedToCell;
+    int32 ConnectedToCell = 0;
 
     UPROPERTY(BlueprintReadOnly, Category = Dungeon)
-    FVector Position;
+    FVector Position = FVector::ZeroVector;
 
     UPROPERTY(BlueprintReadOnly, Category = Dungeon)
-    FQuat Rotation;
+    FQuat Rotation = FQuat::Identity;
 
     UPROPERTY(BlueprintReadOnly, Category = Dungeon)
-    FIntVector IPosition;
+    FIntVector IPosition = FIntVector::ZeroValue;
 };
 
 /**

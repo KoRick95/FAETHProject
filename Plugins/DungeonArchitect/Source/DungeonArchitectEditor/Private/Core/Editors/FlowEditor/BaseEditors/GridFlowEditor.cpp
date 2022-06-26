@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Core/Editors/FlowEditor/BaseEditors/GridFlowEditor.h"
 
@@ -93,6 +93,11 @@ FString FGridFlowEditor::GetWorldCentricTabPrefix() const {
     return TEXT("GridFlowEditor");
 }
 
+FString FGridFlowEditor::GetReferencerName() const {
+    static const FString NameString = TEXT("FGridFlowEditor");
+    return NameString;
+}
+
 //////////////////// Grid Flow Perf Editor ////////////////////
 
 void SGridFlowTestRunner::Construct(const FArguments& InArgs, const TSharedRef<SDockTab>& ConstructUnderMajorTab,
@@ -103,6 +108,11 @@ void SGridFlowTestRunner::Construct(const FArguments& InArgs, const TSharedRef<S
     ParentArgs._OnServiceStopped = InArgs._OnServiceStopped;
 
     Super::Construct(ParentArgs, ConstructUnderMajorTab, ConstructUnderWindow, InFlowAsset);
+}
+
+FString SGridFlowTestRunner::GetReferencerName() const {
+    static const FString NameString = TEXT("SGridFlowTestRunner");
+    return NameString;
 }
 
 TSharedPtr<IFlowProcessDomainExtender> FGridFlowTestRunnerTask::CreateDomainExtender(const FGridFlowTestRunnerSettings& InSettings) {

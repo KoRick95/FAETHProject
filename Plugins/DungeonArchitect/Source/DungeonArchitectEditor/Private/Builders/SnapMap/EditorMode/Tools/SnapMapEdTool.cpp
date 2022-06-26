@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Builders/SnapMap/EditorMode/Tools/SnapMapEdTool.h"
 
@@ -27,6 +27,11 @@ void FSnapMapEdTool::OnRedo() {
 }
 
 void FSnapMapEdTool::AddReferencedObjects(FReferenceCollector& Collector) {
+}
+
+FString FSnapMapEdTool::GetReferencerName() const {
+    static const FString NameString = TEXT("FSnapMapEdTool");
+    return NameString;
 }
 
 UObject* FSnapMapEdTool::GetToolModel() const {

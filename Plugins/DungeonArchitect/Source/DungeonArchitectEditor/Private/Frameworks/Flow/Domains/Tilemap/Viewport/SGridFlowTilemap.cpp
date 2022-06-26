@@ -1,13 +1,13 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Frameworks/Flow/Domains/Tilemap/Viewport/SGridFlowTilemap.h"
 
 #include "Frameworks/Flow/Common/Widgets/SGridFlowItemOverlay.h"
 #include "Frameworks/Flow/Domains/AbstractGraph/Core/FlowAbstractItem.h"
-#include "Frameworks/Flow/Domains/Tilemap/GridFlowTilemap.h"
-#include "Frameworks/Flow/Domains/Tilemap/GridFlowTilemapRenderer.h"
+#include "Frameworks/Flow/Domains/Tilemap/FlowTilemapRenderer.h"
 #include "Frameworks/Flow/Domains/Tilemap/Viewport/GridFlowTilemapViewport.h"
 #include "Frameworks/Flow/Domains/Tilemap/Viewport/GridFlowTilemapViewportClient.h"
+#include "Frameworks/FlowImpl/GridFlow/Tilemap/GridFlowTilemap.h"
 
 #include "EditorStyleSet.h"
 #include "Engine/TextureRenderTarget2D.h"
@@ -59,12 +59,12 @@ void SGridFlowTilemap::Tick(const FGeometry& AllottedGeometry, const double InCu
 
 void SGridFlowTilemap::GeneratePreviewTexture(UGridFlowTilemap* InTilemap) {
     if (InTilemap) {
-        FGridFlowTilemapRendererSettings Settings;
+        FFlowTilemapRendererSettings Settings;
         Settings.bUseTextureTileSize = false;
         Settings.TileSize = 10;
         Settings.BackgroundColor = FLinearColor::Black;
 
-        UTexture* PreviewTexture = FGridFlowTilemapRenderer::Create(InTilemap, Settings);
+        UTexture* PreviewTexture = FFlowTilemapRenderer::Create(InTilemap, Settings);
         ViewportClient->SetTexture(PreviewTexture);
     }
     else {

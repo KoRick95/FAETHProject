@@ -1,13 +1,12 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Core/Editors/ThemeEditor/Widgets/SGraphPalette_PropActions.h"
 
+#include "Core/Editors/ThemeEditor/AppModes/ThemeGraph/Graph/EdGraphSchema_DungeonProp.h"
 #include "Core/Editors/ThemeEditor/DungeonArchitectThemeEditor.h"
-#include "Core/Editors/ThemeEditor/Graph/EdGraphSchema_DungeonProp.h"
 
-void SGraphPalette_PropActions::Construct(const FArguments& InArgs,
-                                          TWeakPtr<FDungeonArchitectThemeEditor> InDungeonEditor) {
-    this->DungeonEditor = InDungeonEditor;
+void SGraphPalette_PropActions::Construct(const FArguments& InArgs, TWeakPtr<SGraphEditor> InGraphEditor) {
+    this->GraphEditorPtr = InGraphEditor;
 
     this->ChildSlot
     [
@@ -42,10 +41,10 @@ void SGraphPalette_PropActions::CollectAllActions(FGraphActionListBuilderBase& O
     const UEdGraphSchema_DungeonProp* Schema = GetDefault<UEdGraphSchema_DungeonProp>();
     TArray<TSharedPtr<FEdGraphSchemaAction>> Actions;
     FGraphActionMenuBuilder ActionMenuBuilder;
-    if (DungeonEditor.IsValid()) {
-        TSharedPtr<SGraphEditor> GraphEditor = DungeonEditor.Pin()->GetGraphEditor();
-        if (GraphEditor.IsValid()) {
-            UEdGraph* Graph = GraphEditor->GetCurrentGraph();
+    TSharedPtr<SGraphEditor> GraphEditor = GraphEditorPtr.Pin();
+    if (GraphEditor.IsValid()) {
+        UEdGraph* Graph = GraphEditor->GetCurrentGraph();
+        if (Graph) {
             Schema->GetActionList(Actions, Graph, Graph);
             for (TSharedPtr<FEdGraphSchemaAction> Action : Actions) {
                 ActionMenuBuilder.AddAction(Action);

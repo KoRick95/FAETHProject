@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
@@ -40,10 +40,8 @@ struct DUNGEONARCHITECTEDITOR_API FAssetPackageInfo : public FGCObject {
     //The package that contains the asset
     UPackage* Package;
 
-    virtual void AddReferencedObjects(FReferenceCollector& Collector) override {
-        Collector.AddReferencedObject(Asset);
-        Collector.AddReferencedObject(Package);
-    }
+    virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+    virtual FString GetReferencerName() const override;
 };
 
 class DUNGEONARCHITECTEDITOR_API FDungeonAssetUtils {

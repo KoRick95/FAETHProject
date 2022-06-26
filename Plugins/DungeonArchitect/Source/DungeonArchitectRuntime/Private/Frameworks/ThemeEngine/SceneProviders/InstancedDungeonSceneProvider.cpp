@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Frameworks/ThemeEngine/SceneProviders/InstancedDungeonSceneProvider.h"
 
@@ -38,10 +38,10 @@ public:
         const FName DungeonTag = UDungeonModelHelper::GetDungeonIdTag(Dungeon);
         ADungeonInstancedMeshActor* InstancedActor = nullptr;
         for (TObjectIterator<AActor> ActorItr; ActorItr; ++ActorItr) {
-            if (!ActorItr->IsValidLowLevel() || ActorItr->IsPendingKill()) continue;
+            if (!ActorItr->IsValidLowLevel() || !::IsValid(*ActorItr)) continue;
             if (ActorItr->ActorHasTag(DungeonTag) && ActorItr->ActorHasTag(InstancedActorTag)) {
                 ADungeonInstancedMeshActor* InstancedActorPtr = Cast<ADungeonInstancedMeshActor>(*ActorItr);
-                if (InstancedActorPtr && !InstancedActorPtr->IsPendingKill()) {
+                if (InstancedActorPtr && ::IsValid(InstancedActorPtr)) {
                     InstancedActor = InstancedActorPtr;
                     break;
                 }
@@ -125,6 +125,19 @@ private:
     FTransform Transform;
 };
 
+
+void InstanceMeshContext::AddReferencedObjects(FReferenceCollector& Collector) {
+    Collector.AddReferencedObject(Dungeon);
+    Collector.AddReferencedObject(InstancedActor);
+    if (LevelOverride) {
+        Collector.AddReferencedObject(LevelOverride);
+    }
+}
+
+FString InstanceMeshContext::GetReferencerName() const {
+    static const FString NameString = TEXT("InstanceMeshContext");
+    return NameString;
+}
 
 void FInstancedDungeonSceneProvider::OnDungeonBuildStart() {
     FPooledDungeonSceneProvider::OnDungeonBuildStart();

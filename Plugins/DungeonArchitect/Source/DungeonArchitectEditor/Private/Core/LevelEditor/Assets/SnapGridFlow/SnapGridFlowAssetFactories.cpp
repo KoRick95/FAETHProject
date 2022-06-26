@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Core/LevelEditor/Assets/SnapGridFlow/SnapGridFlowAssetFactories.h"
 
@@ -22,6 +22,7 @@ UObject* USnapGridFlowAssetFactory::FactoryCreateNew(UClass* Class, UObject* InP
                                                      UObject* Context, FFeedbackContext* Warn) {
     USnapGridFlowAsset* NewAsset = NewObject<USnapGridFlowAsset>(InParent, Class, Name, Flags | RF_Transactional);
     FFlowEditorUtils::InitializeFlowAsset(NewAsset);
+    NewAsset->Version = static_cast<int>(ESnapGridFlowAssetVersion::LatestVersion);
     return NewAsset;
 }
 

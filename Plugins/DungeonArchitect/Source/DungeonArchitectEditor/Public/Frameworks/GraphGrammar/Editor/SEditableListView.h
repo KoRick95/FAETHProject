@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
@@ -6,10 +6,12 @@
 #include "Core/LevelEditor/Customizations/DungeonArchitectStyle.h"
 
 #include "DragAndDrop/DecoratedDragDropOp.h"
+#include "EditorFontGlyphs.h"
 #include "Framework/Application/SlateApplication.h"
 #include "Widgets/Views/SListView.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogEditableListView, Log, All);
+#define LOCTEXT_NAMESPACE "SEditableListView"
 
 template <typename ItemType>
 struct FEditListItemData {
@@ -200,38 +202,47 @@ public:
 			.OnGenerateRow(this, &SEditableListView<ItemType>::GenerateItemListRow)
 			.OnMouseButtonClick(this, &SEditableListView<ItemType>::OnMouseButtonClick);
 
-        TSharedPtr<SWidget> ContentWidget = SNew(SBorder)
-			.BorderImage(FDungeonArchitectStyle::Get().GetBrush("DungeonArchitect.RoundDarkBorder"))
-			.BorderBackgroundColor(this, &SEditableListView::GetBorderColor)
-        [
-            SNew(SVerticalBox)
-
-            + SVerticalBox::Slot()
-            .FillHeight(1.0f)
-            [
-                ItemListView.ToSharedRef()
-            ]
-
-            + SVerticalBox::Slot()
+        TSharedPtr<SWidget> ContentWidget = SNew(SVerticalBox)
+            +SVerticalBox::Slot()
             .AutoHeight()
             [
-                SNew(SBox)
-                .HeightOverride(32)
-                [
-                    SNew(SButton)
-						.ButtonStyle(
-                                     &FDungeonArchitectStyle::Get().GetWidgetStyle<FButtonStyle>(
-                                         "DungeonArchitect.FlatButton.Blue"))
-						.OnClicked(this, &SEditableListView<ItemType>::OnAddItemClicked)
-						.HAlign(HAlign_Center)
-						.VAlign(VAlign_Center)
-                    [
-                        SNew(SImage)
-                        .Image(FEditorStyle::Get().GetBrush("Plus"))
-                    ]
-                ]
+                CreateToolbarWidget()
             ]
-        ];
+            +SVerticalBox::Slot()
+            .FillHeight(1.0f)
+            [   
+                SNew(SBorder)
+			    .BorderImage(FDungeonArchitectStyle::Get().GetBrush("DungeonArchitect.RoundDarkBorder"))
+			    .BorderBackgroundColor(this, &SEditableListView::GetBorderColor)
+                [
+                    SNew(SVerticalBox)
+
+                    + SVerticalBox::Slot()
+                    .FillHeight(1.0f)
+                    [
+                        ItemListView.ToSharedRef()
+                    ]
+                    /*
+                    + SVerticalBox::Slot()
+                    .AutoHeight()
+                    [
+                        SNew(SBox)
+                        .HeightOverride(32)
+                        [
+                            SNew(SButton)
+						        .ButtonStyle(&FDungeonArchitectStyle::Get().GetWidgetStyle<FButtonStyle>("DungeonArchitect.FlatButton.Blue"))
+						        .OnClicked(this, &SEditableListView<ItemType>::OnAddItemClicked)
+						        .HAlign(HAlign_Center)
+						        .VAlign(VAlign_Center)
+                            [
+                                SNew(SImage)
+                                .Image(FEditorStyle::Get().GetBrush("Plus"))
+                            ]
+                        ]
+                    ]
+                    */
+                ]
+            ];
 
         // Wrap around a title if specified
         if (Title.Len() > 0) {
@@ -246,7 +257,7 @@ public:
                 [
                     SNew(STextBlock)
 					.Text(FText::FromString(Title))
-				.Font(FDungeonArchitectStyle::Get().GetFontStyle("DungeonArchitect.ListView.LargeFont"))
+				    .Font(FDungeonArchitectStyle::Get().GetFontStyle("DungeonArchitect.ListView.LargeFont"))
                 ]
 
                 // original content
@@ -266,6 +277,78 @@ public:
         RefreshListView();
     }
 
+    TSharedRef<SWidget> CreateToolbarWidget() {
+        return SNew(SHorizontalBox)
+        +SHorizontalBox::Slot()
+        .AutoWidth()
+        [
+            SNew( SButton )
+            .ButtonStyle(FEditorStyle::Get(), "FlatButton")
+            .ToolTipText( LOCTEXT( "SaveDirtyPackagesTooltip", "Add a new Item" ) )
+            .ContentPadding(FMargin(6, 2))
+            .OnClicked( this, &SEditableListView<ItemType>::OnAddItemClicked)
+            [
+                SNew( SHorizontalBox )
+
+                // Plus Icon
+                + SHorizontalBox::Slot()
+                .VAlign(VAlign_Center)
+                .AutoWidth()
+                [
+                    SNew(STextBlock)
+                    .TextStyle(FEditorStyle::Get(), "ContentBrowser.TopBar.Font")
+                    .Font(FEditorStyle::Get().GetFontStyle("FontAwesome.11"))
+                    .Text(FEditorFontGlyphs::Plus_Circle)
+                ]
+
+                // Add Item
+                + SHorizontalBox::Slot()
+                .AutoWidth()
+                .VAlign(VAlign_Center)
+                .Padding(4, 0, 0, 0)
+                [
+                    SNew( STextBlock )
+                    .TextStyle( FEditorStyle::Get(), "ContentBrowser.TopBar.Font" )
+                    .Text( LOCTEXT( "AddItem", "Add" ) )
+                ]
+            ]
+        ]
+        +SHorizontalBox::Slot()
+        .AutoWidth()
+        [
+            SNew( SButton )
+            .ButtonStyle(FEditorStyle::Get(), "FlatButton")
+            .ToolTipText( LOCTEXT( "SaveDirtyPackagesTooltip", "Remove selected Item" ) )
+            .ContentPadding(FMargin(6, 2))
+            .OnClicked( this, &SEditableListView<ItemType>::OnDeleteSelectedItemClicked)
+            [
+                SNew( SHorizontalBox )
+
+                // Plus Icon
+                + SHorizontalBox::Slot()
+                .VAlign(VAlign_Center)
+                .AutoWidth()
+                [
+                    SNew(STextBlock)
+                    .TextStyle(FEditorStyle::Get(), "ContentBrowser.TopBar.Font")
+                    .Font(FEditorStyle::Get().GetFontStyle("FontAwesome.11"))
+                    .Text(FEditorFontGlyphs::Minus_Circle)
+                ]
+
+                // Add Item
+                + SHorizontalBox::Slot()
+                .AutoWidth()
+                .VAlign(VAlign_Center)
+                .Padding(4, 0, 0, 0)
+                [
+                    SNew( STextBlock )
+                    .TextStyle( FEditorStyle::Get(), "ContentBrowser.TopBar.Font" )
+                    .Text( LOCTEXT( "RemoveItem", "Remove" ) )
+                ]
+            ]
+        ];
+    }
+    
     FSlateColor GetBorderColor() const {
         if (Flasher.IsFlashing()) {
             return Flasher.GetFlashCurveColor();
@@ -439,9 +522,16 @@ private:
         }
     }
 
-
+    FReply OnDeleteSelectedItemClicked() {
+        TArray<TSharedPtr<FEditListItemData<ItemType>>> SelectedItems = ItemListView->GetSelectedItems();
+        if (SelectedItems.Num() > 0) {
+            OnDeleteItemClicked(SelectedItems[0]);
+        }
+        return FReply::Handled();
+    }
+    
     FReply OnDeleteItemClicked(TSharedPtr<FEditListItemData<ItemType>> InItem) {
-        if (OnDeleteItem.IsBound()) {
+        if (InItem.IsValid() && OnDeleteItem.IsBound()) {
             OnDeleteItem.Execute(InItem->Item);
         }
 
@@ -496,4 +586,7 @@ FReply SEditableListViewItem<ItemType>::OnDrop(const FGeometry& MyGeometry, cons
 
     return FReply::Unhandled();
 }
+
+
+#undef LOCTEXT_NAMESPACE
 

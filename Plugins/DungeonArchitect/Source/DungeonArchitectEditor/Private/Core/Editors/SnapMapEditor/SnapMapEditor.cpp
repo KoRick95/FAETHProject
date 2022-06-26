@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Core/Editors/SnapMapEditor/SnapMapEditor.h"
 
@@ -13,7 +13,6 @@
 #include "Frameworks/GraphGrammar/RuleGraph/EdGraph_Grammar.h"
 
 #include "Subsystems/AssetEditorSubsystem.h"
-#include "Toolkits/AssetEditorManager.h"
 #include "WorkflowOrientedApp/WorkflowTabManager.h"
 
 #define LOCTEXT_NAMESPACE "SnapMapEditor"
@@ -49,18 +48,16 @@ void FSnapMapEditor::InitFlowEditor(const EToolkitMode::Type Mode,
     DebugGraph = NewObject<UEdGraph_DebugGrammar>();
     DebugModeSettings = NewObject<UFlowEditorDebugAppModeSettings>();
 
-    const TSharedRef<FTabManager::FLayout> DummyLayout = FTabManager::NewLayout("NullLayout")->AddArea(
-        FTabManager::NewPrimaryArea());
+    const TSharedRef<FTabManager::FLayout> DummyLayout = FTabManager::NewLayout("NullLayout")->AddArea(FTabManager::NewPrimaryArea());
 
     if (!ToolbarBuilder.IsValid()) {
         ToolbarBuilder = MakeShareable(new FSnapMapEditorToolbar(SharedThis(this)));
     }
 
     // Initialize the asset editor and spawn nothing (dummy layout)
-    const bool bCreateDefaultStandaloneMenu = true;
-    const bool bCreateDefaultToolbar = true;
-    InitAssetEditor(Mode, InitToolkitHost, DungeonFlowEditorAppName, DummyLayout, bCreateDefaultStandaloneMenu,
-                    bCreateDefaultToolbar, AssetBeingEdited);
+    constexpr bool bCreateDefaultStandaloneMenu = true;
+    constexpr bool bCreateDefaultToolbar = true;
+    InitAssetEditor(Mode, InitToolkitHost, DungeonFlowEditorAppName, DummyLayout, bCreateDefaultStandaloneMenu, bCreateDefaultToolbar, AssetBeingEdited);
 
     AddApplicationMode(GraphEditorModeID, MakeShareable(new FSnapMapEditor_GraphDesignAppMode(SharedThis(this))));
     AddApplicationMode(VisualizationModeID, MakeShareable(new FSnapMapEditor_VisualizeAppMode(SharedThis(this))));
@@ -117,6 +114,11 @@ void FSnapMapEditor::AddReferencedObjects(FReferenceCollector& Collector) {
     Collector.AddReferencedObject(VisualizationGraph);
     Collector.AddReferencedObject(DebugGraph);
     Collector.AddReferencedObject(DebugModeSettings);
+}
+
+FString FSnapMapEditor::GetReferencerName() const {
+    static const FString NameString = TEXT("FSnapMapEditor");
+    return NameString;
 }
 
 void FSnapMapEditor::NotifyPreChange(FProperty* PropertyAboutToChange) {

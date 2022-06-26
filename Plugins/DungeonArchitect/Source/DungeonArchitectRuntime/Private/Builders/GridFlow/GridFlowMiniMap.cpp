@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Builders/GridFlow/GridFlowMiniMap.h"
 
@@ -6,8 +6,8 @@
 #include "Builders/GridFlow/GridFlowModel.h"
 #include "Core/Dungeon.h"
 #include "Core/DungeonLayoutData.h"
-#include "Frameworks/Flow/Domains/Tilemap/GridFlowTilemap.h"
-#include "Frameworks/Flow/Domains/Tilemap/GridFlowTilemapRenderer.h"
+#include "Frameworks/Flow/Domains/Tilemap/FlowTilemapRenderer.h"
+#include "Frameworks/FlowImpl/GridFlow/Tilemap/GridFlowTilemap.h"
 
 #include "CanvasItem.h"
 #include "Engine/Canvas.h"
@@ -59,12 +59,12 @@ void AGridFlowMiniMap::BuildLayout(UDungeonModel* DungeonModel, UDungeonConfig* 
                                                                    FLinearColor::Transparent, false);
 
     {
-        FGridFlowTilemapRendererSettings Settings;
+        FFlowTilemapRendererSettings Settings;
         Settings.bUseTextureTileSize = false;
         Settings.TileSize = 10;
         Settings.BackgroundColor = FLinearColor::Transparent;
 
-        UTextureRenderTarget2D* RenderedRTT = FGridFlowTilemapRenderer::Create(GridFlowModel->Tilemap, Settings);
+        UTextureRenderTarget2D* RenderedRTT = FFlowTilemapRenderer::Create(GridFlowModel->Tilemap, Settings);
         RenderedRTT->SRGB = 0;
         RenderedRTT->Filter = TF_Nearest;
 
@@ -84,8 +84,7 @@ void AGridFlowMiniMap::BuildLayout(UDungeonModel* DungeonModel, UDungeonConfig* 
             Width *= Aspect;
         }
 
-        FCanvasTileItem Item(FVector2D::ZeroVector, RenderedRTT->Resource, FVector2D(Width, Height),
-                             FLinearColor::White);
+        FCanvasTileItem Item(FVector2D::ZeroVector, RenderedRTT->GetResource(), FVector2D(Width, Height), FLinearColor::White);
         Canvas->DrawItem(Item);
         UKismetRenderingLibrary::EndDrawCanvasToRenderTarget(GetWorld(), RenderContext);
         UKismetRenderingLibrary::ReleaseRenderTarget2D(RenderedRTT);

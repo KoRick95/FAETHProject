@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Frameworks/ThemeEngine/SceneProviders/PooledDungeonSceneProvider.h"
 
@@ -183,6 +183,11 @@ void FPooledDungeonSceneProvider::AddReferencedObjects(FReferenceCollector& Coll
     FDungeonSceneProvider::AddReferencedObjects(Collector);
 
     Collector.AddReferencedObject(World);
+}
+
+FString FPooledDungeonSceneProvider::GetReferencerName() const {
+    static const FString NameString = TEXT("FPooledDungeonSceneProvider");
+    return NameString;
 }
 
 UWorld* FPooledDungeonSceneProvider::GetDungeonWorld() {

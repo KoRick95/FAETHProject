@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Core/LevelEditor/EditorMode/DungeonEdMode.h"
 
@@ -48,6 +48,11 @@ void FEdModeDungeon::AddReferencedObjects(FReferenceCollector& Collector) {
     // Call parent implementation
     FEdMode::AddReferencedObjects(Collector);
     Collector.AddReferencedObject(ModeHandler);
+}
+
+FString FEdModeDungeon::GetReferencerName() const {
+    static const FString NameString = TEXT("FEdModeDungeon");
+    return NameString;
 }
 
 /** FEdMode: Called when the mode is entered */
@@ -373,11 +378,11 @@ bool FEdModeDungeon::ShouldDrawWidget() const {
     return true;
 }
 
-EAxisList::Type FEdModeDungeon::GetWidgetAxisToDraw(FWidget::EWidgetMode InWidgetMode) const {
+EAxisList::Type FEdModeDungeon::GetWidgetAxisToDraw(UE::Widget::EWidgetMode InWidgetMode) const {
     switch (InWidgetMode) {
-    case FWidget::WM_Translate:
-    case FWidget::WM_Rotate:
-    case FWidget::WM_Scale:
+    case UE::Widget::WM_Translate:
+    case UE::Widget::WM_Rotate:
+    case UE::Widget::WM_Scale:
         return EAxisList::XYZ;
     default:
         return EAxisList::None;

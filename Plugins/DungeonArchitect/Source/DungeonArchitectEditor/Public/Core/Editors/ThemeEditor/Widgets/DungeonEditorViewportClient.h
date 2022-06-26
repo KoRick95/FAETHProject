@@ -1,8 +1,8 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
-#include "Core/Editors/ThemeEditor/Widgets/SDungeonEditorViewport.h"
+#include "Core/Editors/ThemeEditor/Widgets/SThemePreviewViewport.h"
 
 #include "PreviewScene.h"
 
@@ -13,8 +13,7 @@ class FDungeonArchitectThemeEditor;
 class DUNGEONARCHITECTEDITOR_API FDungeonEditorViewportClient : public FEditorViewportClient,
                                                                 public TSharedFromThis<FDungeonEditorViewportClient> {
 public:
-    FDungeonEditorViewportClient(TWeakPtr<FDungeonArchitectThemeEditor> InDungeonEditor,
-                                 TWeakPtr<SDungeonEditorViewport> InDungeonEditorViewport,
+    FDungeonEditorViewportClient(TWeakPtr<SThemePreviewViewport> InDungeonEditorViewport,
                                  FPreviewScene& InPreviewScene, UDungeonThemeAsset* InProp);
 
     // FEditorViewportClient interface
@@ -22,9 +21,9 @@ public:
     virtual void ProcessClick(class FSceneView& View, class HHitProxy* HitProxy, FKey Key, EInputEvent Event, uint32 HitX,
                               uint32 HitY) override;
     // End of FEditorViewportClient interface
+	
 private:
-    TWeakPtr<FDungeonArchitectThemeEditor> InDungeonEditor;
-    TWeakPtr<SDungeonEditorViewport> InDungeonEditorViewport;
+    TWeakPtr<SThemePreviewViewport> InDungeonEditorViewport;
     UDungeonThemeAsset* InProp;
 };
 

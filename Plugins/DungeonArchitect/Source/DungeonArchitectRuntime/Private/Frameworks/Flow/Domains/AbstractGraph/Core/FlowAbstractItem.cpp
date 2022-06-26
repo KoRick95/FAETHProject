@@ -1,19 +1,19 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Frameworks/Flow/Domains/AbstractGraph/Core/FlowAbstractItem.h"
 
 #include "Frameworks/Flow/Domains/AbstractGraph/Core/FlowAbstractGraphUtils.h"
 
 namespace {
-    FGridFlowItemCustomInfo ItemCustomInfo_Enemy("E", FLinearColor::White, FLinearColor::Red);
-    FGridFlowItemCustomInfo ItemCustomInfo_Key("K", FLinearColor::Black, FLinearColor::Yellow);
-    FGridFlowItemCustomInfo ItemCustomInfo_Lock("L", FLinearColor::White, FLinearColor::Blue);
-    FGridFlowItemCustomInfo ItemCustomInfo_Entrance("S", FLinearColor::Black, FLinearColor(0, 0.5f, 0));
-    FGridFlowItemCustomInfo ItemCustomInfo_Exit("G", FLinearColor::White, FLinearColor::Black);
-    FGridFlowItemCustomInfo ItemCustomInfo_Treasure("B", FLinearColor::White, FLinearColor(0.15f, 0.15f, 0.5f));
-    FGridFlowItemCustomInfo ItemCustomInfo_Teleporter("T", FLinearColor::Black, FLinearColor(0, 1, 1));
+    FFlowItemCustomInfo ItemCustomInfo_Enemy("E", FLinearColor::White, FLinearColor::Red);
+    FFlowItemCustomInfo ItemCustomInfo_Key("K", FLinearColor::Black, FLinearColor::Yellow);
+    FFlowItemCustomInfo ItemCustomInfo_Lock("L", FLinearColor::White, FLinearColor::Blue);
+    FFlowItemCustomInfo ItemCustomInfo_Entrance("S", FLinearColor::Black, FLinearColor(0, 0.5f, 0));
+    FFlowItemCustomInfo ItemCustomInfo_Exit("G", FLinearColor::White, FLinearColor::Black);
+    FFlowItemCustomInfo ItemCustomInfo_Treasure("B", FLinearColor::White, FLinearColor(0.15f, 0.15f, 0.5f));
+    FFlowItemCustomInfo ItemCustomInfo_Teleporter("T", FLinearColor::Black, FLinearColor(0, 1, 1));
 
-    FGridFlowItemCustomInfo GetItemCustomInfo(const UFlowGraphItem* Item) {
+    FFlowItemCustomInfo GetItemCustomInfo(const UFlowGraphItem* Item) {
         switch (Item->ItemType) {
         case EFlowGraphItemType::Enemy: return ItemCustomInfo_Enemy;
         case EFlowGraphItemType::Key: return ItemCustomInfo_Key;
@@ -43,18 +43,18 @@ namespace {
     }
 }
 
-FString FGridFlowItemVisuals::GetText(const UFlowGraphItem* Item) {
+FString FFlowItemVisuals::GetText(const UFlowGraphItem* Item) {
     if (!Item) return "";
     return GetItemCustomInfo(Item).PreviewText;
 }
 
-FLinearColor FGridFlowItemVisuals::GetTextColor(const UFlowGraphItem* Item, bool bInvertColor) {
+FLinearColor FFlowItemVisuals::GetTextColor(const UFlowGraphItem* Item, bool bInvertColor) {
     if (!Item) return FLinearColor::White;
     FLinearColor Color = GetItemCustomInfo(Item).PreviewTextColor;
     return bInvertColor ? InvertColor(Color, 1.0f) : Color;
 }
 
-FLinearColor FGridFlowItemVisuals::GetBackgroundColor(const UFlowGraphItem* Item, bool bInvertColor) {
+FLinearColor FFlowItemVisuals::GetBackgroundColor(const UFlowGraphItem* Item, bool bInvertColor) {
     if (!Item) return FLinearColor::Black;
     FLinearColor Color = GetItemCustomInfo(Item).PreviewBackgroundColor;
     return bInvertColor ? InvertColor(Color, 0.25f) : Color;

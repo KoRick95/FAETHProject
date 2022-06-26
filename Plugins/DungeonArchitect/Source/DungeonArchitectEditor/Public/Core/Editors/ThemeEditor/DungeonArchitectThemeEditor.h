@@ -1,18 +1,16 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
-#include "Core/Editors/ThemeEditor/Widgets/SGraphNode_DungeonActor.h"
-#include "Core/Editors/ThemeEditor/Widgets/SMarkerListView.h"
-#include "Frameworks/ThemeEngine/DungeonThemeAsset.h"
-
 #include "CoreGlobals.h"
-#include "IDetailsView.h"
 #include "Tickable.h"
-#include "Toolkits/AssetEditorManager.h"
+#include "WorkflowOrientedApp/WorkflowCentricApplication.h"
 
 class SThemeEditorDropTarget;
 class UEdGraphNode_DungeonMarker;
+class FThemeEditorAppModeBase;
+class UDungeonThemeAsset;
+class SThemePreviewViewport;
 
 class FDungeonEditorThumbnailPool : public FAssetThumbnailPool {
 public:
@@ -31,29 +29,31 @@ private:
     static TSharedPtr<FDungeonEditorThumbnailPool> Instance;
 };
 
-class SGraphEditor_Dungeon : public SGraphEditor {
+class FDungeonArchitectThemeEditor;
+
+class FThemeEditorToolbar : public TSharedFromThis<FThemeEditorToolbar> {
 public:
-    // SWidget implementation
-    virtual void Tick(const FGeometry& AllottedGeometry, double InCurrentTime, float InDeltaTime) override;
-    // End SWidget implementation
+    FThemeEditorToolbar(TWeakPtr<FDungeonArchitectThemeEditor> InThemeEditor) : ThemeEditorPtr(InThemeEditor) {}
+    void AddModesToolbar(TSharedPtr<FExtender> Extender) const;
+    void AddThemeGraphToolbar(TSharedPtr<FExtender> Extender);
+    void AddMarkerGeneratorToolbar(TSharedPtr<FExtender> Extender);
+
+private:
+    void FillModesToolbar(FToolBarBuilder& ToolbarBuilder) const;
+    void FillThemeGraphToolbar(FToolBarBuilder& ToolbarBuilder);
+    void FillMarkerGeneratorToolbar(FToolBarBuilder& ToolbarBuilder);
+    
+private:
+    TWeakPtr<FDungeonArchitectThemeEditor> ThemeEditorPtr;
 };
 
-typedef TSharedPtr<class FDungeonArchitectThemeGraphHandler> FDungeonArchitectThemeEditorActionsPtr;
-
-/*-----------------------------------------------------------------------------
-FDungeonArchitectThemeEditor
------------------------------------------------------------------------------*/
-class FDungeonArchitectThemeEditor : public FAssetEditorToolkit, public FNotifyHook,
-                                     public FTickableGameObject {
+class FDungeonArchitectThemeEditor : public FWorkflowCentricApplication,
+                                     public FTickableGameObject
+{
 public:
-    ~FDungeonArchitectThemeEditor();
-    // IToolkit interface
-    virtual void RegisterTabSpawners(const TSharedRef<class FTabManager>& TabManager) override;
-    virtual void UnregisterTabSpawners(const TSharedRef<class FTabManager>& TabManager) override;
-    // End of IToolkit interface
-
+    virtual ~FDungeonArchitectThemeEditor() override;
+    
     // FAssetEditorToolkit
-
     virtual FName GetToolkitFName() const override;
     virtual FText GetBaseToolkitName() const override;
     virtual FText GetToolkitName() const override;
@@ -62,11 +62,6 @@ public:
     virtual FString GetDocumentationLink() const override;
     // End of FAssetEditorToolkit
 
-    // FNotifyHook interface
-    virtual void NotifyPreChange(FProperty* PropertyAboutToChange) override;
-    virtual void NotifyPostChange(const FPropertyChangedEvent& PropertyChangedEvent, FProperty* PropertyThatChanged) override;
-    // End of FNotifyHook interface
-
     // FTickableGameObject Interface
     virtual bool IsTickableInEditor() const override;
     virtual void Tick(float DeltaTime) override;
@@ -74,81 +69,44 @@ public:
     virtual TStatId GetStatId() const override;
     // End of FTickableGameObject Interface
 
-    void InitDungeonEditor(EToolkitMode::Type Mode, const TSharedPtr<class IToolkitHost>& InitToolkitHost,
-                           UDungeonThemeAsset* PropData);
-    UDungeonThemeAsset* GetPropBeingEdited() const { return PropBeingEdited; }
+    void InitDungeonEditor(EToolkitMode::Type Mode, const TSharedPtr<class IToolkitHost>& InitToolkitHost, UDungeonThemeAsset* PropData);
+    UDungeonThemeAsset* GetAssetBeingEdited() const { return AssetBeingEdited; }
+    bool CanAccessModeThemeGraph() const;
+    bool CanAccessModeMarkerGenerator() const;
 
-    FORCEINLINE TSharedPtr<SGraphEditor> GetGraphEditor() const { return GraphEditor; }
-
-    void ShowObjectDetails(UObject* ObjectProperties, bool bForceRefresh = false);
-
-    void RecreateDefaultMarkerNodes();
     void HandleOpenHelpSystem();
-    bool GetBoundsForSelectedNodes(class FSlateRect& Rect, float Padding) const;
+    void CompileThemeGraph() const;
+    static FText GetLocalizedMode(FName InMode);
+    TSharedPtr<FThemeEditorToolbar> GetToolbarBuilder() const { return ToolbarBuilder; };
+    void RegisterToolbarTab(const TSharedRef<class FTabManager>& InTabManager);
+    
+    template<typename T>
+    TSharedPtr<T> GetAppMode(const FName& InModeName) {
+        TSharedPtr<FThemeEditorAppModeBase>* SearchResult = AppModes.Find(InModeName);
+        return SearchResult ? StaticCastSharedPtr<T>(*SearchResult) : nullptr;
+    }
+    
 
 protected:
     void ExtendMenu();
-    void ExtendToolbar();
-    TSharedRef<class SGraphEditor> CreateGraphEditorWidget(UEdGraph* InGraph);
-    TSharedRef<class IDetailsView> CreatePropertyEditorWidget();
-
-
-    void OnGraphChanged(const FEdGraphEditAction& Action);
-    void OnNodePropertyChanged(const FEdGraphEditAction& Action);
-    void HandleGraphChanged();
-    void InitThemeGraph(class UEdGraph_DungeonProp* ThemeGraph);
-    void OnNodeTitleCommitted(const FText& NewText, ETextCommit::Type CommitInfo, UEdGraphNode* NodeBeingChanged);
-
-protected:
-    /** Called when "Save" is clicked for this asset */
     virtual void SaveAsset_Execute() override;
-    void UpdateOriginalPropAsset();
-
-    void UpdateThumbnail();
-
-    void HandleAssetDropped(UObject* AssetObject);
-    bool IsAssetAcceptableForDrop(const UObject* AssetObject) const;
-    FVector2D GetAssetDropGridLocation() const;
-    void RefreshMarkerListView();
-    void OnMarkerListDoubleClicked(TSharedPtr<FMarkerListEntry> Entry);
-    void OnNodeDoubleClicked(class UEdGraphNode* Node);
-    void SelectedNodesChanged(const TSet<UObject*>& SelectedNodes);
+    void BindCommands();
+    void UpdateThumbnail() const;
+    void NotifyBuilderClassChanged(TSubclassOf<class UDungeonBuilder> InBuilderClass);
+    
+public:
+    static const FName AppModeID_GraphEditor;
+    static const FName AppModeID_MarkerGenerator;
 
 protected:
-    TSharedPtr<SGraphEditor> GraphEditor;
-    TSharedPtr<IDetailsView> PropertyEditor;
-    TSharedPtr<SThemeEditorDropTarget> AssetDropTarget;
-    UDungeonThemeAsset* PropBeingEdited = nullptr;
-    TSharedRef<SDockTab> SpawnTab_GraphEditor(const FSpawnTabArgs& Args);
-    TSharedRef<SDockTab> SpawnTab_Preview(const FSpawnTabArgs& Args);
-    TSharedRef<SDockTab> SpawnTab_Details(const FSpawnTabArgs& Args);
-    TSharedRef<SDockTab> SpawnTab_Actions(const FSpawnTabArgs& Args);
-    TSharedRef<SDockTab> SpawnTab_Markers(const FSpawnTabArgs& Args);
-    TSharedRef<SDockTab> SpawnTab_PreviewSettings(const FSpawnTabArgs& Args);
-    TSharedRef<SDockTab> SpawnTab_ContentBrowser(const FSpawnTabArgs& Args);
+    TMap<FName, TSharedPtr<FThemeEditorAppModeBase>> AppModes;
+    UDungeonThemeAsset* AssetBeingEdited = nullptr;
+    TSharedPtr<FThemeEditorToolbar> ToolbarBuilder;
+	TSharedPtr<SThemePreviewViewport> PreviewViewport;
 
-
-    /** Palette of Node actions to perform on the graph */
-    TSharedPtr<class SGraphPalette_PropActions> ActionPalette;
-
-    /** Preview Viewport widget */
-    TSharedPtr<class SDungeonEditorViewport> PreviewViewport;
-
-    TSharedPtr<class SMarkerListView> MarkerListView;
-
-    /** Handle to the registered OnGraphChanged delegate. */
-    FDelegateHandle OnGraphChangedDelegateHandle;
-
-    /** Handle to the registered OnNodePropertyChanged delegate. */
-    FDelegateHandle OnNodePropertyChangedDelegateHandle;
-
-    FDungeonArchitectThemeEditorActionsPtr ThemeGraphHandler;
-
-    bool bGraphStateChanged = false;
-
-private:
-    void BindCommands();
+    friend class SThemePreviewViewport;
 };
+
 
 class FDungeonArchitectThemeEditorUtils {
 public:

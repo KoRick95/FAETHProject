@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
@@ -52,8 +52,7 @@ public:
     // FGCObject Interface
     virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
     // End of FGCObject Interface
-
-    void UpgradeAsset() const;
+    
     void InitEditor(EToolkitMode::Type Mode, const TSharedPtr<class IToolkitHost>& InitToolkitHost, UFlowAssetBase* PropData);
     UFlowAssetBase* GetAssetBeingEdited() const;
     UFlowEditorSettings* GetEditorSettings() const { return EditorSettings; }
@@ -74,7 +73,8 @@ protected:
     virtual TSharedRef<SWidget> CreatePerfWidget(const TSharedRef<SDockTab> DockTab, TSharedPtr<SWindow> OwnerWindow);
     virtual int32 GeNumAllowedFlowExecTimeouts() const;
     virtual bool ShouldBuildPreviewDungeon() const { return true; }
-    
+    virtual void UpgradeAsset() const;
+
     template<typename TWidget>
     TSharedRef<TWidget> CreatePerfWidgetImpl(const TSharedRef<SDockTab> DockTab, TSharedPtr<SWindow> OwnerWindow) {
         return SNew(TWidget, DockTab, OwnerWindow, AssetBeingEdited)
@@ -87,7 +87,7 @@ protected:
     void CreateExecGraphEditorWidget();
     void CreatePropertyEditorWidget();
     void CreatePreviewViewport();
-    void CompileExecGraph();
+    void CompileExecGraph() const;
     void ExecuteGraph();
 
     void SyncEdGraphNodeStates() const;

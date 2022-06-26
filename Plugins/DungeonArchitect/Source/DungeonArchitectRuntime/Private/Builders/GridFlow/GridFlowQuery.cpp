@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Builders/GridFlow/GridFlowQuery.h"
 
@@ -10,7 +10,7 @@
 #include "Core/Utils/MathUtils.h"
 #include "Frameworks/Flow/Domains/AbstractGraph/Core/FlowAbstractGraph.h"
 #include "Frameworks/Flow/Domains/AbstractGraph/Core/FlowAbstractNode.h"
-#include "Frameworks/Flow/Domains/AbstractGraph/Implementations/GridFlowAbstractGraph.h"
+#include "Frameworks/FlowImpl/GridFlow/LayoutGraph/GridFlowAbstractGraph.h"
 
 #include "GameFramework/Actor.h"
 
@@ -76,7 +76,7 @@ FVector UGridFlowQuery::ConvertWorldToTileCoord(const FVector& InWorldCoords) {
     return FVector(TileX, TileY, TileZ);
 }
 
-bool UGridFlowQuery::GetCellAtTileCoord(const FVector& TileCoord, FGridFlowTilemapCell& OutCell) {
+bool UGridFlowQuery::GetCellAtTileCoord(const FVector& TileCoord, FFlowTilemapCell& OutCell) {
     if (!Model || !Model->Tilemap || !Config) {
         UE_LOG(LogGridFlowQuery, Error, TEXT("Invalid grid flow query object state"));
         return false;
@@ -84,7 +84,7 @@ bool UGridFlowQuery::GetCellAtTileCoord(const FVector& TileCoord, FGridFlowTilem
 
     const int32 IX = FMath::FloorToInt(TileCoord.X);
     const int32 IY = FMath::FloorToInt(TileCoord.Y);
-    const FGridFlowTilemapCell* CellPtr = Model->Tilemap->GetSafe(IX, IY);
+    const FFlowTilemapCell* CellPtr = Model->Tilemap->GetSafe(IX, IY);
     if (CellPtr) {
         OutCell = *CellPtr;
         return true;
@@ -92,7 +92,7 @@ bool UGridFlowQuery::GetCellAtTileCoord(const FVector& TileCoord, FGridFlowTilem
     return false;
 }
 
-bool UGridFlowQuery::GetCellAtWorldCoord(const FVector& InWorldCoord, FGridFlowTilemapCell& OutCell) {
+bool UGridFlowQuery::GetCellAtWorldCoord(const FVector& InWorldCoord, FFlowTilemapCell& OutCell) {
     if (!Model || !Model->Tilemap || !Config) {
         UE_LOG(LogGridFlowQuery, Error, TEXT("Invalid grid flow query object state"));
         return false;
@@ -107,7 +107,7 @@ bool UGridFlowQuery::GetCellRoomType(const FVector& WorldCoord, EGridFlowAbstrac
         return false;
     }
     const FVector TileCoords = ConvertWorldToTileCoord(WorldCoord);
-    const FGridFlowTilemapCell* CellPtr = Model->Tilemap->GetSafe(TileCoords.X, TileCoords.Y);
+    const FFlowTilemapCell* CellPtr = Model->Tilemap->GetSafe(TileCoords.X, TileCoords.Y);
     if (CellPtr) {
         const FVector NodeCoord = CellPtr->ChunkCoord;
         for (const UFlowAbstractNode* Node : Model->AbstractGraph->GraphNodes) {
@@ -146,8 +146,8 @@ void UGridFlowQuery::GetFreeTileLocation(TArray<EGridFlowAbstractNodeRoomType> A
 
     TArray<FIntVector> AllFloorTiles;
     TArray<FIntVector> ValidFloorTiles;
-    for (const FGridFlowTilemapCell& Cell : Model->Tilemap->GetCells()) {
-        if (Cell.bLayoutCell && Cell.CellType == EGridFlowTilemapCellType::Floor) {
+    for (const FFlowTilemapCell& Cell : Model->Tilemap->GetCells()) {
+        if (Cell.bLayoutCell && Cell.CellType == EFlowTilemapCellType::Floor) {
             if (Cell.bHasItem) continue;
             if (Cell.bHasOverlay && Cell.Overlay.bTileBlockingOverlay) continue;
 
@@ -184,10 +184,9 @@ bool UGridFlowQuery::GetChunkAtWorldCoord(const FVector& InWorldCoord, FGridFlow
         return false;
     }
     FVector TileCoord = ConvertWorldToTileCoord(InWorldCoord);
-    const FGridFlowTilemapCell* CellPtr = Model->Tilemap->GetSafe(TileCoord.X, TileCoord.Y);
+    const FFlowTilemapCell* CellPtr = Model->Tilemap->GetSafe(TileCoord.X, TileCoord.Y);
     if (CellPtr) {
-        if (CellPtr->CellType != EGridFlowTilemapCellType::Empty && CellPtr->CellType !=
-            EGridFlowTilemapCellType::Custom) {
+        if (CellPtr->CellType != EFlowTilemapCellType::Empty && CellPtr->CellType != EFlowTilemapCellType::Custom) {
             return GetChunkAtLayoutNodeCoord(CellPtr->ChunkCoord, Result);
         }
     }
@@ -256,7 +255,7 @@ void UGridFlowQuery::GetDungeonBounds(FVector& BoundsCenter, FVector& BoundsExte
     const FIntPoint Offset = Model->BuildTileOffset;
     FBox Bounds;
     const FVector& GridSize = Config->GridSize;
-    for (const FGridFlowTilemapCell& Cell : Model->Tilemap->GetCells()) {
+    for (const FFlowTilemapCell& Cell : Model->Tilemap->GetCells()) {
         if (Cell.bLayoutCell) {
             const float TileX = Cell.TileCoord.X - Offset.X;
             const float TileY = Cell.TileCoord.Y - Offset.Y;
@@ -279,9 +278,9 @@ void UGridFlowQuery::IsNearMarker(const FTransform& CurrentMarkerTransform, cons
         const float QueryDistanceSq = NearbyDistance * NearbyDistance;
         const FVector CurrentLocation = CurrentMarkerTransform.GetLocation();
 
-        for (const FPropSocket& Socket : Builder->GetMarkerList()) {
+        for (const FDAMarkerInfo& Socket : Builder->GetMarkerList()) {
             const float DistanceSq = (Socket.Transform.GetLocation() - CurrentLocation).SizeSquared();
-            if (DistanceSq < QueryDistanceSq && Socket.SocketType == NearbyMarkerName) {
+            if (DistanceSq < QueryDistanceSq && Socket.MarkerName == NearbyMarkerName) {
                 NumFound++;
             }
         }

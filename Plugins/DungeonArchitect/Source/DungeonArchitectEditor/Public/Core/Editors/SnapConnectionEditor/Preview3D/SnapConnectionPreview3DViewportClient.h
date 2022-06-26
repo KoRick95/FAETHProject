@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
@@ -7,10 +7,10 @@
 #include "PreviewScene.h"
 
 /** Viewport Client for the preview viewport */
-class DUNGEONARCHITECTEDITOR_API FSnapConnectionPreview3DViewportClient : public FEditorViewportClient,
-                                                                             public TSharedFromThis<
-                                                                                 FSnapConnectionPreview3DViewportClient
-                                                                             > {
+class DUNGEONARCHITECTEDITOR_API FSnapConnectionPreview3DViewportClient
+	: public FEditorViewportClient
+	, public TSharedFromThis<FSnapConnectionPreview3DViewportClient>
+{
 public:
     FSnapConnectionPreview3DViewportClient(FPreviewScene& InPreviewScene);
 

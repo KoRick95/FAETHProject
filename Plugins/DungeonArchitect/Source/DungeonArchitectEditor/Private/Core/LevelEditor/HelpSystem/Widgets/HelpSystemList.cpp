@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Core/LevelEditor/HelpSystem/Widgets/HelpSystemList.h"
 
@@ -31,10 +31,8 @@ void SHelpSystemList::Construct(const FArguments& InArgs) {
         }
     };
 
-    static const FString UrlUserGuide = "http://coderespawn.github.io/dungeon-architect-user-guide-ue4";
-    static const FString UrlQuickStartGuide = "http://coderespawn.github.io/dungeon-architect-quick-start-ue4";
-    static const FString UrlVideoTutorials =
-        "http://htmlpreview.github.io/?https://github.com/coderespawn/dungeon-architect-quick-start-ue4/blob/4.9/Docs/VideoTutorials.html";
+    static const FString UrlUserGuide = "https://docs.dungeonarchitect.dev/ue4";
+    static const FString UrlVideoTutorials = "https://www.youtube.com/watch?v=ZLIYg7xJLks&list=PLGMINEyXduyk9h9fNPdnW7D4sZVxYampp";
     static const FString UrlReleaseNotes = "https://gist.github.com/coderespawn/590e8bbb4adc9782cab8e48ae2a64864";
     static const FString UrlDiscord = "https://discord.gg/dRewTSU";
     static const FString UrlForumThread = "https://forums.unrealengine.com/showthread.php?67599-Dungeon-Architect";
@@ -47,21 +45,10 @@ void SHelpSystemList::Construct(const FArguments& InArgs) {
         .MaxHeight(ItemHeight)
         [
             CreateEntry(
-                LOCTEXT("UserGuideTitle", "User Guide"),
-                LOCTEXT("UserGuideDesc", "Learn how to use Dungeon Architect with this user guide"),
+                LOCTEXT("DocumentationTitle", "Documentation"),
+                LOCTEXT("DocumentationDesc", "Learn how to use Dungeon Architect"),
                 "DungeonArchitect.HelpSystem.IconUserGuide",
                 FOnClicked::CreateStatic(&Local::OpenURL, UrlUserGuide)
-            ).ToSharedRef()
-        ]
-        + SVerticalBox::Slot()
-        .MaxHeight(ItemHeight)
-        [
-            CreateEntry(
-                LOCTEXT("QuickStartTitle", "Quick Start Guide"),
-                LOCTEXT("QuickStartDesc",
-                        "Use the rich set of samples and demos in this guide to quickly get started with Dungeon Architect"),
-                "DungeonArchitect.HelpSystem.IconQuickStartGuide",
-                FOnClicked::CreateStatic(&Local::OpenURL, UrlQuickStartGuide)
             ).ToSharedRef()
         ]
         + SVerticalBox::Slot()

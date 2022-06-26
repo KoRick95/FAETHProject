@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Core/Editors/SnapMapEditor/Viewport/SSnapMapEditorViewport.h"
 
@@ -53,9 +53,14 @@ void SSnapMapEditorViewport::AddReferencedObjects(FReferenceCollector& Collector
     Collector.AddReferencedObject(ObjectToEdit);
 }
 
+FString SSnapMapEditorViewport::GetReferencerName() const {
+    static const FString NameString = TEXT("SSnapMapEditorViewport");
+    return NameString;
+}
+
 
 void SSnapMapEditorViewport::Tick(const FGeometry& AllottedGeometry, const double InCurrentTime,
-                                      const float InDeltaTime) {
+                                  const float InDeltaTime) {
     SEditorViewport::Tick(AllottedGeometry, InCurrentTime, InDeltaTime);
 
 }

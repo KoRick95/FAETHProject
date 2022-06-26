@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Core/Editors/FlowEditor/Panels/Viewport/SFlowPreview3DViewport.h"
 
@@ -50,6 +50,11 @@ SFlowPreview3DViewport::~SFlowPreview3DViewport() {
 }
 
 void SFlowPreview3DViewport::AddReferencedObjects(FReferenceCollector& Collector) {
+}
+
+FString SFlowPreview3DViewport::GetReferencerName() const {
+    static const FString NameString = TEXT("SFlowPreview3DViewport");
+    return NameString;
 }
 
 

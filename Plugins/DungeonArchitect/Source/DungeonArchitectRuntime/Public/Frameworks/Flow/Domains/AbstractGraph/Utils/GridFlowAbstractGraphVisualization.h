@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
@@ -6,8 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "GridFlowAbstractGraphVisualization.generated.h"
 
+class UMaterialInstanceDynamic;
 class UTextRenderComponent;
-class UGridFlowAbstractGraph3D;
+class USnapGridFlowAbstractGraph;
 class UFlowAbstractNode;
 class UFlowGraphItem;
 
@@ -20,6 +21,31 @@ struct DUNGEONARCHITECTRUNTIME_API FGFAbstractGraphVisualizerSettings {
     FLinearColor OneWayLinkColor = FLinearColor(0.4f, 0.05f, 0.0f);
     FVector NodeSeparationDistance = FVector(400, 400, 400);
     bool bRenderNodeOnCellCenter = false;
+};
+
+USTRUCT()
+struct DUNGEONARCHITECTRUNTIME_API FDAbstractNodeVisualizerResources {
+    GENERATED_BODY()
+
+    FDAbstractNodeVisualizerResources();
+    
+    UPROPERTY()
+    TSoftObjectPtr<UMaterialInterface> DefaultMaterial;
+
+    UPROPERTY()
+    TSoftObjectPtr<UMaterialInterface> SelectedMaterial;
+    
+    UPROPERTY()
+    TSoftObjectPtr<UMaterialInterface> TextMaterial;
+    
+    UPROPERTY()
+    TSoftObjectPtr<UMaterialInterface> BoundsMaterial;
+
+    UPROPERTY()
+    TSoftObjectPtr<UStaticMesh> PlaneMesh;
+    
+    UPROPERTY()
+    TSoftObjectPtr<UStaticMesh> BoundsMesh;
 };
 
 UCLASS(HideDropDown, NotPlaceable, NotBlueprintable)
@@ -36,32 +62,49 @@ public:
     void SetAlignToCameraEnabled(bool bEnabled) { bAlignToCamera = bEnabled; }
     void SetSelected(bool bInSelected);
 
+private:
+    void InitResources();
+    
 public:
     UPROPERTY()
-    UStaticMeshComponent* NodeMesh;
+    UStaticMeshComponent* NodeMeshComponent;
 
     UPROPERTY()
-    UStaticMeshComponent* BoundsMesh;
+    UStaticMeshComponent* BoundsMeshComponent;
     
     UPROPERTY()
-    UTextRenderComponent* TextRenderer;
+    UTextRenderComponent* TextRendererComponent;
 
-    UPROPERTY()
-    UMaterialInterface* TextMaterial;
-
+private:
     UPROPERTY(Transient)
-    UMaterialInstanceDynamic* DefaultMaterial;
+    UMaterialInstanceDynamic* DefaultMaterialInstance = nullptr;
     
     UPROPERTY(Transient)
-    UMaterialInstanceDynamic* SelectedMaterial;
+    UMaterialInstanceDynamic* SelectedMaterialInstance = nullptr;
 
     UPROPERTY(Transient)
-    UMaterialInstanceDynamic* BoundsMaterial;
-    
+    UMaterialInstanceDynamic* BoundsMaterialInstance = nullptr;
+
     bool bAlignToCamera = true;
     bool bSelected = false;
     bool bActiveNode = true;
+};
+
+
+USTRUCT()
+struct DUNGEONARCHITECTRUNTIME_API FDAbstractLinkVisualizerResources {
+    GENERATED_BODY()
     
+    FDAbstractLinkVisualizerResources();
+    
+    UPROPERTY()
+    TSoftObjectPtr<UMaterialInterface> LineMaterial;
+
+    UPROPERTY()
+    TSoftObjectPtr<UMaterialInterface> HeadMaterial;
+
+    UPROPERTY()
+    TSoftObjectPtr<UStaticMesh> LinkMesh;
 };
 
 UCLASS(HideDropDown, NotPlaceable, NotBlueprintable)
@@ -74,16 +117,19 @@ public:
     void AlignToCamera(const FVector& InCameraLocation, const FGFAbstractGraphVisualizerSettings& InSettings);
     void UseHeadMaterial(int32 NumHeads) const;
     void SetDynamicAlignment(USceneComponent* Start, USceneComponent* End);
+
+private:
+    void InitResources();
     
 public:
     UPROPERTY()
     UStaticMeshComponent* LineMesh;
     
     UPROPERTY(Transient)
-    UMaterialInstanceDynamic* LineMaterial;
+    UMaterialInstanceDynamic* LineMaterialInstance = nullptr;
     
     UPROPERTY(Transient)
-    UMaterialInstanceDynamic* HeadMaterial;
+    UMaterialInstanceDynamic* HeadMaterialInstance = nullptr;
 
     FVector StartLocation = FVector::ZeroVector;
     FVector EndLocation = FVector::ZeroVector;
@@ -106,7 +152,7 @@ public:
     virtual bool ShouldTickIfViewportsOnly() const override { return true; }
     virtual void Tick(float DeltaSeconds) override;
 
-    void Generate(UGridFlowAbstractGraph3D* InGraph, const FGFAbstractGraphVisualizerSettings& InSettings);
+    void Generate(USnapGridFlowAbstractGraph* InGraph, const FGFAbstractGraphVisualizerSettings& InSettings);
     void SetAutoAlignToLevelViewport(bool bEnabled) { bAutoAlignToLevelViewport = bEnabled; }
     void AlignToCamera(const FVector& InCameraLocation) const;
 

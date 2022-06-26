@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
@@ -15,7 +15,7 @@
 #include "SnapGridFlowDungeon.generated.h"
 
 class UFlowGraphItem;
-class UGridFlowAbstractGraph3D;
+class USnapGridFlowAbstractGraph;
 class USnapGridFlowModuleDatabase;
 class USnapGridFlowAsset;
 
@@ -35,6 +35,13 @@ public:
     /** Spawn the item actors using a theme file.   Here you'd define markers for every item you specified in the flow graph */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Dungeon)  
     TSoftObjectPtr<UDungeonThemeAsset> ItemTheme;
+    
+    /**
+     * Supports door categories names. When stitching the modules, only connections with the same door categories will be stitched together
+     * This will require more processing power, use it only when required. Disable if not needed, to get faster dungeon builds
+     */
+    UPROPERTY(EditAnywhere, Category = "Dungeon")
+    bool bSupportDoorCategories = false;
     
     /** If the layout graph build fails, it will be retried with another seed multiple tiles based on this count */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Dungeon)
@@ -63,6 +70,19 @@ public:
      **/
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Advanced)
     bool bGenerateSinglePersistentDungeon = false;
+    
+    /**
+     * The processing power allotted to the module resolve stage.  This allows the algorithm to bail out early if a solution is not
+     * found and make another retry.  Provide a value around (10,000)
+     */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Dungeon)
+    int32 MaxResolveFrames = 10000;
+
+    /**
+     * The system tries to not repeat a module within the last few room depths specified below
+     */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Dungeon)
+    int32 NonRepeatingRooms = 3;
 };
 
 UCLASS(Blueprintable)
@@ -76,7 +96,7 @@ public:
     TArray<FSnapGridFlowModuleInstanceSerializedData> ModuleInstances;
     
     UPROPERTY()
-    UGridFlowAbstractGraph3D* AbstractGraph = nullptr;
+    USnapGridFlowAbstractGraph* AbstractGraph = nullptr;
     
 public:
     virtual void Reset() override;
@@ -95,7 +115,7 @@ class DUNGEONARCHITECTRUNTIME_API USnapGridFlowToolData : public UDungeonToolDat
 };
 
 
-UCLASS(EarlyAccessPreview)
+UCLASS()
 class DUNGEONARCHITECTRUNTIME_API USnapGridFlowBuilder : public UDungeonBuilder {
     GENERATED_BODY()
 public:
@@ -107,6 +127,8 @@ public:
     virtual bool SupportsBackgroundTask() const override { return false; }
     virtual bool SupportsTheming() const override { return false; }
     virtual bool SupportsLevelStreaming() const override { return true; }
+    virtual bool PerformSelectionLogic(const TArray<UDungeonSelectorLogic*>& SelectionLogics, const FDAMarkerInfo& socket) override;
+    virtual FTransform PerformTransformLogic(const TArray<UDungeonTransformLogic*>& TransformLogics, const FDAMarkerInfo& socket) override;
     
     virtual TSubclassOf<UDungeonModel> GetModelClass() override;
     virtual TSubclassOf<UDungeonConfig> GetConfigClass() override;
@@ -116,12 +138,12 @@ public:
 protected:
     bool GenerateModuleNodeGraph(TArray<SnapLib::FModuleNodePtr>& OutNodes) const;
     bool ExecuteFlowGraph();
-    void CreateDebugVisualizations(const FGuid& DungeonID) const;
+    void CreateDebugVisualizations(const FGuid& DungeonID, const FTransform& InTransform) const;
     void DestroyDebugVisualizations(const FGuid& DungeonID) const;
     void HandleChunkLoaded(USnapStreamingChunk* InChunk);
     void HandleChunkLoadedAndVisible(USnapStreamingChunk* InChunk);
     virtual bool IdentifyBuildSucceeded() const override;
-    TArray<AActor*> SpawnItemWithThemeEngine(UFlowGraphItem* ItemInfo, APlaceableMarkerActor* InMarkerActor) const;
+    TArray<AActor*> SpawnItemWithThemeEngine(UFlowGraphItem* ItemInfo, const APlaceableMarkerActor* InMarkerActor);
     TArray<AActor*> SpawnChunkPlaceableMarkers(const TArray<AActor*>& ChunkActors, const FGuid& AbstractNodeId, const FBox& ChunkBounds, const FString& ChunkName);
     void BuildPersistentSnapLevel(UWorld* InWorld, const TArray<SnapLib::FModuleNodePtr>& InModuleNodes, TSharedPtr<FDungeonSceneProvider> InSceneProvider);
     
@@ -129,13 +151,14 @@ protected:
     FDAAttributeList AttributeList;
     TWeakObjectPtr<USnapGridFlowModel> SnapGridModel;
     TWeakObjectPtr<USnapGridFlowConfig> SnapGridConfig;
+    TWeakObjectPtr<USnapGridFlowQuery> SnapGridQuery;
     TSharedPtr<class FSnapGridFlowStreamingChunkHandler> LevelStreamHandler; 
 };
 
 
 class FSnapGridFlowStreamingChunkHandler : public FSnapStreamingChunkHandlerBase {
 public:
-    FSnapGridFlowStreamingChunkHandler(UWorld* InWorld, USnapGridFlowModel* InSnapGridModel, UDungeonLevelStreamingModel* InLevelStreamingModel);
+    FSnapGridFlowStreamingChunkHandler(UWorld* InWorld, TWeakObjectPtr<ADungeon> InDungeon, USnapGridFlowModel* InSnapGridModel, UDungeonLevelStreamingModel* InLevelStreamingModel);
     virtual TArray<struct FSnapConnectionInstance>* GetConnections() const override;
     virtual void OnChunkVisible(USnapStreamingChunk* Chunk) override;
     virtual void OnChunkHidden(USnapStreamingChunk* Chunk) override;
@@ -161,10 +184,35 @@ private:
 
 class DUNGEONARCHITECTRUNTIME_API FSnapGridFlowProcessDomainExtender : public IFlowProcessDomainExtender {
 public:
-    FSnapGridFlowProcessDomainExtender(TWeakObjectPtr<USnapGridFlowModuleDatabase> InModuleDatabase) : ModuleDatabase(InModuleDatabase) {}
+    FSnapGridFlowProcessDomainExtender(TWeakObjectPtr<USnapGridFlowModuleDatabase> InModuleDatabase, bool bInSupportsDoorCategory)
+        : ModuleDatabase(InModuleDatabase)
+        , bSupportsDoorCategory(bInSupportsDoorCategory)
+    {}
     virtual void ExtendDomains(FFlowProcessor& InProcessor) override;
 
 private:
     TWeakObjectPtr<USnapGridFlowModuleDatabase> ModuleDatabase;
+    bool bSupportsDoorCategory;
+};
+
+UCLASS(Blueprintable, HideDropDown)
+class DUNGEONARCHITECTRUNTIME_API USnapGridFlowSelectorLogic : public UDungeonSelectorLogic {
+    GENERATED_BODY()
+    
+public:
+    UFUNCTION(BlueprintNativeEvent, Category = "Dungeon")
+    bool SelectNode(USnapGridFlowModel* Model, USnapGridFlowConfig* Config, USnapGridFlowBuilder* Builder, USnapGridFlowQuery* Query, const FRandomStream& RandomStream, const FTransform& MarkerTransform);
+    virtual bool SelectNode_Implementation(USnapGridFlowModel* Model, USnapGridFlowConfig* Config, USnapGridFlowBuilder* Builder, USnapGridFlowQuery* Query, const FRandomStream& RandomStream, const FTransform& MarkerTransform);
+};
+
+
+UCLASS(Blueprintable, HideDropDown)
+class DUNGEONARCHITECTRUNTIME_API USnapGridFlowTransformLogic : public UDungeonTransformLogic {
+    GENERATED_BODY()
+    
+public:
+    UFUNCTION(BlueprintNativeEvent, Category = "Dungeon")
+    void GetNodeOffset(USnapGridFlowModel* Model, USnapGridFlowConfig* Config, USnapGridFlowQuery* Query, const FRandomStream& RandomStream, FTransform& Offset);
+    virtual void GetNodeOffset_Implementation(USnapGridFlowModel* Model, USnapGridFlowConfig* Config, USnapGridFlowQuery* Query, const FRandomStream& RandomStream, FTransform& Offset);
 };
 

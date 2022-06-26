@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
@@ -10,7 +10,7 @@
 class DUNGEONARCHITECTEDITOR_API SDungeonEditorViewportToolBar : public SViewportToolBar {
 public:
     SLATE_BEGIN_ARGS(SDungeonEditorViewportToolBar) {}
-        SLATE_ARGUMENT(TSharedPtr<class SDungeonEditorViewport>, Viewport)
+        SLATE_ARGUMENT(TSharedPtr<class SThemePreviewViewport>, Viewport)
     SLATE_END_ARGS()
 
     void Construct(const FArguments& InArgs);
@@ -22,7 +22,7 @@ public:
 
 private:
     /** The viewport that we are in */
-    TWeakPtr<class SDungeonEditorViewport> Viewport;
+    TWeakPtr<class SThemePreviewViewport> Viewport;
 
 };
 

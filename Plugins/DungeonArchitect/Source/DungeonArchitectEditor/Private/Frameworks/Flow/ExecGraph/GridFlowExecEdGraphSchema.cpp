@@ -1,14 +1,14 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Frameworks/Flow/ExecGraph/GridFlowExecEdGraphSchema.h"
 
 #include "Core/Utils/DungeonGraphUtils.h"
 #include "Frameworks/Flow/Domains/FlowDomain.h"
-#include "Frameworks/Flow/Domains/Tilemap/Tasks/GridFlowTaskTilemap_Initialize.h"
 #include "Frameworks/Flow/ExecGraph/GridFlowExecConnectionDrawingPolicy.h"
 #include "Frameworks/Flow/ExecGraph/GridFlowExecEdGraph.h"
 #include "Frameworks/Flow/ExecGraph/Nodes/GridFlowExecEdGraphNodes.h"
 #include "Frameworks/Flow/ExecGraph/Utils/ExecGraphEditorUtils.h"
+#include "Frameworks/FlowImpl/GridFlow/Tilemap/Tasks/GridFlowTilemapTaskInitialize.h"
 
 #include "EdGraph/EdGraph.h"
 #include "EdGraph/EdGraphNode.h"
@@ -36,13 +36,12 @@ void UGridFlowExecEdGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder
 namespace {
     template <typename TTask>
     void AddTaskContextAction(const FText& Category, const FText& Title, const FText& Tooltip, int32 Priority,
-                              const TArray<IFlowDomainWeakPtr>& Domains, TArray<TSharedPtr<FEdGraphSchemaAction>>& OutActions, UEdGraph* OwnerOfTemporaries) {
-        AddTaskContextAction(TTask::StaticClass(), Category, Title, Tooltip, Priority, Domains, OutActions, OwnerOfTemporaries);
+                              TArray<TSharedPtr<FEdGraphSchemaAction>>& OutActions, UEdGraph* OwnerOfTemporaries) {
+        AddTaskContextAction(TTask::StaticClass(), Category, Title, Tooltip, Priority, OutActions, OwnerOfTemporaries);
     }
 
-    void AddTaskContextAction(UClass* Class, const FText& Category, const FText& Title, const FText& Tooltip, int32 Priority,
-                              const TArray<IFlowDomainWeakPtr>& Domains, TArray<TSharedPtr<FEdGraphSchemaAction>>& OutActions, UEdGraph* OwnerOfTemporaries) {
-        const TSharedPtr<FGridFlowExecSchemaAction_NewNode> NewActorNodeAction = MakeShared<FGridFlowExecSchemaAction_NewNode>(Category, Title, Tooltip, 0, Domains);
+    void AddTaskContextAction(UClass* Class, const FText& Category, const FText& Title, const FText& Tooltip, int32 Priority, TArray<TSharedPtr<FEdGraphSchemaAction>>& OutActions, UEdGraph* OwnerOfTemporaries) {
+        const TSharedPtr<FGridFlowExecSchemaAction_NewNode> NewActorNodeAction = MakeShared<FGridFlowExecSchemaAction_NewNode>(Category, Title, Tooltip, 0);
         OutActions.Add(NewActorNodeAction);
         
         UGridFlowExecEdGraphNode_Task* TaskNodeTemplate = NewObject<UGridFlowExecEdGraphNode_Task>(OwnerOfTemporaries);
@@ -61,13 +60,10 @@ void UGridFlowExecEdGraphSchema::GetActionList(TArray<TSharedPtr<FEdGraphSchemaA
         int32 Priority;
     };
     TArray<FTaskClassInfo> TaskClasses;
-    TArray<IFlowDomainWeakPtr> DomainList;
     if (DomainFilter.IsValid()) {
         for (IFlowDomainWeakPtr DomainPtr : DomainFilter->GetAllowedDomains()) {
             IFlowDomainPtr Domain = DomainPtr.Pin();
             if (Domain.IsValid()) {
-                DomainList.Add(Domain);
-                
                 int32 TaskCounter = 1;
                 TArray<UClass*> DomainClasses;
                 Domain->GetDomainTasks(DomainClasses);
@@ -87,7 +83,7 @@ void UGridFlowExecEdGraphSchema::GetActionList(TArray<TSharedPtr<FEdGraphSchemaA
     }
     
     for (const FTaskClassInfo& ClassInfo : TaskClasses) {
-        AddTaskContextAction(ClassInfo.Class, ClassInfo.Category, ClassInfo.Title, ClassInfo.Tooltip, ClassInfo.Priority, DomainList, OutActions, OwnerOfTemporaries);
+        AddTaskContextAction(ClassInfo.Class, ClassInfo.Category, ClassInfo.Title, ClassInfo.Tooltip, ClassInfo.Priority, OutActions, OwnerOfTemporaries);
     }
 }
 
@@ -130,7 +126,7 @@ UEdGraphNode* UGridFlowExecEdGraphSchema::CreateSubstituteNode(UEdGraphNode* Nod
             FObjectInstancingGraph* InstanceGraph, TSet<FName>& InOutExtraNames) const {
     if (UGridFlowExecEdGraphNode_Task* TaskNode = Cast<UGridFlowExecEdGraphNode_Task>(Node)) {
         if (DomainFilter.IsValid()) {
-            for (const IFlowDomainWeakPtr DomainPtr : DomainFilter->GetAllowedDomains()) {
+            for (const IFlowDomainWeakPtr& DomainPtr : DomainFilter->GetAllowedDomains()) {
                 IFlowDomainPtr Domain = DomainPtr.Pin();
                 if (Domain.IsValid()) {
                     UFlowExecTask* CompatibleTemplate =  Domain->TryCreateCompatibleTask(TaskNode->TaskTemplate);
@@ -166,7 +162,7 @@ bool UGridFlowExecEdGraphSchema::TryCreateConnection(UEdGraphPin* A, UEdGraphPin
     bool bSourceIsTilemapCreateNode = false;
     {
         if (UGridFlowExecEdGraphNode_Task* TaskNodeA = Cast<UGridFlowExecEdGraphNode_Task>(NodeA)) {
-            bSourceIsTilemapCreateNode = TaskNodeA-> TaskTemplate && TaskNodeA->TaskTemplate->IsA<UGridFlowTaskTilemap_Initialize>();
+            bSourceIsTilemapCreateNode = TaskNodeA-> TaskTemplate && TaskNodeA->TaskTemplate->IsA<UGridFlowTilemapTaskInitialize>();
         }
     }
     bool bConnectionMade = UEdGraphSchema::TryCreateConnection(OutputA, InputB);
@@ -211,30 +207,6 @@ void UGridFlowExecEdGraphSchema::BreakNodeLinks(UEdGraphNode& TargetNode) const 
     TargetNode.GetGraph()->NotifyGraphChanged();
 }
 #endif // WITH_EDITOR
-
-//////////////////////////////////////// FFlowExecSchemaAction_NewNode ////////////////////////////////////////
-UEdGraphNode* FGridFlowExecSchemaAction_NewNode::PerformAction(class UEdGraph* ParentGraph, UEdGraphPin* FromPin,
-                                                               const FVector2D Location,
-                                                               bool bSelectNewNode /*= true*/) {
-    UEdGraphNode* NewNode = FDungeonSchemaAction_NewNode::PerformAction(ParentGraph, FromPin, Location, bSelectNewNode);
-
-    TArray<IFlowDomainPtr> DomainList;
-    for (IFlowDomainWeakPtr DomainPtr : Domains) {
-        IFlowDomainPtr Domain = DomainPtr.Pin();
-        if (Domain.IsValid()) {
-            DomainList.Add(Domain);
-        }
-    }
-    
-    if (UGridFlowExecEdGraphNode_Task* TaskNode = Cast<UGridFlowExecEdGraphNode_Task>(NewNode)) {
-        if (UFlowExecTask* Task = TaskNode->TaskTemplate) {
-            Task->Extenders.Reset();
-            FExecGraphEditorUtils::AddDomainTaskExtensions(Task, DomainList);
-        }
-    }
-
-    return NewNode;
-}
 
 #undef LOCTEXT_NAMESPACE
 

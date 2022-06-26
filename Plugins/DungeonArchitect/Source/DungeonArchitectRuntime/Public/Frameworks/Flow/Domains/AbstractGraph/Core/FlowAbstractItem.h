@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #pragma once
 #include "CoreMinimal.h"
@@ -18,13 +18,13 @@ enum class EFlowGraphItemType : uint8 {
 };
 
 USTRUCT()
-struct DUNGEONARCHITECTRUNTIME_API FGridFlowItemCustomInfo {
+struct DUNGEONARCHITECTRUNTIME_API FFlowItemCustomInfo {
     GENERATED_BODY()
 
-    FGridFlowItemCustomInfo() {
+    FFlowItemCustomInfo() {
     }
 
-    FGridFlowItemCustomInfo(const FString& InPreviewText, const FLinearColor& InPreviewTextColor,
+    FFlowItemCustomInfo(const FString& InPreviewText, const FLinearColor& InPreviewTextColor,
                             const FLinearColor InPreviewBackgroundColor)
         : PreviewText(InPreviewText)
           , PreviewTextColor(InPreviewTextColor)
@@ -66,10 +66,10 @@ public:
     bool bEditorSelected = false;
 
     UPROPERTY()
-    FGridFlowItemCustomInfo CustomInfo;
+    FFlowItemCustomInfo CustomInfo;
 };
 
-class DUNGEONARCHITECTRUNTIME_API FGridFlowItemVisuals {
+class DUNGEONARCHITECTRUNTIME_API FFlowItemVisuals {
 public:
     static FString GetText(const UFlowGraphItem* Item);
     static FLinearColor GetTextColor(const UFlowGraphItem* Item, bool bInvertColor = false);

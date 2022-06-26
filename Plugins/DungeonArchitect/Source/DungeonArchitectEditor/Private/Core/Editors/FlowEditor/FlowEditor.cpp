@@ -1,4 +1,4 @@
-//$ Copyright 2015-21, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
+//$ Copyright 2015-22, Code Respawn Technologies Pvt Ltd - All Rights Reserved $//
 
 #include "Core/Editors/FlowEditor/FlowEditor.h"
 
@@ -66,58 +66,45 @@ void FFlowEditorBase::InitEditor(const EToolkitMode::Type Mode, const TSharedPtr
 
     if (!Layout.IsValid()) {
         // Default layout
-        Layout = FTabManager::NewLayout(ConstructLayoutName("1.0.0"))
+        Layout = FTabManager::NewLayout(ConstructLayoutName("FlowEditor_Layout_v1.0.1"))
             ->AddArea
             (
                 FTabManager::NewPrimaryArea()
                 ->SetOrientation(Orient_Vertical)
                 ->Split
                 (
-                    FTabManager::NewStack()
-                    ->SetSizeCoefficient(0.1f)
-                    ->SetHideTabWell(true)
-                    ->AddTab(GetToolbarTabId(), ETabState::OpenedTab)
+                    FTabManager::NewSplitter()
+                    ->SetSizeCoefficient(0.4f)
+                    ->SetOrientation(Orient_Horizontal)
+                    ->Split // Exec Graph
+                    (
+                        FTabManager::NewStack()
+                        ->SetSizeCoefficient(0.65f)
+                        ->AddTab(FFlowEditorTabs::ExecGraphID, ETabState::OpenedTab)
+                        ->SetHideTabWell(true)
+                    )
+                    ->Split // Preview Viewport 3D
+                    (
+                        FTabManager::NewStack()
+                        ->SetSizeCoefficient(0.35f)
+                        ->AddTab(FFlowEditorTabs::ViewportID, ETabState::OpenedTab)
+                        ->SetHideTabWell(true)
+                    )
                 )
                 ->Split
                 (
                     FTabManager::NewSplitter()
-                    ->SetOrientation(Orient_Vertical)
-                    ->Split
+                    ->SetSizeCoefficient(0.6f)
+                    ->SetOrientation(Orient_Horizontal)
+                    ->Split // Details Tab
                     (
-
-                        FTabManager::NewSplitter()
-                        ->SetSizeCoefficient(0.4f)
-                        ->SetOrientation(Orient_Horizontal)
-                        ->Split // Exec Graph
-                        (
-                            FTabManager::NewStack()
-                            ->SetSizeCoefficient(0.65f)
-                            ->AddTab(FFlowEditorTabs::ExecGraphID, ETabState::OpenedTab)
-                            ->SetHideTabWell(true)
-                        )
-                        ->Split // Preview Viewport 3D
-                        (
-                            FTabManager::NewStack()
-                            ->SetSizeCoefficient(0.35f)
-                            ->AddTab(FFlowEditorTabs::ViewportID, ETabState::OpenedTab)
-                            ->SetHideTabWell(true)
-                        )
+                        FTabManager::NewStack()
+                        ->SetSizeCoefficient(0.15f)
+                        ->AddTab(FFlowEditorTabs::DetailsID, ETabState::OpenedTab)
                     )
-                    ->Split
+                    ->Split // Domain Editors
                     (
-                        FTabManager::NewSplitter()
-                        ->SetSizeCoefficient(0.6f)
-                        ->SetOrientation(Orient_Horizontal)
-                        ->Split // Details Tab
-                        (
-                            FTabManager::NewStack()
-                            ->SetSizeCoefficient(0.15f)
-                            ->AddTab(FFlowEditorTabs::DetailsID, ETabState::OpenedTab)
-                        )
-                        ->Split // Domain Editors
-                        (
-                            CreateDomainEditorLayout()
-                        )
+                        CreateDomainEditorLayout()
                     )
                 )
             );
@@ -135,7 +122,7 @@ TSharedRef<FTabManager::FSplitter> FFlowEditorBase::CreateDomainEditorLayout() c
           ->SetSizeCoefficient(0.85f)
           ->SetOrientation(Orient_Horizontal);
     
-    for (const IFlowDomainEditorPtr DomainEditor : DomainEditors) {
+    for (const IFlowDomainEditorPtr& DomainEditor : DomainEditors) {
         if (DomainEditor->IsVisualEditor()) {
             FFlowDomainEditorTabInfo TabInfo = DomainEditor->GetTabInfo();
             Host->Split (
@@ -150,7 +137,7 @@ TSharedRef<FTabManager::FSplitter> FFlowEditorBase::CreateDomainEditorLayout() c
 
 TArray<IFlowDomainPtr> FFlowEditorBase::GetDomainList() const {
     TArray<IFlowDomainPtr> Domains;
-    for (const IFlowDomainEditorPtr DomainEditor : DomainEditors) {
+    for (const IFlowDomainEditorPtr& DomainEditor : DomainEditors) {
         IFlowDomainPtr Domain = DomainEditor.IsValid() ? DomainEditor->GetDomain() : nullptr;
         if (Domain.IsValid()) {
             Domains.Add(DomainEditor->GetDomain());
@@ -191,7 +178,7 @@ void FFlowEditorBase::RegisterTabSpawners(const TSharedRef<class FTabManager>& I
                 .SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "LevelEditor.Tabs.Details"));
 
     // Register the domain editor tabs
-    for (const IFlowDomainEditorPtr DomainEditor : DomainEditors) {
+    for (const IFlowDomainEditorPtr& DomainEditor : DomainEditors) {
         if (DomainEditor->IsVisualEditor()) {
             FFlowDomainEditorTabInfo TabInfo = DomainEditor->GetTabInfo();
             InTabManager->RegisterTabSpawner(TabInfo.TabID,
@@ -212,7 +199,7 @@ void FFlowEditorBase::UnregisterTabSpawners(const TSharedRef<class FTabManager>&
     InTabManager->UnregisterTabSpawner(FFlowEditorTabs::PerformanceID);
 
     // Unregister the domain editors
-    for (const IFlowDomainEditorPtr DomainEditor : DomainEditors) {
+    for (const IFlowDomainEditorPtr& DomainEditor : DomainEditors) {
         if (DomainEditor->IsVisualEditor()) {
             const FFlowDomainEditorTabInfo TabInfo = DomainEditor->GetTabInfo();
             InTabManager->UnregisterTabSpawner(TabInfo.TabID);
@@ -267,14 +254,7 @@ void FFlowEditorBase::AddReferencedObjects(FReferenceCollector& Collector) {
 }
 
 void FFlowEditorBase::UpgradeAsset() const {
-    // Make sure we have all the extenders added to the nodes
-    for (UEdGraphNode* ExecEdNode : AssetBeingEdited->ExecEdGraph->Nodes) {
-        if (UGridFlowExecEdGraphNode_Task* TaskExecEdNode = Cast<UGridFlowExecEdGraphNode_Task>(ExecEdNode)) {
-            if (UFlowExecTask* Task = TaskExecEdNode->TaskTemplate) {
-                FExecGraphEditorUtils::AddDomainTaskExtensions(Task, GetDomainList());
-            }
-        }
-    } 
+    
 }
 
 UFlowAssetBase* FFlowEditorBase::GetAssetBeingEdited() const {
@@ -341,7 +321,7 @@ void FFlowEditorBase::CreateExecGraphEditorWidget() {
         const UGridFlowExecEdGraphSchema* ExecGraphSchema = Cast<UGridFlowExecEdGraphSchema>(AssetBeingEdited->ExecEdGraph->GetSchema());
         if (ExecGraphSchema) {
             TArray<IFlowDomainWeakPtr> SchemaDomains;
-            for (const IFlowDomainEditorPtr DomainEditor : DomainEditors) {
+            for (const IFlowDomainEditorPtr& DomainEditor : DomainEditors) {
                 SchemaDomains.Add(DomainEditor->GetDomain());
             }            
             ExecGraphSchema->SetAllowedDomains(SchemaDomains);
@@ -353,7 +333,14 @@ void FFlowEditorBase::CreateExecGraphEditorWidget() {
 
 void FFlowEditorBase::CreatePropertyEditorWidget() {
     FPropertyEditorModule& PropertyEditorModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
-    const FDetailsViewArgs DetailsViewArgs(false, false, true, FDetailsViewArgs::HideNameArea, true, this);
+    FDetailsViewArgs DetailsViewArgs;
+    DetailsViewArgs.bUpdatesFromSelection = false;
+    DetailsViewArgs.bLockable = false;
+    DetailsViewArgs.bAllowSearch = true;
+    DetailsViewArgs.NameAreaSettings = FDetailsViewArgs::HideNameArea;
+    DetailsViewArgs.bHideSelectionTip = true;
+    DetailsViewArgs.NotifyHook = this;
+
     PropertyEditor = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
 }
 
@@ -367,7 +354,7 @@ void FFlowEditorBase::CreatePreviewViewport() {
     PreviewViewport->SetPreviewDungeon(PreviewDungeon);
 }
 
-void FFlowEditorBase::CompileExecGraph() {
+void FFlowEditorBase::CompileExecGraph() const {
     if (AssetBeingEdited) {
         FGridFlowExecScriptCompiler::Compile(AssetBeingEdited->ExecEdGraph, AssetBeingEdited->ExecScript);
         AssetBeingEdited->Modify();
@@ -395,7 +382,7 @@ void FFlowEditorBase::ExecuteGraph() {
     ExecGraphProcessor = MakeShareable(new FFlowProcessor);
 
     // Register the domains
-    for (const TSharedPtr<IFlowDomainEditor> DomainEditor : DomainEditors) {
+    for (const TSharedPtr<IFlowDomainEditor>& DomainEditor : DomainEditors) {
         IFlowDomainPtr Domain = DomainEditor->GetDomain();
         if (Domain.IsValid()) {
             ConfigureDomainObject(Domain);
