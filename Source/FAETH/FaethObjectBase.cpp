@@ -23,6 +23,21 @@ UWorld* UFaethObjectBase::GetWorld() const
 		outer = outer->GetOuter();
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Cannot find a valid World for %s"), *GetClass()->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("Cannot find a valid World for %s"), *GetName());
 	return nullptr;
+}
+
+void UFaethObjectBase::PostInitProperties()
+{
+	Super::PostInitProperties();
+
+	if (GetWorld())
+	{
+		BeginPlay();
+	}
+}
+
+void UFaethObjectBase::BeginPlay()
+{
+	OnBeginPlay();
 }

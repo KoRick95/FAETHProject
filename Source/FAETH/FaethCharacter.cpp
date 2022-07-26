@@ -161,7 +161,6 @@ void AFaethCharacter::PossessedBy(AController* NewController)
 
 void AFaethCharacter::NativeOnHealthChange(float Health, float MaxHealth)
 {
-	UE_LOG(LogTemp, Display, TEXT("Native on health change called."));
 	if (bHasInitialisedAttributes && !bIsDead && FMath::IsNearlyZero(Health, 0.1f))
 	{
 		bIsDead = true;

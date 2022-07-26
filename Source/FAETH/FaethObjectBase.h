@@ -10,6 +10,14 @@ class FAETH_API UFaethObjectBase : public UObject
 	GENERATED_BODY()
 	
 public:
-	UFUNCTION(BlueprintCallable)
-	virtual UWorld* GetWorld() const;
+	UFUNCTION(BlueprintPure)
+	virtual UWorld* GetWorld() const override;
+
+protected:
+	virtual void PostInitProperties() override;
+	
+	virtual void BeginPlay();
+
+	UFUNCTION(BlueprintImplementableEvent, DisplayName = "BeginPlay")
+	void OnBeginPlay();
 };

@@ -120,6 +120,14 @@ public:
 	FGameplayAttributeData Experience;
 	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, Experience);
 
+	UPROPERTY(BlueprintReadWrite)
+	FGameplayAttributeData JobPoints;
+	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, JobPoints);
+
+	UPROPERTY(BlueprintReadWrite)
+	FGameplayAttributeData SkillPoints;
+	ATTRIBUTE_ACCESSORS(UCharacterAttributeSet, SkillPoints);
+
 public:
 	void AdjustAttributeForMaxChange(FGameplayAttributeData& Attribute, const FGameplayAttributeData& MaxAttribute, float NewMaxValue, const FGameplayAttribute& AttributeProperty);
 

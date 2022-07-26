@@ -1,8 +1,75 @@
 #include "SkillNode.h"
 #include "SkillNodeLink.h"
+#include "SkillManager.h"
+#include "FaethCharacter.h"
+#include "FaethGameplayAbility.h"
 
-USkillNodeLink* USkillNode::CreateNodeLinkTo(USkillNode* OtherNode)
+AFaethCharacter* USkillNode::GetOwningCharacter()
 {
-	
-	return nullptr;
+	return SkillManager->GetOwningCharacter();
+}
+
+USkillManager* USkillNode::GetSkillManager()
+{
+	return SkillManager;
+}
+
+void USkillNode::SetSkillManager(USkillManager* NewSkillManager)
+{
+	if (SkillManager)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Set new skill manager failed: You cannot override skill node %s's existing manager."), *GetName());
+		return;
+	}
+
+	SkillManager = NewSkillManager;
+}
+
+void USkillNode::GiveSkillToCharacter(AFaethCharacter* Character)
+{
+	// If node is already activated or is not yet unlocked, do nothing.
+	if (bIsActivated || !bIsUnlocked)
+	{
+		return;
+	}
+
+	// Give ability to the character.
+	if (SkillAbilityClass)
+	{
+		Character->GainAbility(SkillAbilityClass);
+	}
+
+	// Apply gameplay effect to character.
+	if (SkillEffectClass)
+	{
+		// To do: Change the GE level to dynamic.
+		Character->AbilitySystemComponent->ApplyGameplayEffectToSelf(NewObject<UGameplayEffect>(SkillEffectClass), 1, Character->AbilitySystemComponent->MakeEffectContext());
+	}
+
+	bIsActivated = true;
+}
+
+bool USkillNode::CheckUnlockConditions_Implementation()
+{
+	if (!GetOwningCharacter())
+		return false;
+
+	UCharacterAttributeSet* CharacterAttributeSet = GetOwningCharacter()->CharacterAttributeSet;
+
+	if (CharacterAttributeSet->GetJobPoints() >= JobPointsCost &&
+		CharacterAttributeSet->GetSkillPoints() >= SkillPointsCost)
+		return true;
+
+	return false;
+}
+
+void USkillNode::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (SkillManager)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Skill node %s is not assigned to a skill manager."), *GetName());
+		return;
+	}
 }

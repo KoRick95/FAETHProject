@@ -12,8 +12,8 @@ class FAETH_API USkillNodeLink : public UFaethObjectBase
 	GENERATED_BODY()
 	
 public:
-	USkillNodeLink() {}
-	USkillNodeLink(USkillNode* StartNode, USkillNode* EndNode) : StartNode(StartNode), EndNode(EndNode) {}
+	//USkillNodeLink() {}
+	//USkillNodeLink(USkillNode* StartNode, USkillNode* EndNode) : StartNode(StartNode), EndNode(EndNode) {}
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int JobPointCost;
@@ -28,5 +28,8 @@ public:
 	USkillNode* EndNode;
 
 public:
-	// custom check function
+	void SetNodes(USkillNode* Start, USkillNode* End);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	bool CheckSkillRequirements();
 };
