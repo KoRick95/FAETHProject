@@ -1,24 +1,28 @@
 #include "SkillNode.h"
 #include "SkillNodeLink.h"
+#include "SkillManager.h"
 #include "FaethCharacter.h"
 #include "FaethGameplayAbility.h"
 
-USkillNodeLink* USkillNode::CreateNodeLinkTo(USkillNode* OtherNode)
+AFaethCharacter* USkillNode::GetOwningCharacter()
 {
-	for (int i = 0; i < NodeLinks.Num(); ++i)
+	return SkillManager->GetOwningCharacter();
+}
+
+USkillManager* USkillNode::GetSkillManager()
+{
+	return SkillManager;
+}
+
+void USkillNode::SetSkillManager(USkillManager* NewSkillManager)
+{
+	if (SkillManager)
 	{
-		if (NodeLinks[i]->EndNode == OtherNode)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Create node link failed: Node link from %s to %s already exists."), *GetName(), *OtherNode->GetName());
-			return nullptr;
-		}
+		UE_LOG(LogTemp, Warning, TEXT("Set new skill manager failed: You cannot override skill node %s's existing manager."), *GetName());
+		return;
 	}
 
-	USkillNodeLink* NewLink = NewObject<USkillNodeLink>();
-	NewLink->SetNodes(this, OtherNode);
-	NodeLinks.Add(NewLink);
-
-	return NewLink;
+	SkillManager = NewSkillManager;
 }
 
 void USkillNode::GiveSkillToCharacter(AFaethCharacter* Character)
@@ -47,7 +51,25 @@ void USkillNode::GiveSkillToCharacter(AFaethCharacter* Character)
 
 bool USkillNode::CheckUnlockConditions_Implementation()
 {
-	/* To do: Default implementation */
+	if (!GetOwningCharacter())
+		return false;
+
+	UCharacterAttributeSet* CharacterAttributeSet = GetOwningCharacter()->CharacterAttributeSet;
+
+	if (CharacterAttributeSet->GetJobPoints() >= JobPointsCost &&
+		CharacterAttributeSet->GetSkillPoints() >= SkillPointsCost)
+		return true;
 
 	return false;
+}
+
+void USkillNode::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (SkillManager)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Skill node %s is not assigned to a skill manager."), *GetName());
+		return;
+	}
 }

@@ -6,6 +6,7 @@
 
 class UFaethGameplayAbility;
 class UGameplayEffect;
+class USkillManager;
 class USkillNodeLink;
 class AFaethCharacter;
 
@@ -45,12 +46,22 @@ public:
 	TArray<USkillNodeLink*> NodeLinks;
 
 protected:
+	// The owning skill manager of this node
+	USkillManager* SkillManager;
+
 	UPROPERTY(BlueprintReadOnly)
 	// Set to true once the ability/effect has been given to the character
 	bool bIsActivated = false;
 
 public:
-	USkillNodeLink* CreateNodeLinkTo(USkillNode* OtherNode);
+	UFUNCTION(BlueprintPure)
+	AFaethCharacter* GetOwningCharacter();
+
+	UFUNCTION(BlueprintPure)
+	USkillManager* GetSkillManager();
+	
+	UFUNCTION(BlueprintCallable)
+	void SetSkillManager(USkillManager* NewSkillManager);
 
 	UFUNCTION(BlueprintCallable)
 	// Gives the skill to the character if either the ability or effect class is set.
@@ -62,4 +73,7 @@ public:
 	// A blueprint native event for checking all the unlock conditions for this node.
 	// Default implementation checks if the unlock cost(s) can be paid.
 	bool CheckUnlockConditions();
+
+protected:
+	virtual void BeginPlay() override;
 };
