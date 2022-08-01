@@ -1,5 +1,4 @@
 #include "SkillNode.h"
-#include "SkillNodeLink.h"
 #include "SkillManager.h"
 #include "FaethCharacter.h"
 #include "FaethGameplayAbility.h"
@@ -79,7 +78,7 @@ void USkillNode::RemoveSkillFromCharacter(AFaethCharacter* Character)
 			return;
 	}
 
-	if (SkillAbilityClasses)
+	if (SkillAbilityClass)
 	{
 		// To do: Remove ability.
 	}
