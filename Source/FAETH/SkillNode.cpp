@@ -33,6 +33,17 @@ void USkillNode::GiveSkillToCharacter(AFaethCharacter* Character)
 		return;
 	}
 
+	// If the passed in character is not valid...
+	if (!Character)
+	{
+		// Use the owning character.
+		Character = GetOwningCharacter();
+
+		// If the owning character is also not valid, then do nothing.
+		if (!Character)
+			return;
+	}
+
 	// Give ability to the character.
 	if (SkillAbilityClass)
 	{
@@ -47,6 +58,36 @@ void USkillNode::GiveSkillToCharacter(AFaethCharacter* Character)
 	}
 
 	bIsActivated = true;
+}
+
+void USkillNode::RemoveSkillFromCharacter(AFaethCharacter* Character)
+{
+	// If node is not yet activated or unlocked, do nothing.
+	if (!bIsActivated || !bIsUnlocked)
+	{
+		return;
+	}
+
+	// If the passed in character is not valid...
+	if (!Character)
+	{
+		// Use the owning character.
+		Character = GetOwningCharacter();
+
+		// If the owning character is also not valid, then do nothing.
+		if (!Character)
+			return;
+	}
+
+	if (SkillAbilityClasses)
+	{
+		// To do: Remove ability.
+	}
+
+	if (SkillEffectClass)
+	{
+		// To do: Remove effect.
+	}
 }
 
 bool USkillNode::CheckUnlockConditions_Implementation()

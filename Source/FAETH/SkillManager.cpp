@@ -17,6 +17,48 @@ void USkillManager::SetOwningCharacter(AFaethCharacter* NewCharacter)
 	OwningCharacter = NewCharacter;
 }
 
+USkillNode* USkillManager::SelectNodeByIndex(int ArrayIndex)
+{
+	if (ArrayIndex >= 0 && ArrayIndex < SkillNodes.Num())
+	{
+		NodeSelector.Index = ArrayIndex;
+		NodeSelector.Node = SkillNodes[ArrayIndex];
+		return NodeSelector.Node;
+	}
+	else if (ArrayIndex == -1)
+	{
+		return SelectNodeEnd();
+	}
+	else if (ArrayIndex == SkillNodes.Num())
+	{
+		return SelectNodeStart();
+	}
+
+	return nullptr;
+}
+
+USkillNode* USkillManager::SelectNodePrev()
+{
+	return SelectNodeByIndex(NodeSelector.Index - 1);
+}
+
+USkillNode* USkillManager::SelectNodeNext()
+{
+	return SelectNodeByIndex(NodeSelector.Index + 1);
+}
+
+USkillNode* USkillManager::SelectNodeStart()
+{
+	// To do: Function.
+	return nullptr;
+}
+
+USkillNode* USkillManager::SelectNodeEnd()
+{
+	// To do: Function.
+	return nullptr;
+}
+
 void USkillManager::BeginPlay()
 {
 	Super::BeginPlay();

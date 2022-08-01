@@ -65,6 +65,8 @@ public:
 	void GiveSkillToCharacter(AFaethCharacter* Character);
 
 	/* To do: RemoveSkillFromCharacter() */
+	UFUNCTION(BlueprintCallable)
+	void RemoveSkillFromCharacter(AFaethCharacter* Character);
 
 	UFUNCTION(BlueprintNativeEvent)
 	// A blueprint native event for checking all the unlock conditions for this node.
