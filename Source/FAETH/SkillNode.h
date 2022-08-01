@@ -42,9 +42,6 @@ public:
 	// Set to true once the cost of unlocking the node has been paid
 	bool bIsUnlocked = false;
 
-	UPROPERTY(BlueprintReadWrite)
-	TArray<USkillNodeLink*> NodeLinks;
-
 protected:
 	// The owning skill manager of this node
 	USkillManager* SkillManager;
