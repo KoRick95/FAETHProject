@@ -54,6 +54,18 @@ void UFaethUserWidget::NavigateEnd()
 	UpdateNavigator(NavigableWidgets[NavigableWidgets.Num()], NavigableWidgets.Num());
 }
 
+FNavigationReply UFaethUserWidget::NativeOnNavigation(const FGeometry& MyGeometry, const FNavigationEvent& InNavigationEvent, const FNavigationReply& InDefaultReply)
+{
+	FNavigationReply NavReply = Super::NativeOnNavigation(MyGeometry, InNavigationEvent, InDefaultReply);
+	
+	if (NavReply.GetBoundaryRule() == EUINavigationRule::Explicit)
+	{
+		NavReply.GetFocusRecipient();
+	}
+
+	return NavReply;
+}
+
 void UFaethUserWidget::UpdateNavigator(UWidget* NewWidget, int NewIndex)
 {
 	WidgetNavigator.Widget = NewWidget;

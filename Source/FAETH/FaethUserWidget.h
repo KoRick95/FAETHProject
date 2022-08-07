@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "FaethObjectTypes.h"
 #include "FaethUserWidget.generated.h"
 
 USTRUCT(BlueprintType)
@@ -38,6 +39,8 @@ public:
 	FWidgetNavigator WidgetNavigator;
 
 public:
+
+
 	UFUNCTION(BlueprintCallable, Category = "Navigation")
 	int GetCurrentIndex() { return WidgetNavigator.Index; }
 
@@ -59,6 +62,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Navigation")
 	virtual void NavigateEnd();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Navigation")
+	void OnNavigation();
+
 protected:
+	virtual FNavigationReply NativeOnNavigation(const FGeometry& MyGeometry, const FNavigationEvent& InNavigationEvent, const FNavigationReply& InDefaultReply) override;
+
 	void UpdateNavigator(UWidget* NewWidget, int NewIndex);
 };
