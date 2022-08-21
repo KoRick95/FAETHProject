@@ -1,73 +1,49 @@
 #include "FaethUserWidget.h"
+#include "Blueprint/WidgetTree.h"
 
-void UFaethUserWidget::NavigateByIndex(int Index)
+TArray<UWidget*> UFaethUserWidget::GetChildren()
 {
-	if (Index >= 0 && Index < NavigableWidgets.Num())
-	{
-		UpdateNavigator(NavigableWidgets[Index], Index);
-	}
-	else if (Index < 0)
-	{
-		NavigateStart();
-	}
-	else if (Index >= NavigableWidgets.Num())
-	{
-		NavigateEnd();
-	}
+	TArray<UWidget*> Children;
+	WidgetTree.Get()->GetAllWidgets(Children);
+
+	return Children;
 }
 
-void UFaethUserWidget::NagivateNext()
+TArray<UWidget*> UFaethUserWidget::GetChildrenOfClass(TSubclassOf<UWidget> WidgetClass)
 {
-	int NewIndex = GetCurrentIndex() + 1;
+	TArray<UWidget*> Children = GetChildren();
+	TArray<UWidget*> ClassChildren;
 
-	if (NewIndex < NavigableWidgets.Num())
+	for (int i = 0; i < Children.Num(); ++i)
 	{
-		UpdateNavigator(NavigableWidgets[NewIndex], NewIndex);
+		if (Children[i]->IsA(WidgetClass))
+		{
+			ClassChildren.Add(Children[i]);
+		}
 	}
-	else if (bWrapAround)
-	{
-		NavigateStart();
-	}
-}
 
-void UFaethUserWidget::NavigatePrev()
-{
-	int NewIndex = GetCurrentIndex() - 1;
-
-	if (NewIndex >= 0)
-	{
-		UpdateNavigator(NavigableWidgets[NewIndex], NewIndex);
-	}
-	else if (bWrapAround)
-	{
-		NavigateEnd();
-	}
-}
-
-void UFaethUserWidget::NavigateStart()
-{
-	UpdateNavigator(NavigableWidgets[0], 0);
-}
-
-void UFaethUserWidget::NavigateEnd()
-{
-	UpdateNavigator(NavigableWidgets[NavigableWidgets.Num()], NavigableWidgets.Num());
+	return ClassChildren;
 }
 
 FNavigationReply UFaethUserWidget::NativeOnNavigation(const FGeometry& MyGeometry, const FNavigationEvent& InNavigationEvent, const FNavigationReply& InDefaultReply)
 {
 	FNavigationReply NavReply = Super::NativeOnNavigation(MyGeometry, InNavigationEvent, InDefaultReply);
 	
-	if (NavReply.GetBoundaryRule() == EUINavigationRule::Explicit)
+	TArray<UWidget*> Children = GetChildren();
+
+	for (int i = 0; i < Children.Num(); ++i)
 	{
-		NavReply.GetFocusRecipient();
+		
 	}
+
+	OnNavigation();
 
 	return NavReply;
 }
 
 void UFaethUserWidget::UpdateNavigator(UWidget* NewWidget, int NewIndex)
 {
-	WidgetNavigator.Widget = NewWidget;
+	WidgetNavigator.PreviousWidget = WidgetNavigator.CurrentWidget;
+	WidgetNavigator.CurrentWidget = NewWidget;
 	WidgetNavigator.Index = NewIndex;
 }

@@ -12,12 +12,15 @@ struct FWidgetNavigator
 
 public:
 	FWidgetNavigator() {}
-	FWidgetNavigator(UWidget* InWidget, int InIndex) : Widget(InWidget), Index(InIndex) {}
+	FWidgetNavigator(UWidget* InWidget, int InIndex) : CurrentWidget(InWidget), Index(InIndex) {}
 
-	UPROPERTY(BlueprintReadWrite)
-	UWidget* Widget;
+	UPROPERTY(BlueprintReadOnly)
+	UWidget* CurrentWidget;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadOnly)
+	UWidget* PreviousWidget;
+
+	UPROPERTY(BlueprintReadOnly)
 	int Index;
 };
 
@@ -39,28 +42,19 @@ public:
 	FWidgetNavigator WidgetNavigator;
 
 public:
+	UFUNCTION(BlueprintPure)
+	TArray<UWidget*> GetChildren();
 
-
-	UFUNCTION(BlueprintCallable, Category = "Navigation")
-	int GetCurrentIndex() { return WidgetNavigator.Index; }
-
-	UFUNCTION(BlueprintCallable, Category = "Navigation")
-	UWidget* GetCurrentWidget() { return WidgetNavigator.Widget; }
+	UFUNCTION(BlueprintPure)
+	TArray<UWidget*> GetChildrenOfClass(TSubclassOf<UWidget> WidgetClass);
 
 	UFUNCTION(BlueprintCallable, Category = "Navigation")
-	virtual void NavigateByIndex(int Index);
+	UWidget* GetCurrentWidget() { return WidgetNavigator.CurrentWidget; }
 
 	UFUNCTION(BlueprintCallable, Category = "Navigation")
-	virtual void NagivateNext();
+	UWidget* GetPreviousWidget() { return WidgetNavigator.PreviousWidget; }
 
-	UFUNCTION(BlueprintCallable, Category = "Navigation")
-	virtual void NavigatePrev();
-
-	UFUNCTION(BlueprintCallable, Category = "Navigation")
-	virtual void NavigateStart();
-
-	UFUNCTION(BlueprintCallable, Category = "Navigation")
-	virtual void NavigateEnd();
+	
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Navigation")
 	void OnNavigation();
