@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "FaethObjectBase.h"
+#include "FaethDataObject.h"
 #include "SkillManager.generated.h"
 
 class AFaethCharacter;
@@ -21,7 +21,7 @@ public:
 };
 
 UCLASS()
-class FAETH_API USkillManager : public UFaethObjectBase
+class FAETH_API USkillManager : public UFaethDataObject
 {
 	GENERATED_BODY()
 	
