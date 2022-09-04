@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "FaethObjectBase.h"
+#include "FaethDataObject.h"
 #include "FaethObjectTypes.h"
 #include "QuestObjective.generated.h"
 
@@ -19,7 +19,7 @@ enum class EQuestObjectiveType : uint8
 };
 
 UCLASS(Blueprintable)
-class FAETH_API UQuestObjective : public UFaethObjectBase
+class FAETH_API UQuestObjective : public UFaethDataObject
 {
 	GENERATED_BODY()
 

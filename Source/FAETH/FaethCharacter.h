@@ -80,8 +80,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool GetIsHostile(AFaethCharacter* other);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Gameplay")
 	void GainAbility(TSubclassOf<UFaethGameplayAbility> Ability);
+
+	UFUNCTION(BlueprintCallable, Category = "Gameplay")
+	void LoseAbility(TSubclassOf<UFaethGameplayAbility> Ability);
+
+	UFUNCTION(BlueprintCallable, Category = "Gameplay")
+	void GainEffect(TSubclassOf<UGameplayEffect> Effect);
+
+	UFUNCTION(BlueprintCallable, Category = "Gameplay")
+	void LoseEffect(TSubclassOf<UGameplayEffect> Effect);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Gameplay", DisplayName = "OnHealthChanged")
 	void BP_OnHealthChange(float Health, float MaxHealth);

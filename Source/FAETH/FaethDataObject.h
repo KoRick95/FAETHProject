@@ -2,10 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "FaethObjectBase.generated.h"
+#include "FaethDataObject.generated.h"
 
 UCLASS(Blueprintable, BlueprintType)
-class FAETH_API UFaethObjectBase : public UObject
+class FAETH_API UFaethDataObject : public UObject
 {
 	GENERATED_BODY()
 	
@@ -19,5 +19,5 @@ protected:
 	virtual void BeginPlay();
 
 	UFUNCTION(BlueprintImplementableEvent, DisplayName = "BeginPlay")
-	void OnBeginPlay();
+	void BP_BeginPlay();
 };

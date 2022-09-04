@@ -1,6 +1,6 @@
-#include "FaethObjectBase.h"
+#include "FaethDataObject.h"
 
-UWorld* UFaethObjectBase::GetWorld() const
+UWorld* UFaethDataObject::GetWorld() const
 {
 	// If this is a CDO, then return nullptr instead of calling Outer->GetWorld() to fool UObject::ImplementsGetWorld()
 	if (HasAnyFlags(RF_ClassDefaultObject))
@@ -27,7 +27,7 @@ UWorld* UFaethObjectBase::GetWorld() const
 	return nullptr;
 }
 
-void UFaethObjectBase::PostInitProperties()
+void UFaethDataObject::PostInitProperties()
 {
 	Super::PostInitProperties();
 
@@ -37,7 +37,7 @@ void UFaethObjectBase::PostInitProperties()
 	}
 }
 
-void UFaethObjectBase::BeginPlay()
+void UFaethDataObject::BeginPlay()
 {
-	OnBeginPlay();
+	BP_BeginPlay();
 }

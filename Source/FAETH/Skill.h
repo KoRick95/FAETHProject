@@ -2,16 +2,16 @@
 
 #include "CoreMinimal.h"
 #include "FaethDataObject.h"
-#include "SkillNode.generated.h"
+#include "FaethObjectTypes.h"
+#include "Skill.generated.h"
 
+class AFaethCharacter;
 class UFaethGameplayAbility;
 class UGameplayEffect;
-class USkillManager;
-class USkillNodeLink;
-class AFaethCharacter;
+class USkillSetComponent;
 
 UCLASS()
-class FAETH_API USkillNode : public UFaethDataObject
+class FAETH_API USkill : public UFaethDataObject
 {
 	GENERATED_BODY()
 	
@@ -40,38 +40,44 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	// Set to true once the cost of unlocking the node has been paid
-	bool bIsUnlocked = false;
+	bool bUnlocked = false;
 
 protected:
-	// The owning skill manager of this node
-	USkillManager* SkillManager;
-
 	UPROPERTY(BlueprintReadOnly)
-	// Set to true once the ability/effect has been given to the character
-	bool bIsActivated = false;
+	USkillSetComponent* OwningComponent;
+
+	UPROPERTY(EditAnywhere)
+	// If set to true before runtime, then the skill will be applied on BeginPlay
+	// Otherwise, this is only modified by ActivateSkill() or DeactivateSkill()
+	bool bActivated = false;
+
+	// Set to true once the skill has been properly applied to the owning character
+	bool bApplied = false;
 
 public:
 	UFUNCTION(BlueprintPure)
-	AFaethCharacter* GetOwningCharacter();
+	const bool IsActivated() { return bActivated; }
 
 	UFUNCTION(BlueprintPure)
-	USkillManager* GetSkillManager();
+	const bool IsApplied() { return bApplied; }
+
+	UFUNCTION(BlueprintPure)
+	// Returns the owning character of the owning skill set component
+	AFaethCharacter* GetOwningCharacter();
+
+	UFUNCTION(BlueprintCallable)
+	// Activates the skill on the owning character
+	void ActivateSkill();
+
+	UFUNCTION(BlueprintCallable)
+	// Deactivates the skill on the owning character
+	void DeactivateSkill();
 	
-	UFUNCTION(BlueprintCallable)
-	void SetSkillManager(USkillManager* NewSkillManager);
+	// Applies the skill to the character if either the ability or effect class is set
+	void ApplySkillTo(AFaethCharacter* Character);
 
-	UFUNCTION(BlueprintCallable)
-	// Gives the skill to the character if either the ability or effect class is set.
-	void GiveSkillToCharacter(AFaethCharacter* Character);
-
-	/* To do: RemoveSkillFromCharacter() */
-	UFUNCTION(BlueprintCallable)
-	void RemoveSkillFromCharacter(AFaethCharacter* Character);
-
-	UFUNCTION(BlueprintNativeEvent)
-	// A blueprint native event for checking all the unlock conditions for this node.
-	// Default implementation checks if the unlock cost(s) can be paid.
-	bool CheckUnlockConditions();
+	// Removes the skill from the character if it has been applied
+	void RemoveSkillFrom(AFaethCharacter* Character);
 
 protected:
 	virtual void BeginPlay() override;
