@@ -19,5 +19,5 @@ protected:
 	virtual void BeginPlay();
 
 	UFUNCTION(BlueprintImplementableEvent, DisplayName = "BeginPlay")
-	void OnBeginPlay();
+	void BP_BeginPlay();
 };

@@ -39,5 +39,5 @@ void UFaethDataObject::PostInitProperties()
 
 void UFaethDataObject::BeginPlay()
 {
-	OnBeginPlay();
+	BP_BeginPlay();
 }
