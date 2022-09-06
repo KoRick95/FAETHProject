@@ -34,10 +34,6 @@ void UFaethDataObject::PostInitProperties()
 	if (GetWorld())
 	{
 		BeginPlay();
+		BP_BeginPlay();
 	}
-}
-
-void UFaethDataObject::BeginPlay()
-{
-	BP_BeginPlay();
 }

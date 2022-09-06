@@ -16,7 +16,7 @@ public:
 protected:
 	virtual void PostInitProperties() override;
 	
-	virtual void BeginPlay();
+	virtual void BeginPlay() {}
 
 	UFUNCTION(BlueprintImplementableEvent, DisplayName = "BeginPlay")
 	void BP_BeginPlay();
