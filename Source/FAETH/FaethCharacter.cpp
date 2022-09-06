@@ -1,5 +1,6 @@
 #include "FaethCharacter.h"
 #include "FaethAbility.h"
+#include "FaethAbilitySystemComponent.h"
 #include "FaethObjectTypes.h"
 
 // Sets default values
@@ -7,7 +8,7 @@ AFaethCharacter::AFaethCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>("AbilitySystemComponent");
+	AbilitySystemComponent = CreateDefaultSubobject<UFaethAbilitySystemComponent>("AbilitySystemComponent");
 	AbilitySystemComponent->SetIsReplicated(true);
 	CharacterAttributeSet = CreateDefaultSubobject<UCharacterAttributeSet>("CharacterAttributeSet");
 	bIsDead = false;
