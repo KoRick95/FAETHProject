@@ -6,7 +6,7 @@
 #include "CharacterAttributeSet.h"
 #include "FaethCharacter.generated.h"
 
-class UFaethGameplayAbility;
+class UFaethAbility;
 
 UCLASS()
 class FAETH_API AFaethCharacter : public ACharacter, public IAbilitySystemInterface
@@ -81,10 +81,10 @@ public:
 	bool GetIsHostile(AFaethCharacter* other);
 
 	UFUNCTION(BlueprintCallable, Category = "Gameplay")
-	void GainAbility(TSubclassOf<UFaethGameplayAbility> Ability);
+	void GainAbility(TSubclassOf<UFaethAbility> Ability);
 
 	UFUNCTION(BlueprintCallable, Category = "Gameplay")
-	void LoseAbility(TSubclassOf<UFaethGameplayAbility> Ability);
+	void LoseAbility(TSubclassOf<UFaethAbility> Ability);
 
 	UFUNCTION(BlueprintCallable, Category = "Gameplay")
 	void GainEffect(TSubclassOf<UGameplayEffect> Effect);

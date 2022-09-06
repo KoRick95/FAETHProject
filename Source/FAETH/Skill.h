@@ -6,7 +6,7 @@
 #include "Skill.generated.h"
 
 class AFaethCharacter;
-class UFaethGameplayAbility;
+class UFaethAbility;
 class UGameplayEffect;
 class USkillSetComponent;
 
@@ -24,7 +24,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	// The ability that will be given to the character
-	TSubclassOf<UFaethGameplayAbility> SkillAbilityClass;
+	TSubclassOf<UFaethAbility> SkillAbilityClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	// The effect that will be granted to the character

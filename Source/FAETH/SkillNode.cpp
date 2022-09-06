@@ -1,7 +1,7 @@
 #include "SkillNode.h"
 #include "SkillManager.h"
 #include "FaethCharacter.h"
-#include "FaethGameplayAbility.h"
+#include "FaethAbility.h"
 
 AFaethCharacter* USkillNode::GetOwningCharacter()
 {

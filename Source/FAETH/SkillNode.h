@@ -4,7 +4,7 @@
 #include "FaethDataObject.h"
 #include "SkillNode.generated.h"
 
-class UFaethGameplayAbility;
+class UFaethAbility;
 class UGameplayEffect;
 class USkillManager;
 class USkillNodeLink;
@@ -24,7 +24,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	// The ability that will be given to the character
-	TSubclassOf<UFaethGameplayAbility> SkillAbilityClass;
+	TSubclassOf<UFaethAbility> SkillAbilityClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	// The effect that will be granted to the character

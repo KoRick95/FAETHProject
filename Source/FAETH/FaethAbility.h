@@ -3,10 +3,10 @@
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
 #include "FaethObjectTypes.h"
-#include "FaethGameplayAbility.generated.h"
+#include "FaethAbility.generated.h"
 
 UCLASS()
-class FAETH_API UFaethGameplayAbility : public UGameplayAbility
+class FAETH_API UFaethAbility : public UGameplayAbility
 {
 	GENERATED_BODY()
 	

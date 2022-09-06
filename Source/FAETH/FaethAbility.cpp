@@ -1,6 +1,6 @@
-#include "FaethGameplayAbility.h"
+#include "FaethAbility.h"
 
-float UFaethGameplayAbility::GetAbilityCost(FString AbilityCostType)
+float UFaethAbility::GetAbilityCost(FString AbilityCostType)
 {
 	float Cost = 0;
 
