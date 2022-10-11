@@ -42,3 +42,10 @@ void USkillSetComponent::BeginPlay()
 
 	OwningCharacter = Cast<AFaethCharacter>(GetOwner());
 }
+
+void USkillSetComponent::OnComponentDestroyed(bool bDestroyingHierarchy)
+{
+	Super::OnComponentDestroyed(bDestroyingHierarchy);
+	
+	// To do: perhaps tell the skill manager to handle the saving of this component's information.
+}

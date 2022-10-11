@@ -1,34 +1,27 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "FaethDataObject.h"
+#include "FaethAbility.h"
 #include "FaethObjectTypes.h"
 #include "Skill.generated.h"
 
 class AFaethCharacter;
 class UFaethAbility;
+class UFaethGameplayAbilitySystem;
 class UGameplayEffect;
 class USkillSetComponent;
 
 UCLASS()
-class FAETH_API USkill : public UFaethDataObject
+class FAETH_API USkill : public UFaethAbility
 {
 	GENERATED_BODY()
 	
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText SkillDisplayName;
+	FText DisplayName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText SkillDescription;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	// The ability that will be given to the character
-	TSubclassOf<UFaethAbility> SkillAbilityClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	// The effect that will be granted to the character
-	TSubclassOf<UGameplayEffect> SkillEffectClass;
+	FText Description;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0"))
 	// The amount of job points that will be paid to unlock this node
@@ -43,20 +36,22 @@ public:
 	bool bUnlocked = false;
 
 protected:
-	UPROPERTY(BlueprintReadOnly)
-	USkillSetComponent* OwningComponent;
+	UPROPERTY(EditAnywhere)
+	// Set to true when the ability is granted to the character
+	bool bEnabled = false;
 
 	UPROPERTY(EditAnywhere)
-	// If set to true before runtime, then the skill will be applied on BeginPlay
-	// Otherwise, this is only modified by ActivateSkill() or DeactivateSkill()
-	bool bActivated = false;
+	// Set to true if the ability is auto activated when granted to the character
+	bool bAutoActivate = false;
+
+	UFaethGameplayAbilitySystem* OwningComponent;
 
 	// Set to true once the skill has been properly applied to the owning character
 	bool bApplied = false;
 
 public:
 	UFUNCTION(BlueprintPure)
-	const bool IsActivated() { return bActivated; }
+	const bool IsActivated() { return bEnabled; }
 
 	UFUNCTION(BlueprintPure)
 	const bool IsApplied() { return bApplied; }
@@ -80,5 +75,5 @@ public:
 	void RemoveSkillFrom(AFaethCharacter* Character);
 
 protected:
-	virtual void BeginPlay() override;
+	virtual void OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
 };
