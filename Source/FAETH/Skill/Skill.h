@@ -1,79 +1,75 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "../FaethAbility.h"
-#include "../FaethObjectTypes.h"
+#include "../FaethDataObject.h"
 #include "Skill.generated.h"
 
-class AFaethCharacter;
+class APlayableCharacter;
 class UFaethAbility;
-class UFaethGameplayAbilitySystem;
-class UGameplayEffect;
 class USkillSystemComponent;
 
 UCLASS()
-class FAETH_API USkill : public UFaethAbility
+class FAETH_API USkill : public UFaethDataObject
 {
 	GENERATED_BODY()
-	
+
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText DisplayName;
+	UPROPERTY(EditAnywhere)
+	FName SkillID;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText Description;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0"))
-	// The amount of job points that will be paid to unlock this node
-	int JobPointsCost = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0"))
-	// The amount of skill points that will be paid to unlock this node
-	int SkillPointsCost = 0;
+	FText SkillDisplayName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	// Set to true once the cost of unlocking the node has been paid
+	FText SkillDescription;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UFaethAbility> AbilityClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0"), Category = "Unlock Requirements")
+	float JobPointsCost;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0"), Category = "Unlock Requirements")
+	float SkillPointsCost;
+
+	UPROPERTY(EditAnywhere, Category = "Unlock Requirements")
+	// Other skills that need to be unlocked before this skill can be unlocked
+	TArray<TSubclassOf<USkill>> PrerequisiteSkills;
+
+	UPROPERTY(BlueprintReadOnly)
+	// Whether this skill is currently unlocked for the owning character
+	// Note: Try to avoid modifying this value directly. Use TryUnlockSkill() from the SkillSystemComponent instead.
 	bool bUnlocked = false;
 
-protected:
-	UPROPERTY(EditAnywhere)
-	// Set to true when the ability is granted to the character
+	UPROPERTY(BlueprintReadOnly)
+	// Whether this skill is currently enabled for the owning character
+	// Note: Try to avoid modifying this value directly. Use EnableSkill() / DisableSkill() from the SkillSystemComponent instead.
 	bool bEnabled = false;
 
-	UPROPERTY(EditAnywhere)
-	// Set to true if the ability is auto activated when granted to the character
-	bool bAutoActivate = false;
-
-	UFaethGameplayAbilitySystem* OwningComponent;
-
-	// Set to true once the skill has been properly applied to the owning character
-	bool bApplied = false;
+protected:
+	// Cached pointer to the character which owns this skill
+	APlayableCharacter* OwningCharacter;
 
 public:
 	UFUNCTION(BlueprintPure)
-	const bool IsActivated() { return bEnabled; }
+	// Returns the skill system component that owns this skill.
+	USkillSystemComponent* GetSkillSystemComponent();
 
 	UFUNCTION(BlueprintPure)
-	const bool IsApplied() { return bApplied; }
+	// Returns the character which owns this skill.
+	APlayableCharacter* GetOwningCharacter();
 
-	UFUNCTION(BlueprintPure)
-	// Returns the owning character of the owning skill set component
-	AFaethCharacter* GetOwningCharacter();
+	UFUNCTION(BlueprintPure, BlueprintNativeEvent)
+	// Returns true if the owning character can pay the unlock cost of this skill.
+	bool CanPayUnlockCost();
 
-	UFUNCTION(BlueprintCallable)
-	// Activates the skill on the owning character
-	void ActivateSkill();
+	UFUNCTION(BlueprintPure, BlueprintNativeEvent)
+	// A native function that is meant to be overridden in the derived classes.
+	// Return should be true when the conditions are fulfilled.
+	// Default implementation always returns true.
+	bool CheckAdditionalUnlockConditions();
 
-	UFUNCTION(BlueprintCallable)
-	// Deactivates the skill on the owning character
-	void DeactivateSkill();
-	
-	// Applies the skill to the character if either the ability or effect class is set
-	void ApplySkillTo(AFaethCharacter* Character);
-
-	// Removes the skill from the character if it has been applied
-	void RemoveSkillFrom(AFaethCharacter* Character);
-
-protected:
-	virtual void OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
+	UFUNCTION(BlueprintNativeEvent)
+	// Returns true if the owning character successfully paid for the unlock cost of this skill.
+	bool TryPayUnlockCost();
 };

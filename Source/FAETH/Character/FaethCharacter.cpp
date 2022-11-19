@@ -14,16 +14,11 @@ AFaethCharacter::AFaethCharacter()
 	bIsDead = false;
 }
 
-UAbilitySystemComponent* AFaethCharacter::GetAbilitySystemComponent() const
-{
-	return AbilitySystemComponent;
-}
-
 void AFaethCharacter::InitAbilities()
 {
-	for (TSubclassOf<UFaethAbility> ability : InitialAbilityClasses)
+	for (int i = 0; i < InitialAbilityClasses.Num(); ++i)
 	{
-		GainAbility(ability);
+		LearnAbility(InitialAbilityClasses[i], 1);
 	}
 }
 
@@ -122,31 +117,31 @@ bool AFaethCharacter::GetIsHostile(AFaethCharacter* other)
 		return false;
 }
 
-void AFaethCharacter::GainAbility(TSubclassOf<UFaethAbility> Ability)
+void AFaethCharacter::LearnAbility(TSubclassOf<UFaethAbility> Ability, int AbilityLevel)
 {
-	if (AbilitySystemComponent && Ability && HasAuthority())
-	{
-		// To do: Pass the ability level dynamically.
-		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability, 1, static_cast<int32>(Ability.GetDefaultObject()->AbilityInputID), this));
-	}
+	if (!AbilitySystemComponent)
+		return;
+
+	AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability, AbilityLevel, static_cast<int32>(Ability.GetDefaultObject()->AbilityInputID), this));
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 }
 
-void AFaethCharacter::LoseAbility(TSubclassOf<UFaethAbility> Ability)
+void AFaethCharacter::ForgetAbility(TSubclassOf<UFaethAbility> Ability)
 {
-	if (AbilitySystemComponent && Ability && HasAuthority())
-	{
-		FGameplayAbilitySpec* AbilitySpec = AbilitySystemComponent->FindAbilitySpecFromClass(Ability);
+	if (!AbilitySystemComponent)
+		return;
 
-		if (AbilitySpec)
-		{
-			AbilitySystemComponent->ClearAbility(AbilitySpec->Handle);
-		}
+	FGameplayAbilitySpec* AbilitySpec = AbilitySystemComponent->FindAbilitySpecFromClass(Ability);
+
+	if (AbilitySpec)
+	{
+		AbilitySystemComponent->ClearAbility(AbilitySpec->Handle);
 	}
 }
 
 void AFaethCharacter::GainEffect(TSubclassOf<UGameplayEffect> Effect)
 {
-	if (AbilitySystemComponent && Effect && HasAuthority())
+	if (AbilitySystemComponent && Effect)
 	{
 		// To do: Pass the effect level dynamically.
 		AbilitySystemComponent->ApplyGameplayEffectToSelf(NewObject<UGameplayEffect>(Effect), 1, AbilitySystemComponent->MakeEffectContext());
@@ -155,7 +150,7 @@ void AFaethCharacter::GainEffect(TSubclassOf<UGameplayEffect> Effect)
 
 void AFaethCharacter::LoseEffect(TSubclassOf<UGameplayEffect> Effect)
 {
-	if (AbilitySystemComponent && Effect && HasAuthority())
+	if (AbilitySystemComponent && Effect)
 	{
 		AbilitySystemComponent->RemoveActiveGameplayEffectBySourceEffect(Effect, AbilitySystemComponent);
 	}

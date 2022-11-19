@@ -1,66 +1,62 @@
 #include "Skill.h"
 #include "SkillSystemComponent.h"
 #include "../FaethAbility.h"
-#include "../Character/FaethCharacter.h"
+#include "../Character/CharacterAttributeSet.h"
+#include "../Character/PlayableCharacter.h"
 
-AFaethCharacter* USkill::GetOwningCharacter()
+USkillSystemComponent* USkill::GetSkillSystemComponent()
 {
-	return nullptr;
+	return Cast<USkillSystemComponent>(GetOuter());
 }
 
-void USkill::ActivateSkill()
+APlayableCharacter* USkill::GetOwningCharacter()
 {
-	// If the skill is not yet unlocked, or is already activated, then do nothing.
-	if (!bUnlocked || bEnabled)
+	if (!OwningCharacter)
 	{
-		return;
+		USkillSystemComponent* SkillSystemComponent = GetSkillSystemComponent();
+
+		if (SkillSystemComponent)
+			OwningCharacter = SkillSystemComponent->GetOwningCharacter();
 	}
 
-	//ApplySkillTo(GetOwningCharacter());
-
-	bEnabled = true;
+	return OwningCharacter;
 }
 
-void USkill::DeactivateSkill()
+bool USkill::CanPayUnlockCost_Implementation()
 {
-	// If the skill is not already activated, then do nothing.
-	if (!bEnabled)
-	{
-		return;
-	}
+	APlayableCharacter* Character = GetOwningCharacter();
 
-	//RemoveSkillFrom(GetOwningCharacter());
+	if (!Character)
+		return false;
 
-	bEnabled = false;
+	UCharacterAttributeSet* AttributeSet = Character->GetCharacterAttributeSet();
+
+	if (!AttributeSet)
+		return false;
+
+	if (AttributeSet->JobPoints.GetBaseValue() < JobPointsCost)
+		return false;
+
+	if (AttributeSet->SkillPoints.GetBaseValue() < SkillPointsCost)
+		return false;
+
+	return true;
 }
 
-void USkill::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
+bool USkill::CheckAdditionalUnlockConditions_Implementation()
 {
-	Super::OnGiveAbility(ActorInfo, Spec);
-
-	// If set to auto activate on granted
-	if (bAutoActivate)
-	{
-		// Try activate the ability on the character
-		ActorInfo->AbilitySystemComponent->TryActivateAbility(Spec.Handle, false);
-	}
+	return true;
 }
 
-//void USkill::BeginPlay()
-//{
-//	OwningComponent = Cast<USkillSystemComponent>(GetOuter());
-//
-//	if (!OwningComponent)
-//	{
-//		UE_LOG(LogTemp, Error, TEXT("Skill %s does not have a valid SkillSystemComponent outer."), *GetName());
-//		return;
-//	}
-//
-//	// If the skill is activated before runtime, then apply the skill.
-//	if (IsActivated())
-//	{
-//		ApplySkillTo(GetOwningCharacter());
-//	}
-//
-//	Super::BeginPlay();
-//}
+bool USkill::TryPayUnlockCost_Implementation()
+{
+	if (!CanPayUnlockCost())
+		return false;
+
+	UCharacterAttributeSet* AttributeSet = GetOwningCharacter()->GetCharacterAttributeSet();
+
+	AttributeSet->SetJobPoints(AttributeSet->JobPoints.GetBaseValue() - JobPointsCost);
+	AttributeSet->SetSkillPoints(AttributeSet->SkillPoints.GetBaseValue() - SkillPointsCost);
+
+	return true;
+}

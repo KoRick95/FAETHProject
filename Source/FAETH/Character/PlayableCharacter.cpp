@@ -1,4 +1,5 @@
 #include "PlayableCharacter.h"
+#include "../Skill/SkillSystemComponent.h"
 
 void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {

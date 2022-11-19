@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -17,12 +18,6 @@ public:
 	// Sets default values for this character's properties
 	AFaethCharacter();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	UAbilitySystemComponent* AbilitySystemComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	UCharacterAttributeSet* CharacterAttributeSet;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int TeamID = 0;
 
@@ -30,9 +25,15 @@ public:
 	TArray<TSubclassOf<UGameplayEffect>> InitAttributesEffectClasses;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "Initial Abilities")
-	TArray<TSubclassOf<UGameplayAbility>> InitialAbilityClasses;
+	TArray<TSubclassOf<UFaethAbility>> InitialAbilityClasses;
 
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UAbilitySystemComponent* AbilitySystemComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UCharacterAttributeSet* CharacterAttributeSet;
+
 	UPROPERTY(BlueprintReadOnly)
 	bool bHasInitialisedAttributes;
 
@@ -40,7 +41,8 @@ protected:
 	bool bIsDead;
 
 public:
-	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	UAbilitySystemComponent* GetAbilitySystemComponent() const override { return AbilitySystemComponent; }
+	UCharacterAttributeSet* GetCharacterAttributeSet() { return CharacterAttributeSet; }
 
 	void InitAbilities();
 
@@ -80,11 +82,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool GetIsHostile(AFaethCharacter* other);
 
-	UFUNCTION(BlueprintCallable, Category = "Gameplay")
-	void GainAbility(TSubclassOf<UFaethAbility> Ability);
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	virtual void LearnAbility(TSubclassOf<UFaethAbility> Ability, int AbilityLevel);
 
-	UFUNCTION(BlueprintCallable, Category = "Gameplay")
-	void LoseAbility(TSubclassOf<UFaethAbility> Ability);
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	virtual void ForgetAbility(TSubclassOf<UFaethAbility> Ability);
 
 	UFUNCTION(BlueprintCallable, Category = "Gameplay")
 	void GainEffect(TSubclassOf<UGameplayEffect> Effect);

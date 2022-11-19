@@ -1,38 +1,163 @@
 #include "SkillSystemComponent.h"
-#include "../Character/FaethCharacter.h"
 #include "Skill.h"
+#include "../Character/CharacterAttributeSet.h"
+#include "../Character/PlayableCharacter.h"
 
-USkillSystemComponent::USkillSystemComponent()
+TArray<USkill*> USkillSystemComponent::GetUnlockedSkills()
 {
-	PrimaryComponentTick.bCanEverTick = false;
+	TArray<USkill*> UnlockedSkills;
+
+	for (int i = 0; i < Skills.Num(); ++i)
+	{
+		if (Skills[i]->bUnlocked)
+		{
+			UnlockedSkills.Add(Skills[i]);
+		}
+	}
+
+	return UnlockedSkills;
 }
 
 USkill* USkillSystemComponent::GetSkillByClass(TSubclassOf<USkill> SkillClass)
 {
-	for (int i = 0; i < SkillSet.Num(); ++i)
+	for (int i = 0; i < Skills.Num(); ++i)
 	{
-		if (SkillSet[i]->GetClass() == SkillClass)
+		if (Skills[i]->GetClass() == SkillClass)
 		{
-			return SkillSet[i];
+			return Skills[i];
 		}
 	}
 
 	return nullptr;
 }
 
-void USkillSystemComponent::ActivateSkill(USkill* Skill)
+USkill* USkillSystemComponent::GetSkillByID(FName SkillID)
 {
-	if (Skill)
+	for (int i = 0; i < Skills.Num(); ++i)
 	{
-		Skill->ActivateSkill();
+		if (Skills[i]->SkillID == SkillID)
+		{
+			return Skills[i];
+		}
+	}
+
+	return nullptr;
+}
+
+APlayableCharacter* USkillSystemComponent::GetOwningCharacter()
+{
+	return GetOwner<APlayableCharacter>();
+}
+
+UCharacterAttributeSet* USkillSystemComponent::GetOwningCharacterAttributeSet()
+{
+	APlayableCharacter* Character = GetOwningCharacter();
+
+	if (Character)
+		return Character->GetCharacterAttributeSet();
+
+	return nullptr;
+}
+
+bool USkillSystemComponent::CanUnlockSkill(USkill* Skill)
+{
+	if (!Skill || Skill->bUnlocked)
+		return false;
+
+	if (!Skill->CanPayUnlockCost())
+		return false;
+
+	if (!HasUnlockedPrerequisiteSkills(Skill))
+		return false;
+
+	if (!CheckAdditionalUnlockConditions(Skill))
+		return false;
+
+	if (!Skill->CheckAdditionalUnlockConditions())
+		return false;
+
+	return true;
+}
+
+bool USkillSystemComponent::HasUnlockedPrerequisiteSkills(USkill* Skill)
+{
+	if (!Skill)
+		return false;
+
+	auto PrereqSkills = Skill->PrerequisiteSkills;
+	TArray<USkill*> UnlockedSkills = GetUnlockedSkills();
+
+	for (int i = 0; i < PrereqSkills.Num(); ++i)
+	{
+		bool bFound = false;
+
+		for (int j = 0; j < UnlockedSkills.Num(); ++i)
+		{
+			if (UnlockedSkills[i]->GetClass() == PrereqSkills[i])
+			{
+				bFound = true;
+				break;
+			}
+		}
+
+		if (!bFound)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool USkillSystemComponent::CheckAdditionalUnlockConditions_Implementation(USkill* Skill)
+{
+	return true;
+}
+
+bool USkillSystemComponent::TryUnlockSkill(USkill* Skill, bool bAutoEnable)
+{
+	if (!Skill || Skill->GetSkillSystemComponent() != this)
+		return false;
+
+	if (!CanUnlockSkill(Skill))
+		return false;
+
+	if (Skill->TryPayUnlockCost())
+		return false;
+
+	Skill->bUnlocked = true;
+
+	if (bAutoEnable)
+		EnableSkill(Skill);
+
+	return true;
+}
+
+void USkillSystemComponent::EnableSkill(USkill* Skill)
+{
+	if (!Skill || Skill->GetSkillSystemComponent() != this || !Skill->bUnlocked || Skill->bEnabled)
+		return;
+
+	APlayableCharacter* Character = GetOwningCharacter();
+
+	if (Character)
+	{
+		Character->LearnAbility(Skill->AbilityClass, Character->GetCharacterAttributeSet()->GetLevel());
+		Skill->bEnabled = true;
 	}
 }
 
-void USkillSystemComponent::DeactivateSkill(USkill* Skill)
+void USkillSystemComponent::DisableSkill(USkill* Skill)
 {
-	if (Skill)
+	if (!Skill || Skill->GetSkillSystemComponent() != this || !Skill->bUnlocked || Skill->bEnabled)
+		return;
+
+	APlayableCharacter* Character = GetOwningCharacter();
+
+	if (Character)
 	{
-		Skill->DeactivateSkill();
+		Character->ForgetAbility(Skill->AbilityClass);
+		Skill->bEnabled = false;
 	}
 }
 
@@ -40,12 +165,18 @@ void USkillSystemComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	OwningCharacter = Cast<AFaethCharacter>(GetOwner());
+	// To do: if can read save data, then initialize from save data
+
+	for (int i = 0; i < SkillSet.Num(); ++i)
+	{
+		USkill* NewSkill = NewObject<USkill>(this, SkillSet[i]);
+		Skills.Add(NewSkill);
+	}
 }
 
 void USkillSystemComponent::OnComponentDestroyed(bool bDestroyingHierarchy)
 {
 	Super::OnComponentDestroyed(bDestroyingHierarchy);
-	
-	// To do: perhaps tell the skill manager to handle the saving of this component's information.
+
+	// To do: handle the saving of the component data
 }
