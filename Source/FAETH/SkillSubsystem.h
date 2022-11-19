@@ -18,7 +18,7 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	TArray<USkill*> SkillSet;
-}
+};
 
 UCLASS()
 class FAETH_API USkillSubsystem : public UGameInstanceSubsystem
