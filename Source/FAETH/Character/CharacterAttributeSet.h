@@ -9,7 +9,7 @@ GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 #include "CoreMinimal.h"
 #include "AttributeSet.h"
 #include "AbilitySystemComponent.h"
-#include "FaethObjectTypes.h"
+#include "../FaethObjectTypes.h"
 #include "CharacterAttributeSet.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAttributeChangeDelegate, float, Attribute, float, MaxAttribute);

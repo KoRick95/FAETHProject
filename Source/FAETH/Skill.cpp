@@ -1,5 +1,5 @@
 #include "Skill.h"
-#include "FaethCharacter.h"
+#include "Character/FaethCharacter.h"
 #include "FaethAbility.h"
 #include "SkillSetComponent.h"
 

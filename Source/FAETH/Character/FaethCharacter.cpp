@@ -1,7 +1,7 @@
 #include "FaethCharacter.h"
-#include "FaethAbility.h"
-#include "FaethAbilitySystemComponent.h"
-#include "FaethObjectTypes.h"
+#include "../FaethAbility.h"
+#include "../FaethAbilitySystemComponent.h"
+#include "../FaethObjectTypes.h"
 
 // Sets default values
 AFaethCharacter::AFaethCharacter()
