@@ -11,7 +11,8 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"GameplayAbilities",
-				"CoreUObject"
+				"CoreUObject",
+				"UMG"
 			]
 		}
 	],
@@ -54,7 +55,7 @@
 		},
 		{
 			"Name": "Bridge",
-			"Enabled": true,
+			"Enabled": false,
 			"SupportedTargetPlatforms": [
 				"Win64",
 				"Mac",

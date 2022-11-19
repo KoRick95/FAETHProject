@@ -4,7 +4,7 @@
 #include "Engine/GameInstance.h"
 #include "FaethGameInstance.generated.h"
 
-class APlayerCharacter;
+class APlayableCharacter;
 class UQuestManager;
 
 UCLASS()
@@ -13,14 +13,17 @@ class FAETH_API UFaethGameInstance : public UGameInstance
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(EditAnywhere, DisplayName = "Quest Manager")
-	TSubclassOf<UQuestManager> QuestManagerClass;
+	UPROPERTY(BlueprintReadOnly, Category = "Player")
+	APlayableCharacter* Player;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "Quest")
 	UQuestManager* QuestManager;
 
-	UPROPERTY(BlueprintReadWrite)
-	APlayerCharacter* Player;
+protected:
+	// To do: Perhaps change the manager class to a subsystem instead? They are pretty much singletons.
+	
+	UPROPERTY(EditAnywhere, Category = "Quest", DisplayName = "Quest Manager")
+	TSubclassOf<UQuestManager> QuestManagerClass;
 
 public:
 	virtual void Init() override;
