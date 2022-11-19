@@ -1,7 +1,7 @@
 #include "SkillSubsystem.h"
-#include "SkillSetComponent.h"
+#include "SkillSystemComponent.h"
 
-TArray<USkillSetComponent*> USkillSubsystem::GetRegisteredSkillComponents()
+TArray<USkillSystemComponent*> USkillSubsystem::GetRegisteredSkillComponents()
 {
 	return RegisteredSkillComponents;
 }
@@ -12,14 +12,14 @@ FCharacterSkillInfo USkillSubsystem::GetCharacterSkillInfo(FName CharacterId)
 	return FCharacterSkillInfo();
 }
 
-void USkillSubsystem::RegisterSkillComponent(USkillSetComponent* NewSkillComponent)
+void USkillSubsystem::RegisterSkillComponent(USkillSystemComponent* NewSkillComponent)
 {
 	RegisteredSkillComponents.Add(NewSkillComponent);
 
 	// To do: Also ref this subsystem from the component.
 }
 
-void USkillSubsystem::OnSkillComponentDestroyed(USkillSetComponent* SkillComponent)
+void USkillSubsystem::OnSkillComponentDestroyed(USkillSystemComponent* SkillComponent)
 {
 	// To do: Deregister the component and remove from internal array.
 }

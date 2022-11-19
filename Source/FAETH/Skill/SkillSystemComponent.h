@@ -2,18 +2,18 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "SkillSetComponent.generated.h"
+#include "SkillSystemComponent.generated.h"
 
 class AFaethCharacter;
 class USkill;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class FAETH_API USkillSetComponent : public UActorComponent
+class FAETH_API USkillSystemComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
-	USkillSetComponent();
+	USkillSystemComponent();
 	
 	UPROPERTY(BlueprintReadWrite)
 	TArray<USkill*> SkillSet;

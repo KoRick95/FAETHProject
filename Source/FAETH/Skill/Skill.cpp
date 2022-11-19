@@ -1,5 +1,5 @@
 #include "Skill.h"
-#include "SkillSetComponent.h"
+#include "SkillSystemComponent.h"
 #include "../FaethAbility.h"
 #include "../Character/FaethCharacter.h"
 
@@ -48,11 +48,11 @@ void USkill::OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGa
 
 //void USkill::BeginPlay()
 //{
-//	OwningComponent = Cast<USkillSetComponent>(GetOuter());
+//	OwningComponent = Cast<USkillSystemComponent>(GetOuter());
 //
 //	if (!OwningComponent)
 //	{
-//		UE_LOG(LogTemp, Error, TEXT("Skill %s does not have a valid SkillSetComponent outer."), *GetName());
+//		UE_LOG(LogTemp, Error, TEXT("Skill %s does not have a valid SkillSystemComponent outer."), *GetName());
 //		return;
 //	}
 //

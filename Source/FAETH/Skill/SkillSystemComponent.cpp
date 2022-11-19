@@ -1,13 +1,13 @@
-#include "SkillSetComponent.h"
+#include "SkillSystemComponent.h"
 #include "../Character/FaethCharacter.h"
 #include "Skill.h"
 
-USkillSetComponent::USkillSetComponent()
+USkillSystemComponent::USkillSystemComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-USkill* USkillSetComponent::GetSkillByClass(TSubclassOf<USkill> SkillClass)
+USkill* USkillSystemComponent::GetSkillByClass(TSubclassOf<USkill> SkillClass)
 {
 	for (int i = 0; i < SkillSet.Num(); ++i)
 	{
@@ -20,7 +20,7 @@ USkill* USkillSetComponent::GetSkillByClass(TSubclassOf<USkill> SkillClass)
 	return nullptr;
 }
 
-void USkillSetComponent::ActivateSkill(USkill* Skill)
+void USkillSystemComponent::ActivateSkill(USkill* Skill)
 {
 	if (Skill)
 	{
@@ -28,7 +28,7 @@ void USkillSetComponent::ActivateSkill(USkill* Skill)
 	}
 }
 
-void USkillSetComponent::DeactivateSkill(USkill* Skill)
+void USkillSystemComponent::DeactivateSkill(USkill* Skill)
 {
 	if (Skill)
 	{
@@ -36,14 +36,14 @@ void USkillSetComponent::DeactivateSkill(USkill* Skill)
 	}
 }
 
-void USkillSetComponent::BeginPlay()
+void USkillSystemComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
 	OwningCharacter = Cast<AFaethCharacter>(GetOwner());
 }
 
-void USkillSetComponent::OnComponentDestroyed(bool bDestroyingHierarchy)
+void USkillSystemComponent::OnComponentDestroyed(bool bDestroyingHierarchy)
 {
 	Super::OnComponentDestroyed(bDestroyingHierarchy);
 	

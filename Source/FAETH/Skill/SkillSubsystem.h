@@ -5,7 +5,7 @@
 #include "SkillSubsystem.generated.h"
 
 class USkill;
-class USkillSetComponent;
+class USkillSystemComponent;
 
 USTRUCT(BlueprintType)
 struct FCharacterSkillInfo
@@ -29,19 +29,19 @@ public:
 	
 
 protected:
-	TArray<USkillSetComponent*> RegisteredSkillComponents;
+	TArray<USkillSystemComponent*> RegisteredSkillComponents;
 
 public:
 	UFUNCTION(BlueprintPure)
 	FCharacterSkillInfo GetCharacterSkillInfo(FName CharacterId);
 	
 	UFUNCTION(BlueprintPure)
-	TArray<USkillSetComponent*> GetRegisteredSkillComponents();
+	TArray<USkillSystemComponent*> GetRegisteredSkillComponents();
 
 	UFUNCTION(BlueprintCallable)
-	void RegisterSkillComponent(USkillSetComponent* NewSkillComponent);
+	void RegisterSkillComponent(USkillSystemComponent* NewSkillComponent);
 
-	void OnSkillComponentDestroyed(USkillSetComponent* SkillComponent);
+	void OnSkillComponentDestroyed(USkillSystemComponent* SkillComponent);
 
 protected:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;

@@ -9,7 +9,7 @@ class AFaethCharacter;
 class UFaethAbility;
 class UFaethGameplayAbilitySystem;
 class UGameplayEffect;
-class USkillSetComponent;
+class USkillSystemComponent;
 
 UCLASS()
 class FAETH_API USkill : public UFaethAbility
