@@ -2,10 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "FaethCharacter.h"
-#include "PlayerCharacter.generated.h"
+#include "PlayableCharacter.generated.h"
 
 UCLASS()
-class FAETH_API APlayerCharacter : public AFaethCharacter
+class FAETH_API APlayableCharacter : public AFaethCharacter
 {
 	GENERATED_BODY()
 
