@@ -1,8 +1,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "FaethAbility.h"
-#include "FaethObjectTypes.h"
+#include "../FaethAbility.h"
+#include "../FaethObjectTypes.h"
 #include "Skill.generated.h"
 
 class AFaethCharacter;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "FaethDataObject.h"
+#include "../FaethDataObject.h"
 #include "SkillManager.generated.h"
 
 class AFaethCharacter;

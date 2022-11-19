@@ -1,7 +1,7 @@
 #include "Skill.h"
-#include "Character/FaethCharacter.h"
-#include "FaethAbility.h"
 #include "SkillSetComponent.h"
+#include "../FaethAbility.h"
+#include "../Character/FaethCharacter.h"
 
 AFaethCharacter* USkill::GetOwningCharacter()
 {

@@ -1,7 +1,7 @@
 #include "FaethGameInstance.h"
 #include "Character/PlayerCharacter.h"
 #include "Quest/QuestManager.h"
-#include "SkillManager.h"
+#include "Skill/SkillManager.h"
 
 #include "AbilitySystemGlobals.h"
 

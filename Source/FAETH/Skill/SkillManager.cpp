@@ -1,5 +1,5 @@
 #include "SkillManager.h"
-#include "Character/FaethCharacter.h"
+#include "../Character/FaethCharacter.h"
 
 AFaethCharacter* USkillManager::GetOwningCharacter()
 {

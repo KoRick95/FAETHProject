@@ -1,5 +1,5 @@
 #include "SkillSetComponent.h"
-#include "Character/FaethCharacter.h"
+#include "../Character/FaethCharacter.h"
 #include "Skill.h"
 
 USkillSetComponent::USkillSetComponent()
