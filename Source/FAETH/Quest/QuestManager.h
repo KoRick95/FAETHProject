@@ -2,8 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "FaethDataObject.h"
-#include "FaethObjectTypes.h"
+#include "../FaethDataObject.h"
+#include "../FaethObjectTypes.h"
 #include "QuestManager.generated.h"
 
 class UQuest;

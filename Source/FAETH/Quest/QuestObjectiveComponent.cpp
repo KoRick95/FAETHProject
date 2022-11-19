@@ -1,8 +1,8 @@
 #include "QuestObjectiveComponent.h"
-#include "FaethFunctionLibrary.h"
 #include "Quest.h"
 #include "QuestManager.h"
 #include "QuestObjective.h"
+#include "../FaethFunctionLibrary.h"
 
 UQuestObjectiveComponent::UQuestObjectiveComponent()
 {

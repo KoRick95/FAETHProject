@@ -1,7 +1,7 @@
 #include "QuestManager.h"
-#include "FaethFunctionLibrary.h"
 #include "Quest.h"
 #include "QuestObjective.h"
+#include "../FaethFunctionLibrary.h"
 
 void UQuestManager::PostInitProperties()
 {

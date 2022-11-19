@@ -2,8 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "FaethDataObject.h"
-#include "FaethObjectTypes.h"
+#include "../FaethDataObject.h"
+#include "../FaethObjectTypes.h"
 #include "Quest.generated.h"
 
 class UQuestManager;

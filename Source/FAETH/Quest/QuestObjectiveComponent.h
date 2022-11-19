@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "FaethObjectTypes.h"
+#include "../FaethObjectTypes.h"
 #include "QuestObjectiveComponent.generated.h"
 
 class UQuest;

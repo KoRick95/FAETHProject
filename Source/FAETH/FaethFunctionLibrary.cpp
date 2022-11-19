@@ -1,8 +1,8 @@
 #include "FaethFunctionLibrary.h"
 #include "FaethGameInstance.h"
-#include "Quest.h"
-#include "QuestManager.h"
-#include "QuestObjective.h"
+#include "Quest/Quest.h"
+#include "Quest/QuestManager.h"
+#include "Quest/QuestObjective.h"
 #include "Kismet/GameplayStatics.h"
 
 UFaethGameInstance* UFaethFunctionLibrary::GetFaethGameInstance(const UObject* WorldContextObject)
