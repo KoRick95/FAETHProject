@@ -1,7 +1,7 @@
 #include "QuestGiverComponent.h"
-#include "FaethFunctionLibrary.h"
 #include "Quest.h"
 #include "QuestManager.h"
+#include "../FaethFunctionLibrary.h"
 
 UQuestGiverComponent::UQuestGiverComponent()
 {

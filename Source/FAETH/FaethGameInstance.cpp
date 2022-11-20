@@ -1,6 +1,6 @@
 #include "FaethGameInstance.h"
-#include "PlayerCharacter.h"
-#include "QuestManager.h"
+#include "Character/PlayableCharacter.h"
+#include "Quest/QuestManager.h"
 
 #include "AbilitySystemGlobals.h"
 
@@ -10,5 +10,5 @@ void UFaethGameInstance::Init()
 	UAbilitySystemGlobals::Get().InitGlobalData();
 
 	QuestManagerClass = (QuestManagerClass) ? QuestManagerClass : UQuestManager::StaticClass();
-	QuestManager = NewObject<UQuestManager>(this, QuestManagerClass, "Quest Manager");
+	QuestManager = NewObject<UQuestManager>(this, QuestManagerClass, "QuestManager");
 }

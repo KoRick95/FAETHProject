@@ -1,5 +1,5 @@
 #include "DamageExecutionCalculation.h"
-#include "CharacterAttributeSet.h"
+#include "Character/CharacterAttributeSet.h"
 
 struct DamageStatics
 {

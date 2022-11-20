@@ -1,6 +1,6 @@
 #include "FaethObjectTypes.h"
-#include "Quest.h"
-#include "QuestObjective.h"
+#include "Quest/Quest.h"
+#include "Quest/QuestObjective.h"
 
 FQuestObjectiveData::FQuestObjectiveData(const UQuestObjective* ObjectivePtr)
 {

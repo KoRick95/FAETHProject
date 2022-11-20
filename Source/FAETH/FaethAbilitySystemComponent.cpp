@@ -1,5 +1,5 @@
 #include "FaethAbilitySystemComponent.h"
-#include "Skill.h"
+#include "Skill/Skill.h"
 
 USkill* UFaethAbilitySystemComponent::GetSkillByClass(TSubclassOf<USkill> SkillClass)
 {

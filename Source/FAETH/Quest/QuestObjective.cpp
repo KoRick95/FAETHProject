@@ -1,7 +1,7 @@
 #include "QuestObjective.h"
-#include "FaethFunctionLibrary.h"
 #include "Quest.h"
 #include "QuestManager.h"
+#include "../FaethFunctionLibrary.h"
 
 bool UQuestObjective::IsObjectiveStatusBlocked(const FProgressStatusBlockFlags& Flags) const
 {
