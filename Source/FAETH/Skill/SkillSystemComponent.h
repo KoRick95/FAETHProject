@@ -7,7 +7,7 @@
 class APlayableCharacter;
 class USkill;
 
-UCLASS()
+UCLASS(Blueprintable)
 class FAETH_API USkillSystemComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -51,18 +51,15 @@ public:
 	// Returns true if the owning character has unlocked all of the prerequisites of the given skill.
 	bool HasUnlockedPrerequisiteSkills(USkill* Skill);
 
-	UFUNCTION(BlueprintPure, BlueprintNativeEvent, Category = "Skill Unlocking")
-	// A native function that is meant to be overridden in the derived classes.
-	// Return should be true when the conditions are fulfilled.
-	// Default implementation always returns true.
-	bool CheckAdditionalUnlockConditions(USkill* Skill);
-
 	UFUNCTION(BlueprintPure, Category = "Skill Unlocking")
 	// Returns true if the owning character is eligible to unlock the given skill.
 	bool CanUnlockSkill(USkill* Skill);
 
 	UFUNCTION(BlueprintCallable, Category = "Skill Unlocking")
-	// To do: Comment
+	// Attempts to unlock the skill and pay any associated costs.
+	// @param Skill This is the skill to unlock (must exist in this component).
+	// @param AutoEnable If set to true, it will automatically enables the skill for the owning character.
+	// @return Returns true if the skill was successfully unlocked.
 	bool TryUnlockSkill(USkill* Skill, bool bAutoEnable = true);
 
 	UFUNCTION(BlueprintCallable)
