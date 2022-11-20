@@ -1,6 +1,11 @@
 #include "PlayableCharacter.h"
 #include "../Skill/SkillSystemComponent.h"
 
+APlayableCharacter::APlayableCharacter()
+{
+	SkillSystemComponent = CreateDefaultSubobject<USkillSystemComponent>("SkillSystemComponent");
+}
+
 void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
