@@ -70,9 +70,6 @@ bool USkillSystemComponent::CanUnlockSkill(USkill* Skill)
 	if (!HasUnlockedPrerequisiteSkills(Skill))
 		return false;
 
-	if (!CheckAdditionalUnlockConditions(Skill))
-		return false;
-
 	if (!Skill->CheckAdditionalUnlockConditions())
 		return false;
 
@@ -106,11 +103,6 @@ bool USkillSystemComponent::HasUnlockedPrerequisiteSkills(USkill* Skill)
 		}
 	}
 
-	return true;
-}
-
-bool USkillSystemComponent::CheckAdditionalUnlockConditions_Implementation(USkill* Skill)
-{
 	return true;
 }
 

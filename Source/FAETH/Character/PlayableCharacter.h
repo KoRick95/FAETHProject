@@ -11,6 +11,9 @@ class FAETH_API APlayableCharacter : public AFaethCharacter
 {
 	GENERATED_BODY()
 
+public:
+	APlayableCharacter();
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Skills")
 	USkillSystemComponent* SkillSystemComponent;
