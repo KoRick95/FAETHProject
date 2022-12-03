@@ -114,7 +114,7 @@ bool USkillSystemComponent::TryUnlockSkill(USkill* Skill, bool bAutoEnable)
 	if (!CanUnlockSkill(Skill))
 		return false;
 
-	if (Skill->TryPayUnlockCost())
+	if (!Skill->TryPayUnlockCost())
 		return false;
 
 	Skill->bUnlocked = true;
