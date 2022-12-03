@@ -1,4 +1,5 @@
 #include "FaethAbility.h"
+#include "AbilitySystemComponent.h"
 
 float UFaethAbility::GetAbilityCost(FString AbilityCostType)
 {
@@ -14,4 +15,14 @@ float UFaethAbility::GetAbilityCost(FString AbilityCostType)
 	}
 
 	return Cost;
+}
+
+void UFaethAbility::OnAvatarSet(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
+{
+	Super::OnAvatarSet(ActorInfo, Spec);
+
+	if (bAutoActivate)
+	{
+		ActorInfo->AbilitySystemComponent->TryActivateAbility(Spec.Handle, false);
+	}
 }

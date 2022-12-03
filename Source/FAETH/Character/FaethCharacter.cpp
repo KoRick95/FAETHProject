@@ -14,6 +14,14 @@ AFaethCharacter::AFaethCharacter()
 	bIsDead = false;
 }
 
+UGameplayAbility* AFaethCharacter::GetAbilityByClass(TSubclassOf<UGameplayAbility> AbilityClass)
+{
+	if (FGameplayAbilitySpec* Spec = AbilitySystemComponent->FindAbilitySpecFromClass(AbilityClass))
+		return Spec->Ability;
+
+	return nullptr;
+}
+
 void AFaethCharacter::InitAbilities()
 {
 	for (int i = 0; i < InitialAbilityClasses.Num(); ++i)

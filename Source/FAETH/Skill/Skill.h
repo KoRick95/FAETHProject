@@ -71,5 +71,6 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 	// Returns true if the owning character successfully paid for the unlock cost of this skill.
+	// To do: Currently facing restrictions from being unable to modify FGameplayAttributeData types. Will fix in the future.
 	bool TryPayUnlockCost();
 };

@@ -44,6 +44,9 @@ public:
 	UAbilitySystemComponent* GetAbilitySystemComponent() const override { return AbilitySystemComponent; }
 	UCharacterAttributeSet* GetCharacterAttributeSet() { return CharacterAttributeSet; }
 
+	UFUNCTION(BlueprintPure)
+	UGameplayAbility* GetAbilityByClass(TSubclassOf<UGameplayAbility> AbilityClass);
+
 	void InitAbilities();
 
 	UFUNCTION(BlueprintCallable)

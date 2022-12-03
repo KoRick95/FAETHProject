@@ -11,10 +11,16 @@ class FAETH_API UFaethAbility : public UGameplayAbility
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere)
+	bool bAutoActivate = false;
+
+	UPROPERTY(EditAnywhere)
 	EAbilityInputID AbilityInputID = EAbilityInputID::None;
 
 public:
 	UFUNCTION(BlueprintCallable)
 	float GetAbilityCost(FString AbilityCostType);
+
+protected:
+	virtual void OnAvatarSet(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
 };
