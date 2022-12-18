@@ -2,11 +2,29 @@
 
 #include "CoreMinimal.h"
 #include "../FaethDataObject.h"
+#include "../FaethObjectTypes.h"
 #include "Skill.generated.h"
 
 class APlayableCharacter;
 class UFaethAbility;
 class USkillSystemComponent;
+
+// A struct which stores a skill ID and the condition type.
+// Used for checking for prerequisite skills.
+USTRUCT(BlueprintType)
+struct FSkillPrerequisiteCondition
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	// The ID of the skill that is required for another skill to be unlocked
+	FName RequiredSkillID;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	// Determines how the condition gets checked against an existing skill
+	EConditionType ConditionType;
+};
 
 UCLASS()
 class FAETH_API USkill : public UFaethDataObject
@@ -35,8 +53,8 @@ public:
 	float SkillPointsCost;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unlock Requirements")
-	// Other skills that need to be unlocked before this skill can be unlocked
-	TArray<FName> PrerequisiteSkillIDs;
+	// The prerequisite conditions that need to be met before this skill can be unlocked
+	TArray<FSkillPrerequisiteCondition> PrerequisiteConditions;
 
 	UPROPERTY(BlueprintReadOnly)
 	// Whether this skill is currently unlocked for the owning character

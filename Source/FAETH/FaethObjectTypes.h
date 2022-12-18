@@ -22,6 +22,14 @@ enum class EAbilityInputID : uint8
 };
 
 UENUM(BlueprintType)
+enum class EConditionType : uint8
+{
+	AND		UMETA(ToolTip = "All AND type conditions must be met."),
+	OR		UMETA(ToolTip = "At least one of an OR type condition must be met."),
+	NOT		UMETA(ToolTip = "All NOT conditions must not be met (relative to their AND counterpart).")
+};
+
+UENUM(BlueprintType)
 enum class EProgressStatus : uint8
 {
 	Locked,

@@ -78,7 +78,7 @@ bool USkillSystemComponent::CanUnlockSkill(USkill* Skill)
 	if (!Skill->CanPayUnlockCost())
 		return false;
 
-	if (!HasUnlockedPrerequisiteSkills(Skill))
+	if (!HasMetPrerequisiteConditions(Skill))
 		return false;
 
 	if (!Skill->CheckAdditionalUnlockConditions())
@@ -87,34 +87,79 @@ bool USkillSystemComponent::CanUnlockSkill(USkill* Skill)
 	return true;
 }
 
-bool USkillSystemComponent::HasUnlockedPrerequisiteSkills(USkill* Skill)
+bool USkillSystemComponent::HasMetPrerequisiteConditions(USkill* Skill)
 {
 	if (!Skill)
 		return false;
 
-	TArray<FName> RequiredSkills = Skill->PrerequisiteSkillIDs;
+	TArray<FSkillPrerequisiteCondition> PrereqCon = Skill->PrerequisiteConditions;
 	TArray<USkill*> UnlockedSkills = GetUnlockedSkills();
 
-	for (int i = 0; i < RequiredSkills.Num(); ++i)
-	{
-		bool bFound = false;
+	bool bOrConditionSuccess = false;
 
-		for (int j = 0; j < UnlockedSkills.Num(); ++i)
+	for (int i = 0; i < PrereqCon.Num(); ++i)
+	{
+		if (PrereqCon[i].ConditionType == EConditionType::AND)
 		{
-			if (UnlockedSkills[i]->SkillID == RequiredSkills[i])
+			bool bFound = false;
+
+			// Try to determine if the skill has been unlocked.
+			for (int j = 0; j < UnlockedSkills.Num(); ++j)
 			{
-				bFound = true;
-				break;
+				if (PrereqCon[i].RequiredSkillID == UnlockedSkills[j]->SkillID)
+				{
+					bFound = true;
+					break;
+				}
+			}
+
+			// If skill is not found, then the condition has failed.
+			if (!bFound)
+			{
+				return false;
 			}
 		}
-
-		if (!bFound)
+		else if (PrereqCon[i].ConditionType == EConditionType::OR)
 		{
-			return false;
+			// If one OR condition has already succeeded, skip the rest.
+			if (bOrConditionSuccess)
+				continue;
+
+			// Try to determine if the skill has been unlocked.
+			for (int j = 0; j < UnlockedSkills.Num(); ++j)
+			{
+				if (PrereqCon[i].RequiredSkillID == UnlockedSkills[j]->SkillID)
+				{
+					// If one is found, set the OR condition to true for this function call.
+					bOrConditionSuccess = true;
+					break;
+				}
+			}
+		}
+		else if (PrereqCon[i].ConditionType == EConditionType::NOT)
+		{
+			bool bFound = false;
+
+			// Try to determine if the skill has been unlocked.
+			for (int j = 0; j < UnlockedSkills.Num(); ++j)
+			{
+				if (PrereqCon[i].RequiredSkillID == UnlockedSkills[j]->SkillID)
+				{
+					bFound = true;
+					break;
+				}
+			}
+
+			// If skill is found, then the condition has failed.
+			if (bFound)
+			{
+				return false;
+			}
 		}
 	}
 
-	return true;
+	// We only need to return the result of the OR condition since it is the only condition type that cannot exit early.
+	return bOrConditionSuccess;
 }
 
 bool USkillSystemComponent::TryUnlockSkill(USkill* Skill, bool bAutoEnable)

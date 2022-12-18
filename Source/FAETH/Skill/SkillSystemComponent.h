@@ -52,7 +52,7 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Skill Unlocking")
 	// Returns true if the owning character has unlocked all of the prerequisites of the given skill.
-	bool HasUnlockedPrerequisiteSkills(USkill* Skill);
+	bool HasMetPrerequisiteConditions(USkill* Skill);
 
 	UFUNCTION(BlueprintPure, Category = "Skill Unlocking")
 	// Returns true if the owning character is eligible to unlock the given skill.
