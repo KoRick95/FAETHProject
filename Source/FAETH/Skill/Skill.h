@@ -34,7 +34,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0"), Category = "Unlock Requirements")
 	float SkillPointsCost;
 
-	UPROPERTY(EditAnywhere, Category = "Unlock Requirements")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Unlock Requirements")
 	// Other skills that need to be unlocked before this skill can be unlocked
 	TArray<FName> PrerequisiteSkillIDs;
 
