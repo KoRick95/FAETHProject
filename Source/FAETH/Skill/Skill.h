@@ -16,7 +16,7 @@ class FAETH_API USkill : public UFaethDataObject
 public:
 	//USkill(FName InSkillID) : SkillID(InSkillID) {}
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName SkillID;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

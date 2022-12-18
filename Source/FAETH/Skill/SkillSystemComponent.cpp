@@ -59,6 +59,17 @@ UCharacterAttributeSet* USkillSystemComponent::GetOwningCharacterAttributeSet()
 	return nullptr;
 }
 
+void USkillSystemComponent::AddNewSkill(USkill* NewSkill)
+{
+	if (!NewSkill)
+		return;
+
+	if (NewSkill->bUnlocked || NewSkill->bEnabled)
+		UE_LOG(LogTemp, Warning, TEXT("Added a new skill that is already unlocked or enabled."));
+
+	Skills.Add(NewSkill);
+}
+
 bool USkillSystemComponent::CanUnlockSkill(USkill* Skill)
 {
 	if (!Skill || Skill->bUnlocked)
@@ -159,9 +170,9 @@ void USkillSystemComponent::BeginPlay()
 
 	// To do: if can read save data, then initialize from save data
 
-	for (int i = 0; i < SkillSet.Num(); ++i)
+	for (int i = 0; i < InitialSkills.Num(); ++i)
 	{
-		USkill* NewSkill = NewObject<USkill>(this, SkillSet[i]);
+		USkill* NewSkill = NewObject<USkill>(this, InitialSkills[i]);
 		Skills.Add(NewSkill);
 	}
 }
