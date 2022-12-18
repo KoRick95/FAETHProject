@@ -15,7 +15,7 @@ class FAETH_API USkillSystemComponent : public UActorComponent
 public:
 	UPROPERTY(EditAnywhere)
 	// An array of skill classes that gets instantiated on BeginPlay
-	TArray<TSubclassOf<USkill>> SkillSet;
+	TArray<TSubclassOf<USkill>> InitialSkills;
 
 protected:
 	UPROPERTY()
@@ -46,6 +46,9 @@ public:
 	UFUNCTION(BlueprintPure)
 	// Returns the attribute set of GetOwningCharacter().
 	UCharacterAttributeSet* GetOwningCharacterAttributeSet();
+
+	UFUNCTION(BlueprintCallable)
+	void AddNewSkill(USkill* NewSkill);
 
 	UFUNCTION(BlueprintPure, Category = "Skill Unlocking")
 	// Returns true if the owning character has unlocked all of the prerequisites of the given skill.
