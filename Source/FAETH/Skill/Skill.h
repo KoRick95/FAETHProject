@@ -14,6 +14,8 @@ class FAETH_API USkill : public UFaethDataObject
 	GENERATED_BODY()
 
 public:
+	//USkill(FName InSkillID) : SkillID(InSkillID) {}
+
 	UPROPERTY(EditAnywhere)
 	FName SkillID;
 
@@ -34,7 +36,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Unlock Requirements")
 	// Other skills that need to be unlocked before this skill can be unlocked
-	TArray<TSubclassOf<USkill>> PrerequisiteSkills;
+	TArray<FName> PrerequisiteSkillIDs;
 
 	UPROPERTY(BlueprintReadOnly)
 	// Whether this skill is currently unlocked for the owning character

@@ -81,16 +81,16 @@ bool USkillSystemComponent::HasUnlockedPrerequisiteSkills(USkill* Skill)
 	if (!Skill)
 		return false;
 
-	auto PrereqSkills = Skill->PrerequisiteSkills;
+	TArray<FName> RequiredSkills = Skill->PrerequisiteSkillIDs;
 	TArray<USkill*> UnlockedSkills = GetUnlockedSkills();
 
-	for (int i = 0; i < PrereqSkills.Num(); ++i)
+	for (int i = 0; i < RequiredSkills.Num(); ++i)
 	{
 		bool bFound = false;
 
 		for (int j = 0; j < UnlockedSkills.Num(); ++i)
 		{
-			if (UnlockedSkills[i]->GetClass() == PrereqSkills[i])
+			if (UnlockedSkills[i]->SkillID == RequiredSkills[i])
 			{
 				bFound = true;
 				break;
