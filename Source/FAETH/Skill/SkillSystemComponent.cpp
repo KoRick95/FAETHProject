@@ -92,21 +92,28 @@ bool USkillSystemComponent::HasMetPrerequisiteConditions(USkill* Skill)
 	if (!Skill)
 		return false;
 
-	TArray<FSkillPrerequisiteCondition> PrereqCon = Skill->PrerequisiteConditions;
+	// Get the skill's prerequite conditions array.
+	TArray<FSkillPrerequisiteCondition> PrereqCons = Skill->PrerequisiteConditions;
+
+	// If there are no prerequisite conditions, then just return true.
+	if (PrereqCons.IsEmpty())
+		return true;
+
 	TArray<USkill*> UnlockedSkills = GetUnlockedSkills();
 
-	bool bOrConditionSuccess = false;
+	bool bUsesOrCondition = false; // If it doesn't have any OR condition, ignore bOrConditionSuccess.
+	bool bOrConditionSuccess = false; // Whether any of the OR conditions succeeds in the entire array.
 
-	for (int i = 0; i < PrereqCon.Num(); ++i)
+	for (int i = 0; i < PrereqCons.Num(); ++i)
 	{
-		if (PrereqCon[i].ConditionType == EConditionType::AND)
+		if (PrereqCons[i].ConditionType == EConditionType::AND)
 		{
 			bool bFound = false;
 
 			// Try to determine if the skill has been unlocked.
 			for (int j = 0; j < UnlockedSkills.Num(); ++j)
 			{
-				if (PrereqCon[i].RequiredSkillID == UnlockedSkills[j]->SkillID)
+				if (PrereqCons[i].RequiredSkillID == UnlockedSkills[j]->SkillID)
 				{
 					bFound = true;
 					break;
@@ -119,8 +126,10 @@ bool USkillSystemComponent::HasMetPrerequisiteConditions(USkill* Skill)
 				return false;
 			}
 		}
-		else if (PrereqCon[i].ConditionType == EConditionType::OR)
+		else if (PrereqCons[i].ConditionType == EConditionType::OR)
 		{
+			bUsesOrCondition = true;
+
 			// If one OR condition has already succeeded, skip the rest.
 			if (bOrConditionSuccess)
 				continue;
@@ -128,7 +137,7 @@ bool USkillSystemComponent::HasMetPrerequisiteConditions(USkill* Skill)
 			// Try to determine if the skill has been unlocked.
 			for (int j = 0; j < UnlockedSkills.Num(); ++j)
 			{
-				if (PrereqCon[i].RequiredSkillID == UnlockedSkills[j]->SkillID)
+				if (PrereqCons[i].RequiredSkillID == UnlockedSkills[j]->SkillID)
 				{
 					// If one is found, set the OR condition to true for this function call.
 					bOrConditionSuccess = true;
@@ -136,14 +145,14 @@ bool USkillSystemComponent::HasMetPrerequisiteConditions(USkill* Skill)
 				}
 			}
 		}
-		else if (PrereqCon[i].ConditionType == EConditionType::NOT)
+		else if (PrereqCons[i].ConditionType == EConditionType::NOT)
 		{
 			bool bFound = false;
 
 			// Try to determine if the skill has been unlocked.
 			for (int j = 0; j < UnlockedSkills.Num(); ++j)
 			{
-				if (PrereqCon[i].RequiredSkillID == UnlockedSkills[j]->SkillID)
+				if (PrereqCons[i].RequiredSkillID == UnlockedSkills[j]->SkillID)
 				{
 					bFound = true;
 					break;
@@ -158,8 +167,13 @@ bool USkillSystemComponent::HasMetPrerequisiteConditions(USkill* Skill)
 		}
 	}
 
-	// We only need to return the result of the OR condition since it is the only condition type that cannot exit early.
-	return bOrConditionSuccess;
+	// If any OR conditions were checked, then...
+	// We need to return the result since it is the only condition type that cannot exit early.
+	if (bUsesOrCondition)
+		return bOrConditionSuccess;
+
+	// Otherwise it has passed every condition.
+	return true;
 }
 
 bool USkillSystemComponent::TryUnlockSkill(USkill* Skill, bool bAutoEnable)
